@@ -1,8 +1,3 @@
-# 
-# 	input: minimap2 sam
-# 	advanced inputs: bam format files
-# 	date: Dec, 13th, 2017
-# 
 import sys
 
 def acquire_clip(cigar, flag):
@@ -37,24 +32,21 @@ def analysis_read(path):
 			if cigar[0] == '*':
 				# unaligned_num += 1
 				if read_id not in unaligned_dic:
-					unaligned_dic[read_id] = read_len
-			# else:
-			# 	soft_clip = acquire_clip(cigar, 'S')
-			# 	hard_clip = acquire_clip(cigar, 'H')
-			# 	clip = soft_clip + hard_clip
-			# 	if clip >= read_len * 0.1:
-			# 		# print read_id
-			# 		# unaligned_num += 1
-			# 		if read_id not in unaligned_dic:
-			# 			unaligned_dic[read_id] = 1
-			# 	else:
-			# 		if read_id not in aligned_dic:
-			# 			aligned_dic[read_id] = 1
-			# 		# aligned_num += 1
-			# 	# aligned_num += 1
+					unaligned_dic[read_id] = 1
 			else:
-				if read_id not in aligned_dic:
-					aligned_dic[read_id] = 1
+				soft_clip = acquire_clip(cigar, 'S')
+				hard_clip = acquire_clip(cigar, 'H')
+				clip = soft_clip + hard_clip
+				if clip >= read_len * 0.1:
+					# print read_id
+					# unaligned_num += 1
+					if read_id not in unaligned_dic:
+						unaligned_dic[read_id] = 1
+				else:
+					if read_id not in aligned_dic:
+						aligned_dic[read_id] = 1
+					# aligned_num += 1
+				# aligned_num += 1
 	file.close()
 	# print unaligned_num, aligned_num
 
@@ -71,19 +63,15 @@ def analysis_read(path):
 
 def main():
 	unaligned_read_id_minimap2 = analysis_read(sys.argv[1])
-	# unaligned_read_id_nglmr = analysis_read(sys.argv[2])
+	unaligned_read_id_nglmr = analysis_read(sys.argv[2])
 
-	# for key in unaligned_read_id_nglmr:
-	# 	if key not in unaligned_read_id_minimap2:
-	# 		print "belongs to nglmr: "+key
-
-	# for key in unaligned_read_id_minimap2:
-	# 	if key not in unaligned_read_id_nglmr:
-	# 		print "belongs to minimap2: "+key
+	for key in unaligned_read_id_nglmr:
+		if key not in unaligned_read_id_minimap2:
+			print "belongs to nglmr: "+key
 
 	for key in unaligned_read_id_minimap2:
-		# print key+"\t"+str(unaligned_read_id_minimap2[key])
-		print key
+		if key not in unaligned_read_id_nglmr:
+			print "belongs to minimap2: "+key
 
 
 if __name__ == '__main__':
