@@ -207,7 +207,7 @@ def simulation_random_del(Locus_pos, hg19, chr_list, pre_out):
 				# fp_e = fp_s + ele[1] - ele[0]
 				_offect_ = _offect_ + ele[1] - ele[0]
 				# fp_e = fp_s + len(alu_seq)
-				Answer.append([key, str(fp_s), str(ele[1] - ele[0])])
+				Answer.append([key, str(fp_s), str(ele[1] - ele[0]), ele[2]])
 					# print(alu_seq)
 					# print(Answer)
 					# test_num += 1

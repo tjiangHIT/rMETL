@@ -145,7 +145,7 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 
 			if locus_chr not in locus_dic:
 				locus_dic[locus_chr] = list()
-			locus_dic[locus_chr].append([start_pos, end_pos])
+			locus_dic[locus_chr].append([start_pos, end_pos, class_ele])
 	# random deletion
 	for key in locus_dic:
 		kept = int(0.2*len(locus_dic[key]))
