@@ -120,7 +120,8 @@ def parse_read(read, Chr_name):
 
 def out_put(chr, cluster):
 	for i in cluster:
-		print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
+		if i[2] >= 5:
+			print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
 
 def acquire_clip_locus(down, up, chr):
 	list_clip = list()
@@ -129,7 +130,8 @@ def acquire_clip_locus(down, up, chr):
 		if key_1 not in CLIP_note[chr]:
 			continue
 		for i in xrange(int((up%10000)/50)-int((down%10000)/50)+1):
-			key_2 = int((up%10000)/50)+i
+			# exist a bug ***********************************
+			key_2 = int((down%10000)/50)+i
 			if key_2 not in CLIP_note[chr][key_1]:
 				continue
 			for ele in CLIP_note[chr][key_1][key_2]:
@@ -194,7 +196,7 @@ def load_sam(path):
 					cluster_pos.append(i)
 		# while not CLIP_note[Chr_name].empty():
 		# 	print Chr_name, CLIP_note[Chr_name].get()
-		print CLIP_note[Chr_name][6]
+		# print CLIP_note[Chr_name][6]
 		cluster_pos = sorted(cluster_pos, key = lambda x:x[0])
 		Cluster = cluster(cluster_pos, Chr_name)
 		out_put(Chr_name, Cluster)
