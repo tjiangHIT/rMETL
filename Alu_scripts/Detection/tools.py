@@ -125,13 +125,35 @@ def out_put(chr, cluster):
 
 def acquire_clip_locus(down, up, chr):
 	list_clip = list()
-	for k in xrange(int(up/10000) - int(down/10000) + 1):
-		key_1 = int(down/10000) + k
+	if int(up/10000) == int(down/10000):
+		key_1 = int(down/10000)
 		if key_1 not in CLIP_note[chr]:
-			continue
+			return list_clip
 		for i in xrange(int((up%10000)/50)-int((down%10000)/50)+1):
 			# exist a bug ***********************************
 			key_2 = int((down%10000)/50)+i
+			if key_2 not in CLIP_note[chr][key_1]:
+				continue
+			for ele in CLIP_note[chr][key_1][key_2]:
+				if ele >= down and ele <= up:
+					list_clip.append(ele)
+	else:
+		key_1 = int(down/10000)
+		if key_1 in CLIP_note[chr]:
+			for i in xrange(200-int((down%10000)/50)):
+				# exist a bug ***********************************
+				key_2 = int((down%10000)/50)+i
+				if key_2 not in CLIP_note[chr][key_1]:
+					continue
+				for ele in CLIP_note[chr][key_1][key_2]:
+					if ele >= down and ele <= up:
+						list_clip.append(ele)
+		key_1 += 1
+		if key_1 not in CLIP_note[chr]:
+			return list_clip
+		for i in xrange(int((up%10000)/50)+1):
+			# exist a bug ***********************************
+			key_2 = i
 			if key_2 not in CLIP_note[chr][key_1]:
 				continue
 			for ele in CLIP_note[chr][key_1][key_2]:
@@ -161,7 +183,8 @@ def cluster(pos_list, chr):
 	temp = list()
 	temp.append(pos_list[0])
 	for pos in pos_list[1:]:
-		if temp[-1][0] + temp[-1][1] < pos[0]:
+		# if temp[-1][0] + temp[-1][1] < pos[0]:
+		if temp[-1][0] + 20 < pos[0]:
 			_cluster_.append(merge_pos(temp, chr))
 			temp = list()
 			temp.append(pos)
