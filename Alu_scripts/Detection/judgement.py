@@ -219,9 +219,9 @@ def main():
 	# print count_1, count_2
 	print("[INFO]: The total number of the grand truth: %d"%(total))
 	print("[INFO]: The total number of the scripts' predictions: %d(%d)"%(count_1, real_count_1))
-	print("[INFO]: The recall rate is %0.3f"%(real_count_1*1.0/total))
+	print("[INFO]: The recall rate is %0.5f"%(real_count_1*1.0/total))
 	print("[INFO]: The total number of the Sniffles's predictions: %d(%d)"%(count_2, real_count_2))
-	print("[INFO]: The recall rate is %0.3f"%(real_count_2*1.0/total))
+	print("[INFO]: The recall rate is %0.5f"%(real_count_2*1.0/total))
 	print("[INFO]: Finished in %0.2f seconds."%(time.time() - starttime))
 	print("[INFO]: Have a nice day! ^.^ ")
 
