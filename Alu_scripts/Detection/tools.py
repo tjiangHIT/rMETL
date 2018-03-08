@@ -8,6 +8,7 @@ clip_flag = {4:'S', 5:'H'}
 low_bandary = 20
 
 CLIP_note = dict()
+total_signal = list()
 # clip_store = Q.PriorityQueue()
 
 def revcom_complement(s): 
@@ -118,10 +119,11 @@ def parse_read(read, Chr_name):
 			# return [r_start + shift, element[1]]
 	return local_pos
 
-def out_put(chr, cluster):
+def merge_siganl(chr, cluster):
 	for i in cluster:
 		if i[2] >= 5:
-			print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
+			total_signal.append("%s\t%d\t%d\t%d\n"%(chr, i[0], i[1], i[2]))
+			# print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
 
 def acquire_clip_locus(down, up, chr):
 	list_clip = list()
@@ -193,17 +195,19 @@ def cluster(pos_list, chr):
 	_cluster_.append(merge_pos(temp, chr))
 	return _cluster_
 
-def load_sam(path):
+def load_sam(p1, p2):
 	'''
 	Load_BAM_File
 	library:	pysam.AlignmentFile
 	'''
-	samfile = pysam.AlignmentFile(path)
+	samfile = pysam.AlignmentFile(p1)
 	# print(samfile.get_index_statistics())
 	contig_num = len(samfile.get_index_statistics())
+	print("[INFO]: The total number of chromsomes: %d"%(contig_num))
 	# Acquire_Chr_name
 	for _num_ in xrange(contig_num):
 		Chr_name = samfile.get_reference_name(_num_)
+		print("[INFO]: Resolving the chromsome %s."%(Chr_name))
 		# Chr_length = samfile.lengths[_num_]
 		if Chr_name not in CLIP_note:
 			# CLIP_note[Chr_name] = [0] * Chr_length
@@ -221,7 +225,15 @@ def load_sam(path):
 		# 	print Chr_name, CLIP_note[Chr_name].get()
 		# print CLIP_note[Chr_name][6]
 		cluster_pos = sorted(cluster_pos, key = lambda x:x[0])
-		Cluster = cluster(cluster_pos, Chr_name)
-		out_put(Chr_name, Cluster)
-		break
+		if len(cluster_pos) == 0:
+			Cluster = list()
+		else:
+			Cluster = cluster(cluster_pos, Chr_name)
+		print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster), Chr_name))
+		merge_siganl(Chr_name, Cluster)
+		# break
+	out_signal = open(p2, 'w')
+	for i in total_signal:
+		out_signal.write(i)
+	out_signal.close()
 	samfile.close()
