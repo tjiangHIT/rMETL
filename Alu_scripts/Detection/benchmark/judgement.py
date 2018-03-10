@@ -30,6 +30,9 @@ def find_common(chr, start_pos, length, note):
 	answer = list()
 	up = start_pos + length
 	down = start_pos
+
+	if chr not in CLIP_note:
+		return answer
 	# print down, up
 	# for k in xrange(int(up/10000) - int(down/10000) + 1):
 	if int(up/10000) == int(down/10000):
