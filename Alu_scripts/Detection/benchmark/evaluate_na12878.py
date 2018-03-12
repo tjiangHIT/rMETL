@@ -206,8 +206,8 @@ def main():
 	# print len(dic_retroseq)
 
 	signal_path = sys.argv[5]
-	out_path = sys.argv[6]
-	sniffles_path = sys.argv[7]
+	out_path = sys.argv[7]
+	sniffles_path = sys.argv[6]
 	print("[INFO]: The path of the Signal file: %s"%(signal_path))
 	print("[INFO]: The path of the Sniffles file: %s"%(sniffles_path))
 	print("[INFO]: Starting to evaluate...")
