@@ -1,6 +1,7 @@
 
 import pysam
 import Queue as Q
+from concensus import *
 
 # list_flag = {1:'I', 4:'S', 5:'H'}
 list_flag = {1:'I'}
@@ -33,22 +34,23 @@ def detect_flag(Flag):
 # def acquire_ins_part():
 # 	# about insert sequence
 
-def store_clip_pos(locus, chr):
+def store_clip_pos(locus, chr, seq, flag):
 	# about collecting breakpoint from clipping 
 	hash_1 = int(locus /10000)
 	mod = locus % 10000
 	hash_2 = int(mod / 50)
+	element = [locus, seq, flag]
 
 	if hash_1 not in CLIP_note[chr]:
 		CLIP_note[chr][hash_1] = dict()
 		CLIP_note[chr][hash_1][hash_2] = list()
-		CLIP_note[chr][hash_1][hash_2].append(locus)
+		CLIP_note[chr][hash_1][hash_2].append(element)
 	else:
 		if hash_2 not in CLIP_note[chr][hash_1]:
 			CLIP_note[chr][hash_1][hash_2] = list()
-			CLIP_note[chr][hash_1][hash_2].append(locus)
+			CLIP_note[chr][hash_1][hash_2].append(element)
 		else:
-			CLIP_note[chr][hash_1][hash_2].append(locus)
+			CLIP_note[chr][hash_1][hash_2].append(element)
 
 def parse_read(read, Chr_name):
 	'''
@@ -88,17 +90,29 @@ def parse_read(read, Chr_name):
 			# 	MEI_contig = read.query_sequence[_shift_read_ - element[1]:_shift_read_]
 			# MEI_contig = read.query_sequence[_shift_read_-element[1]-4:_shift_read_+10]
 			# judge flag !!!!!!!!
-			local_pos.append([pos_start + shift, element[1]])
-			# print read.query_name
+			local_pos.append([pos_start + shift, element[1], MEI_contig])
+
+			# print read.query_name, "I", pos_start + shift
 			# print MEI_contig
+
 		if element[0] in clip_flag:
 			if element[1] > low_bandary:
 				if shift == 0:
 					clip_pos = pos_start - 1
+					clip_contig = read.query_sequence[:element[1]]
+					store_clip_pos(clip_pos, Chr_name, clip_contig, 0)
+					# print read.query_name, "0 S", clip_pos 
+					# print clip_contig
 				else:
 					clip_pos = pos_start + shift - 1
+					clip_contig = read.query_sequence[read.query_length - element[1]:]
+					store_clip_pos(clip_pos, Chr_name, clip_contig, 1)
+					# print read.query_name, "1 S", clip_pos 
+					# print clip_contig
 
-				store_clip_pos(clip_pos, Chr_name)
+				# store_clip_pos(clip_pos, Chr_name, clip_contig)
+				# print read.query_name, "S"
+				# print clip_contig
 				# hash_1 = int(clip_pos / 10000)
 				# mod_1 = int(clip_pos % 10000)
 				# hash_2 = int(mod_1 / 50)
@@ -122,7 +136,7 @@ def parse_read(read, Chr_name):
 def merge_siganl(chr, cluster):
 	for i in cluster:
 		if i[2] >= 5:
-			total_signal.append("%s\t%d\t%d\t%d\n"%(chr, i[0], i[1], i[2]))
+			total_signal.append("%s\t%d\t%d\t%d\t%s\n"%(chr, i[0], i[1], i[2], i[3]))
 			# print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
 
 def acquire_clip_locus(down, up, chr):
@@ -137,7 +151,7 @@ def acquire_clip_locus(down, up, chr):
 			if key_2 not in CLIP_note[chr][key_1]:
 				continue
 			for ele in CLIP_note[chr][key_1][key_2]:
-				if ele >= down and ele <= up:
+				if ele[0] >= down and ele[0] <= up:
 					list_clip.append(ele)
 	else:
 		key_1 = int(down/10000)
@@ -148,7 +162,7 @@ def acquire_clip_locus(down, up, chr):
 				if key_2 not in CLIP_note[chr][key_1]:
 					continue
 				for ele in CLIP_note[chr][key_1][key_2]:
-					if ele >= down and ele <= up:
+					if ele[0] >= down and ele[0] <= up:
 						list_clip.append(ele)
 		key_1 += 1
 		if key_1 not in CLIP_note[chr]:
@@ -159,7 +173,7 @@ def acquire_clip_locus(down, up, chr):
 			if key_2 not in CLIP_note[chr][key_1]:
 				continue
 			for ele in CLIP_note[chr][key_1][key_2]:
-				if ele >= down and ele <= up:
+				if ele[0] >= down and ele[0] <= up:
 					list_clip.append(ele)
 	return list_clip
 
@@ -174,10 +188,18 @@ def merge_pos(pos_list, chr):
 	search_up = max(start) + 10
 	temp_clip = acquire_clip_locus(search_down, search_up, chr)
 
-	total_breakpoint = int((sum(start) + sum(temp_clip)) / (len(pos_list) + len(temp_clip)))
-	total_length = int(sum(end)/len(pos_list)) - total_breakpoint
+	concensus, ref_pos = construct_concensus_seq(pos_list, temp_clip)
+	# print ref_pos
+	# print concensus
+
+	'''
+	TE detect
+	'''
+
+	# total_breakpoint = int((sum(start) + sum(temp_clip)) / (len(pos_list) + len(temp_clip)))
+	# total_length = int(sum(end)/len(pos_list)) - total_breakpoint
 	total_read_count = len(pos_list) + len(temp_clip)
-	return	[total_breakpoint, total_length, total_read_count]
+	return	[ref_pos, len(concensus), total_read_count, concensus]
 	# return [int(sum(start)/len(pos_list)), int(sum(end)/len(pos_list)) - int(sum(start)/len(pos_list)), len(pos_list)]
 
 def cluster(pos_list, chr):
