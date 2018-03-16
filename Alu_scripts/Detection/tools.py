@@ -13,7 +13,7 @@ total_signal = list()
 # clip_store = Q.PriorityQueue()
 
 def revcom_complement(s): 
-    basecomplement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'} 
+    basecomplement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'a': 'T', 'c': 'G', 'g': 'C', 't': 'A'} 
     letters = list(s) 
     letters = [basecomplement[base] for base in letters] 
     return ''.join(letters)[::-1]

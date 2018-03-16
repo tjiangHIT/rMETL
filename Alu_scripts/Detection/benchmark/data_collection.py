@@ -153,3 +153,55 @@ def collect():
 
 # if __name__ == '__main__':
 # 	collect()
+
+def parse_genotype(genotype):
+	left = genotype.split(':')[0].split('/')[0]
+	if left == '.':
+		left = 0
+	else:
+		left = int(left)
+	right = genotype.split(':')[0].split('/')[1]
+	if right == '.':
+		right = 0
+	else:
+		right = int(right)
+
+	if left + right > 0:
+		return 1
+	else:
+		return 0
+
+def parse_info(info):
+	svtype = info.split(';')[3].split('=')[1]
+	svlen = int(info.split(';')[4].split('=')[1])
+	subtype = info.split(';')[5].split('=')[1].split(',')[0]
+	polarity = info.split(';')[5].split('=')[1].split(',')[3]
+	return [svlen, subtype, polarity]
+
+def collect_1000G(p):
+	NA12878_ans = list()
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		pos = int(seq[1])
+		info = parse_info(seq[7])
+
+		genotype = parse_genotype(seq[432])
+		if genotype == 0:
+			continue
+		else:
+			NA12878_ans.append([chr, pos, info])
+	file.close()
+	return NA12878_ans
+
+def collect_1kg(p):
+	dic_1kg = dict()
+	local_list = collect_1000G(p)
+	for i in local_list:
+		if i[0] not in dic_1kg:
+			dic_1kg[i[0]] = list()
+		dic_1kg[i[0]].append([i[1], 0])
+	return dic_1kg
