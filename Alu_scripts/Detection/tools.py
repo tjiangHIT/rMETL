@@ -134,10 +134,13 @@ def parse_read(read, Chr_name):
 	return local_pos
 
 def merge_siganl(chr, cluster):
+	# for i in cluster:
+	# 	if i[2] >= 5:
+	# 		total_signal.append("%s\t%d\t%d\t%d\t%s\n"%(chr, i[0], i[1], i[2], i[3]))
+	# 		# print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
 	for i in cluster:
-		if i[2] >= 5:
-			total_signal.append("%s\t%d\t%d\t%d\t%s\n"%(chr, i[0], i[1], i[2], i[3]))
-			# print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
+		for j in i:
+			total_signal.append(j)
 
 def acquire_clip_locus(down, up, chr):
 	list_clip = list()
@@ -188,7 +191,15 @@ def merge_pos(pos_list, chr):
 	search_up = max(start) + 10
 	temp_clip = acquire_clip_locus(search_down, search_up, chr)
 
-	concensus, ref_pos = construct_concensus_seq(pos_list, temp_clip)
+	# concensus, ref_pos = construct_concensus_seq(pos_list, temp_clip)
+	result = construct_concensus_info(pos_list, temp_clip)
+	if result != 0:
+		for i in xrange(len(result)):
+			result[i] = ">" + chr + result[i]
+		return result
+	else:
+		return 0
+
 	# print ref_pos
 	# print concensus
 
@@ -198,8 +209,8 @@ def merge_pos(pos_list, chr):
 
 	# total_breakpoint = int((sum(start) + sum(temp_clip)) / (len(pos_list) + len(temp_clip)))
 	# total_length = int(sum(end)/len(pos_list)) - total_breakpoint
-	total_read_count = len(pos_list) + len(temp_clip)
-	return	[ref_pos, len(concensus), total_read_count, concensus]
+	# total_read_count = len(pos_list) + len(temp_clip)
+	# return	[ref_pos, len(concensus), total_read_count, concensus]
 	# return [int(sum(start)/len(pos_list)), int(sum(end)/len(pos_list)) - int(sum(start)/len(pos_list)), len(pos_list)]
 
 def cluster(pos_list, chr):
@@ -209,12 +220,17 @@ def cluster(pos_list, chr):
 	for pos in pos_list[1:]:
 		# if temp[-1][0] + temp[-1][1] < pos[0]:
 		if temp[-1][0] + 20 < pos[0]:
-			_cluster_.append(merge_pos(temp, chr))
+			result = merge_pos(temp, chr)
+			if result != 0:
+				_cluster_.append(result)
 			temp = list()
 			temp.append(pos)
 		else:
 			temp.append(pos)
-	_cluster_.append(merge_pos(temp, chr))
+	result = merge_pos(temp, chr)
+	if result != 0:
+		_cluster_.append(result)
+	# _cluster_.append(merge_pos(temp, chr))
 	return _cluster_
 
 def load_sam(p1, p2):

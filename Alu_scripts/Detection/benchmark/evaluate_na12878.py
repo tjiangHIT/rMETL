@@ -6,7 +6,7 @@ from data_collection import *
 # dic_tangram = dict()
 # dic_retroseq = dict()
 DICT = list()
-standard = 10
+standard = 20
 
 def check_locus(chr, pos, flag):
 	dic_tea = DICT[0]
@@ -104,18 +104,6 @@ def evaluation(p, op, p2):
 	file.close()
 	print("[INFO]: (1,2,3,4) %d,%d,%d,%d signal locuses predictions are good!"%(nice_job_1, nice_job_2, nice_job_3, nice_job_4))
 
-	Tp = 0
-	Np = 0
-	for key in DICT[3]:
-		for i in xrange(len(DICT[3][key])):
-			if DICT[3][key][i][1] == 0:
-				Np += 1
-				# overlap = call_overlap(DICT[0][key][i], 1, 2, 1)
-				# out_file.write("Tea\t%s\t%d\t%s\t%d\n"%(key, DICT[0][key][i][0], DICT[0][key][i][2], overlap))
-			else:
-				Tp += 1
-	print("[INFO]: For 1kg callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
-
 	out_file = open(op, 'w')
 	Tp = 0
 	Np = 0
@@ -153,6 +141,17 @@ def evaluation(p, op, p2):
 				Tp += 1
 	print("[INFO]: For RetroSeq callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
 	out_file.close()
+	Tp = 0
+	Np = 0
+	for key in DICT[3]:
+		for i in xrange(len(DICT[3][key])):
+			if DICT[3][key][i][1] == 0:
+				Np += 1
+				# overlap = call_overlap(DICT[0][key][i], 1, 2, 1)
+				# out_file.write("Tea\t%s\t%d\t%s\t%d\n"%(key, DICT[0][key][i][0], DICT[0][key][i][2], overlap))
+			else:
+				Tp += 1
+	print("[INFO]: For 1kg callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
 
 	nice_job_1 = 0
 	nice_job_2 = 0
@@ -165,7 +164,7 @@ def evaluation(p, op, p2):
 			continue
 		chr = seq[0]
 		subtype = seq[10]
-		start_pos = int(seq[13])
+		start_pos = int(seq[1])
 		# end_pos = int(seq[15])
 		if subtype == 'INS' or subtype == "DUP":
 			result = check_locus(chr, start_pos, 2)
@@ -181,18 +180,6 @@ def evaluation(p, op, p2):
 				nice_job_4 += 1
 	file.close()
 	print("[INFO]: (1,2,3,4) %d,%d,%d,%d signal locuses Sniffles are good!"%(nice_job_1, nice_job_2, nice_job_3, nice_job_4))
-
-	Tp = 0
-	Np = 0
-	for key in DICT[3]:
-		for i in xrange(len(DICT[3][key])):
-			if DICT[3][key][i][1] != 2:
-				Np += 1
-				# overlap = call_overlap(DICT[0][key][i], 1, 2, 1)
-				# out_file.write("Tea\t%s\t%d\t%s\t%d\n"%(key, DICT[0][key][i][0], DICT[0][key][i][2], overlap))
-			else:
-				Tp += 1
-	print("[INFO]: For 1kg callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
 
 	Tp = 0
 	Np = 0
@@ -229,6 +216,18 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For RetroSeq callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+
+	Tp = 0
+	Np = 0
+	for key in DICT[3]:
+		for i in xrange(len(DICT[3][key])):
+			if DICT[3][key][i][1] != 2:
+				Np += 1
+				# overlap = call_overlap(DICT[0][key][i], 1, 2, 1)
+				# out_file.write("Tea\t%s\t%d\t%s\t%d\n"%(key, DICT[0][key][i][0], DICT[0][key][i][2], overlap))
+			else:
+				Tp += 1
+	print("[INFO]: For 1kg callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
 
 
 def main():
