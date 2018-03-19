@@ -268,10 +268,16 @@ def load_sam(p1, p2):
 		else:
 			Cluster = cluster(cluster_pos, Chr_name)
 		print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster), Chr_name))
-		merge_siganl(Chr_name, Cluster)
+		# merge_siganl(Chr_name, Cluster)
 		# break
-	out_signal = open(p2, 'w')
-	for i in total_signal:
-		out_signal.write(i)
-	out_signal.close()
+		out_signal = open(p2, 'a+')
+		for i in Cluster:
+			for j in i:
+				out_signal.write(j)
+		out_signal.close()
+
+	# out_signal = open(p2, 'w')
+	# for i in total_signal:
+	# 	out_signal.write(i)
+	# out_signal.close()
 	samfile.close()
