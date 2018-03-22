@@ -6,7 +6,7 @@ from data_collection import *
 # dic_tangram = dict()
 # dic_retroseq = dict()
 DICT = list()
-standard = 10
+standard = 20
 
 def check_locus(chr, pos, flag):
 	dic_tea = DICT[0]
