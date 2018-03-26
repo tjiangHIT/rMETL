@@ -2,6 +2,8 @@
 import pysam
 import Queue as Q
 from concensus import *
+import cigar
+
 
 # list_flag = {1:'I', 4:'S', 5:'H'}
 list_flag = {1:'I'}
@@ -52,6 +54,69 @@ def store_clip_pos(locus, chr, seq, flag):
 		else:
 			CLIP_note[chr][hash_1][hash_2].append(element)
 
+def acquire_clip_pos(deal_cigar):
+	seq = list(cigar.Cigar(deal_cigar).items())
+	if seq[0][1] == 'S':
+		first_pos = seq[0][0]
+	else:
+		first_pos = 0
+	if seq[-1][1] == 'S':
+		last_pos = seq[-1][0]
+	else:
+		last_pos = 0
+	# seq = cigar.split('S')
+	# if len(seq) == 3:
+	# 	first_pos = int(seq[0])
+	# 	last_pos = int(seq[1].split('M')[-1])
+	# 	return [first_pos, last_pos]
+	# if len(seq) == 1:
+	# 	return []
+	# if len(seq) == 2:
+	# 	if seq[1] == '':
+	# 		return []
+	# 	first_pos = int(seq[0])
+	# 	last_pos = 0
+	bias = 0
+	for i in seq:
+		if i[1] == 'M' or i[1] == 'D':
+			bias += i[0]
+
+	return [first_pos, last_pos, bias]
+
+def organize_split_signal(chr, primary_info, Supplementary_info, total_L):
+	overlap = list()
+	for i in Supplementary_info:
+		seq = i.split(',')
+		local_chr = seq[0]
+		local_start = int(seq[1])
+		local_cigar = seq[3]
+
+		dic_starnd = {1:'+', 2: '-'}
+
+		if dic_starnd[primary_info[4]] != seq[2]:
+			continue
+		if chr != local_chr:
+			# return overlap
+			continue
+		local_set = acquire_clip_pos(local_cigar)
+		# if len(local_set) == 0:
+		# 	continue
+		if primary_info[0] < local_start:
+			if primary_info[3]+local_set[0]-total_L > 20:
+				overlap.append([total_L - primary_info[3], local_set[0], primary_info[1]])
+		else:
+			if local_set[1]+primary_info[2]-total_L > 20:
+				overlap.append([total_L - local_set[1], primary_info[2], local_start+local_set[2]-1])
+			# exist some bugs
+
+		# if local_start <= primary_end + 50 and local_start >= primary_end - 50:
+		# 	local_set = acquire_clip_pos(local_cigar)
+		# 	if len(local_set) != 0:
+		# 		overlap.append([primary_clip, sum(local_set) - primary_clip])
+	return overlap
+
+
+
 def parse_read(read, Chr_name):
 	'''
 	Check:	1.Flag
@@ -67,6 +132,9 @@ def parse_read(read, Chr_name):
 	pos_start = read.reference_start
 	shift = 0
 	_shift_read_ = 0
+	pos_end = read.reference_end
+	primary_clip_0 = 0
+	primary_clip_1 = 0
 	for element in read.cigar:
 		if element[0] == 0 or element[0] == 2:
 			shift += element[1]
@@ -96,19 +164,30 @@ def parse_read(read, Chr_name):
 			# print MEI_contig
 
 		if element[0] in clip_flag:
+
+			if shift == 0:
+				primary_clip_0 = element[1]
+			else:
+				primary_clip_1 = element[1]
+
 			if element[1] > low_bandary:
 				if shift == 0:
 					clip_pos = pos_start - 1
 					clip_contig = read.query_sequence[:element[1]]
 					store_clip_pos(clip_pos, Chr_name, clip_contig, 0)
-					# print read.query_name, "0 S", clip_pos 
-					# print clip_contig
+
+					# primary_clip_0 = element[1]
+					# left clip size
+
 				else:
 					clip_pos = pos_start + shift - 1
+					# primary_clip = read.query_length - element[1]
 					clip_contig = read.query_sequence[read.query_length - element[1]:]
 					store_clip_pos(clip_pos, Chr_name, clip_contig, 1)
-					# print read.query_name, "1 S", clip_pos 
-					# print clip_contig
+
+					# primary_clip_1 = read.query_length - element[1]
+					# right clip size
+
 
 				# store_clip_pos(clip_pos, Chr_name, clip_contig)
 				# print read.query_name, "S"
@@ -131,6 +210,26 @@ def parse_read(read, Chr_name):
 				# print Chr_name, clip_pos
 	# cluster_pos = sorted(cluster_pos, key = lambda x:x[0])
 			# return [r_start + shift, element[1]]
+
+	if process_signal == 1 or process_signal == 2:
+		Tags = read.get_tags()
+		chr = Chr_name
+		# primary_clip = pos_start
+		primary_info = [pos_start, pos_end, primary_clip_0, primary_clip_1, process_signal]
+
+		for i in Tags:
+			if i[0] == 'SA':
+				Supplementary_info = i[1].split(';')[:-1]
+				# print process_signal
+				# print chr, primary_info, read.query_length
+				# print read.cigar
+				# print i[1].split(';')[-1]
+				overlap = organize_split_signal(chr, primary_info, Supplementary_info, read.query_length)
+				for k in overlap:
+					# print k
+					MEI_contig = read.query_sequence[k[0]:k[1]]
+					local_pos.append([k[2], k[1] - k[0], MEI_contig])
+
 	return local_pos
 
 def merge_siganl(chr, cluster):
