@@ -8,6 +8,8 @@ from data_collection import *
 DICT = list()
 standard = 20
 
+final_statics = list()
+
 def check_locus(chr, pos, flag):
 	dic_tea = DICT[0]
 	dic_tangram = DICT[1]
@@ -69,6 +71,16 @@ def check_1kg(chr, pos, flag):
 				result = 1
 	return result
 
+def build_statics():
+	print("\n[INFO]: Threshold is %d"%(standard))
+	# print("*"*50)
+	print("[INFO]: Tea\tTangram\tRetroSeq\t1KG")
+	print("[INFO]: %d/%d\t%d/%d\t%d/%d\t%d/%d"%(final_statics[0][0], final_statics[4][0], final_statics[1][0], final_statics[5][0], final_statics[2][0], final_statics[6][0], final_statics[3][0], final_statics[7][0]))
+	print("[INFO]: %d/%d\t%d/%d\t%d/%d\t%d/%d"%(final_statics[0][1], final_statics[4][1], final_statics[1][1], final_statics[5][1], final_statics[2][1], final_statics[6][1], final_statics[3][1], final_statics[7][1]))
+	print("[INFO]: %0.5f/%0.5f\t%0.5f/%0.5f\t%0.5f/%0.5f\t%0.5f/%0.5f\n"%(final_statics[0][2], final_statics[4][2], final_statics[1][2], final_statics[5][2], final_statics[2][2], final_statics[6][2], final_statics[3][2], final_statics[7][2]))
+	# print("*")
+	# print("*"*50)
+
 def evaluation(p, op, p2):
 	# r = check_locus('1', 5934294)
 	# print r
@@ -116,6 +128,7 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For Tea callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
 
 	Tp = 0
 	Np = 0
@@ -128,6 +141,7 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For Tangram callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
 
 	Tp = 0
 	Np = 0
@@ -140,6 +154,7 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For RetroSeq callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
 	out_file.close()
 	Tp = 0
 	Np = 0
@@ -152,6 +167,7 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For 1kg callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
 
 	nice_job_1 = 0
 	nice_job_2 = 0
@@ -192,6 +208,7 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For Tea callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
 
 	Tp = 0
 	Np = 0
@@ -204,6 +221,7 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For Tangram callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
 
 	Tp = 0
 	Np = 0
@@ -216,6 +234,7 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For RetroSeq callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
 
 	Tp = 0
 	Np = 0
@@ -228,6 +247,8 @@ def evaluation(p, op, p2):
 			else:
 				Tp += 1
 	print("[INFO]: For 1kg callset: Y for %d, N for %d(%0.5f)."%(Tp, Np, Tp*1.0/(Tp+Np)))
+	final_statics.append([Tp, Np, Tp*1.0/(Tp+Np)])
+	build_statics()
 
 
 def main():
