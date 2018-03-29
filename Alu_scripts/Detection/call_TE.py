@@ -63,27 +63,35 @@ def load_sam_2(p1):
 		Flag = int(seq[1])
 		sub_type = seq[2]
 		MAPQ = int(seq[4])
-		if flag_dic[Flag] != 0 and int(insert_size) >= 50:
+		if flag_dic[Flag] != 0 and int(insert_size) >= 50 and MAPQ >= 20:
 			# to do something
 			key = "%s_%s_%s"%(chr, breakpoint, insert_size)
 			if key not in cluster_dic:
-				cluster_dic[key] = [MAPQ, sub_type]
-			else:
-				if MAPQ > cluster_dic[key][0]:
-					cluster_dic[key] = [MAPQ, sub_type]
-			# cluster_dic[key].append(sub_type+"&"+str(flag_dic[Flag]))
-			# cluster_dic[key].append(sub_type)
+				cluster_dic[key] = list()
+			cluster_dic[key].append(sub_type)
+
+			# if key not in cluster_dic:
+			# 	cluster_dic[key] = [MAPQ, sub_type]
+			# else:
+			# 	if MAPQ > cluster_dic[key][0]:
+			# 		cluster_dic[key] = [MAPQ, sub_type]
+
 	AlignmentFile.close()
 
 	sort_list = list()
 	for i in cluster_dic:
 		chr, breakpoint, insert_size = parse_name(i)
-		# final = acquire_count_max(cluster_dic[i])
-		final_type = cluster_dic[i][1]
+		final_type = acquire_count_max(cluster_dic[i])
+		# final_type = cluster_dic[i][1]
+		# final_MAPQ = cluster_dic[i][0]
 		# final_strand = final.split('&')[1]
 		# final_strand = acquire_count_max(cluster_dic[i][1])
 		# sort_list.append([chr, breakpoint, insert_size, final_type, strand_dic[int(final_strand)]])
+
+		# if final_MAPQ >= 20:
 		sort_list.append([chr, breakpoint, insert_size, final_type])
+
+		# sort_list.append([chr, breakpoint, insert_size, final_type, str(final_MAPQ)])
 		# print("%s\t%s\t%s\t%s"%(chr, breakpoint, insert_size, final_type))
 	sort_list = sorted(sort_list, key = lambda x:(x[0], int(x[1])))
 	for i in sort_list:

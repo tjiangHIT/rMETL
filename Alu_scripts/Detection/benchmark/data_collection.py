@@ -1,5 +1,50 @@
 import sys
 
+def parse_Tea_subtype(sub_list):
+	seq = sub_list.split(',')
+	out_sub_list = list()
+	for i in xrange(len(seq)):
+		local_subtype = seq[i]
+		if len(local_subtype.split('_')) == 2:
+			if local_subtype.split('_')[1][0] == 'A':
+				out_sub_list.append(local_subtype.split('_')[1])
+		else:
+			out_sub_list.append(local_subtype)
+	return out_sub_list
+
+def collect_Tea_plus(p1, p2):
+	dic_tea = dict()
+	alu_Tea = open(p1, 'r')
+	for line in alu_Tea:
+		seq = line.strip('\n').split('\t')
+		chr = seq[0]
+		if len(chr) == 3:
+			continue
+		chr = chr[3:]
+		breakpoint = int(seq[1])
+		# subtype = parse_Tea_subtype(seq[3])
+		subtype = "Alu"
+		if chr not in dic_tea:
+			dic_tea[chr] = list()
+		dic_tea[chr].append([breakpoint, subtype, 0])
+	alu_Tea.close()
+
+	L1_Tea = open(p2, 'r')
+	for line in L1_Tea:
+		seq = line.strip('\n').split('\t')
+		chr = seq[0]
+		if len(chr) == 3:
+			continue
+		chr = chr[3:]
+		breakpoint = int(seq[1])
+		# subtype = parse_Tea_subtype(seq[3])
+		subtype = "L1"
+		if chr not in dic_tea:
+			dic_tea[chr] = list()
+		dic_tea[chr].append([breakpoint, subtype, 0])
+	L1_Tea.close()
+	return dic_tea
+
 def collect_Tea(p1, p2):
 	dic_tea = dict()
 	tea_alu = open(p1, 'r')
@@ -35,6 +80,33 @@ def collect_Tea(p1, p2):
 	tea_L1.close()
 	return dic_tea
 
+def collect_Tangram_plus(p):
+	tangram = open(p, 'r')
+	dic_tangram = dict()
+	for line in tangram:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		subtype = seq[4][-3:-1]
+		if subtype[0] == 'A':
+			subtype = "Alu"
+		elif subtype[0] == 'L':
+			subtype = "L1"
+		elif subtype[0] == "S":
+			subtype = "SVA"
+		else:
+			subtype = "HERV"
+		# strand = seq[7].split()
+		# genotype = seq[9]
+
+		if chr not in dic_tangram:
+			dic_tangram[chr] = list()
+		dic_tangram[chr].append([breakpoint, subtype, 0])
+	tangram.close()
+	return dic_tangram
+
 def collect_Tangram(p):
 	tangram = open(p, 'r')
 	dic_tangram = dict()
@@ -55,6 +127,26 @@ def collect_Tangram(p):
 		dic_tangram[chr].append([start_pos, info_len, subtype, 0])
 	tangram.close()
 	return dic_tangram
+
+def collect_RetroSeq_plus(p):
+	retroseq = open(p, 'r')
+	dic_retroseq = dict()
+	for line in retroseq:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		subtype = seq[7].split('=')[1].split(',')[0]
+		if subtype[0] == 'A':
+			subtype = "Alu"
+		if subtype[0] == "L":
+			subtype = "L1"
+		if chr not in dic_retroseq:
+			dic_retroseq[chr] = list()
+		dic_retroseq[chr].append([breakpoint, subtype, 0])
+	retroseq.close()
+	return dic_retroseq
 
 def collect_RetroSeq(p):
 	retroseq = open(p, 'r')
@@ -205,3 +297,49 @@ def collect_1kg(p):
 			dic_1kg[i[0]] = list()
 		dic_1kg[i[0]].append([i[1], 0])
 	return dic_1kg
+
+def collect_1kg_plus(p):
+	dic_1kg = dict()
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		subtype = seq[7].split(';')[3].split('=')[1]
+		if subtype[0] == "A":
+			subtype = "Alu"
+		if subtype[0] == "L":
+			subtype = "L1"
+		if subtype[0] == "S":
+			subtype = "SVA"
+		genotype = parse_genotype(seq[432])
+		if genotype == 1:
+			if chr not in dic_1kg:
+				dic_1kg[chr] = list()
+			dic_1kg[chr].append([breakpoint, subtype, 0])
+	file.close()
+	return dic_1kg
+
+def collect_Mobster_plus(p):
+	dic_Mobster = dict()
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0][3:]
+		breakpoint = int(seq[4])
+		subtype = seq[3]
+		if subtype[0] == "A":
+			subtype = "Alu"
+		if subtype[0] == "L":
+			subtype = "L1"
+		if subtype[0] == "S":
+			subtype = "SVA"
+		if chr not in dic_Mobster:
+			dic_Mobster[chr] = list()
+		dic_Mobster[chr].append([breakpoint, subtype, 0])
+	file.close()
+	return dic_Mobster
