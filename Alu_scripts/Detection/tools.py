@@ -120,7 +120,7 @@ def organize_split_signal(chr, primary_info, Supplementary_info, total_L):
 
 
 
-def parse_read(read, Chr_name, Ref):
+def parse_read(read, Chr_name):
 	'''
 	Check:	1.Flag
 			2.Supplementary mapping
@@ -390,7 +390,7 @@ def merge_pos_del(pos_list, chr, Ref):
 	else:
 		if 'chr'+chr in Ref:
 			# result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])))
-			result = ['DEL', chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])]
+			result.append(['DEL', chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])])
 	# for i in xrange(len(pos_list)):
 	# 	result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, i, pos_list[i][2]))
 	return result
@@ -419,14 +419,27 @@ def load_ref(ref_g):
 	return SeqIO.to_dict(SeqIO.parse(ref_g, "fasta"))
 
 def combine_result(INS, DEL):
-	# print INS+DEL
-	Temp = sorted(INS + DEL, key = lambda x:x[2])
 	result = list()
-	for i in Temp:
-		key = "%s_%s_%d_%d_%s"%(i[0], i[1], i[2], i[3], i[4])
-		fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
-		fake_seq.seq = Seq(i[5])
-		result.append(fake_seq)
+	for i in INS:
+		for j in i:
+			key = "%s_%s_%d_%d_%s"%(j[0], j[1], j[2], j[3], j[4])
+			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
+			fake_seq.seq = Seq(j[5])
+			result.append(fake_seq)
+	for i in DEL:
+		for j in i:
+			key = "%s_%s_%d_%d_%s"%(j[0], j[1], j[2], j[3], j[4])
+			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
+			fake_seq.seq = Seq(j[5])
+			result.append(fake_seq)
+	# print INS+DEL
+	# Temp = sorted(INS + DEL, key = lambda x:x[2])
+	# result = list()
+	# for i in Temp:
+	# 	key = "%s_%s_%d_%d_%s"%(i[0], i[1], i[2], i[3], i[4])
+	# 	fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
+	# 	fake_seq.seq = Seq(i[5])
+	# 	result.append(fake_seq)
 	return result
 	# return INS+DEL
 
@@ -457,7 +470,7 @@ def load_sam(p1, p2, p3):
 		cluster_pos_INS = list()
 		cluster_pos_DEL = list()
 		for read in samfile.fetch(Chr_name):
-			feed_back, feed_back_del = parse_read(read, Chr_name, Ref)
+			feed_back, feed_back_del = parse_read(read, Chr_name)
 
 			if len(feed_back) > 0:
 				for i in feed_back:
