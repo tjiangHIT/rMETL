@@ -4,6 +4,7 @@ import Queue as Q
 from concensus import *
 import cigar
 from Bio import SeqIO
+from Bio.Seq import Seq
 
 
 # list_flag = {1:'I', 4:'S', 5:'H'}
@@ -334,7 +335,8 @@ def merge_pos(pos_list, chr):
 	result = construct_concensus_info(pos_list, temp_clip)
 	if result != 0:
 		for i in xrange(len(result)):
-			result[i] = ">INS_" + chr + result[i]
+			# result[i] = ">INS_" + chr + result[i]
+			result[i] = ["INS", chr] + result[i]
 		return result
 	else:
 		return 0
@@ -387,7 +389,8 @@ def merge_pos_del(pos_list, chr, Ref):
 		return result
 	else:
 		if 'chr'+chr in Ref:
-			result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])))
+			# result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])))
+			result = ['DEL', chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])]
 	# for i in xrange(len(pos_list)):
 	# 	result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, i, pos_list[i][2]))
 	return result
@@ -416,9 +419,16 @@ def load_ref(ref_g):
 	return SeqIO.to_dict(SeqIO.parse(ref_g, "fasta"))
 
 def combine_result(INS, DEL):
-	# result = list()
-	# return result
-	return INS+DEL
+	# print INS+DEL
+	Temp = sorted(INS + DEL, key = lambda x:x[2])
+	result = list()
+	for i in Temp:
+		key = "%s_%s_%d_%d_%s"%(i[0], i[1], i[2], i[3], i[4])
+		fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
+		fake_seq.seq = Seq(i[5])
+		result.append(fake_seq)
+	return result
+	# return INS+DEL
 
 def load_sam(p1, p2, p3):
 	'''
@@ -478,11 +488,14 @@ def load_sam(p1, p2, p3):
 		# merge step
 		Final_result = combine_result(Cluster_INS, Cluster_DEL)
 
-		out_signal = open(p2, 'a+')
-		for i in Final_result:
-			for j in i:
-				out_signal.write(j)
-		out_signal.close()
+		# out_signal = open(p2, 'a+')
+		# for i in Final_result:
+		# 	for j in i:
+		# 		out_signal.write(j)
+		# out_signal.close()
+
+		path = p2+Chr_name+'.fa'
+		SeqIO.write(Final_result, path, "fasta")
 
 	# out_signal = open(p2, 'w')
 	# for i in total_signal:

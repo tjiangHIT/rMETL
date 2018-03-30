@@ -32,14 +32,17 @@ def construct_concensus_info(Ins_list, Clip_list):
 	Average_size = int(sum(insert_size)/len(insert_size))
 	# print Average_size
 	local_info = list()
-	local_name = "_%d_%d_"%(Prob_pos_2, Average_size)
+	# local_name = "_%d_%d_"%(Prob_pos_2, Average_size)
+	local_name = [Prob_pos_2, Average_size]
 	local_id = 0
 	for i in Ins_list:
-		info = local_name + str(local_id) + '\n' + i[2] + '\n'
+		# info = local_name + str(local_id) + '\n' + i[2] + '\n'
+		info = local_name + [str(local_id), i[2]]
 		local_id += 1
 		local_info.append(info)
 	for i in Clip_list:
-		info = local_name + str(local_id) + '\n' + i[1] + '\n'
+		# info = local_name + str(local_id) + '\n' + i[1] + '\n'
+		info = local_name + [str(local_id), i[1]]
 		local_id += 1
 		local_info.append(info)
 			# print(">%d\n%s"%(i[0], i[2])) 
