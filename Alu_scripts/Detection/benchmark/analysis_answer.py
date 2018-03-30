@@ -128,7 +128,7 @@ def statics():
 		for ele in Alu[key]:
 			if ele[3] == 0:
 				Talu_0[len(ele[2])-1] +=1
-				# if len(ele[2]) == 4:
+				# if len(ele[2]) == 2:
 				# 	print key, ele
 			else:
 				# print ele
@@ -139,7 +139,7 @@ def statics():
 		for ele in L1[key]:
 			if ele[3] == 0:
 				TL1_0[len(ele[2])-1] +=1
-				# if len(ele[2]) == 4:
+				# if len(ele[2]) == 2:
 				# 	print key, ele
 			else:
 				TL1_1[len(ele[2])-1] += 1 

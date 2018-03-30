@@ -3,10 +3,12 @@ import pysam
 import Queue as Q
 from concensus import *
 import cigar
+from Bio import SeqIO
 
 
 # list_flag = {1:'I', 4:'S', 5:'H'}
-list_flag = {1:'I'}
+INS_flag = {1:'I'}
+DEL_flag = {2:'D'}
 clip_flag = {4:'S', 5:'H'}
 low_bandary = 20
 
@@ -117,16 +119,54 @@ def organize_split_signal(chr, primary_info, Supplementary_info, total_L):
 
 
 
-def parse_read(read, Chr_name):
+def parse_read(read, Chr_name, Ref):
 	'''
 	Check:	1.Flag
 			2.Supplementary mapping
 			3.Seq
 	'''
-	local_pos = list()
-	process_signal = detect_flag(read.flag) 
+	DEL_ME_pos = list()
+	INS_ME_pos = list()
+	process_signal = detect_flag(read.flag)
 	if process_signal == 0:
-		return local_pos
+		return INS_ME_pos, DEL_ME_pos
+
+	# Add DEL:ME type call signal
+	# DEL_ME_pos = list()
+	pos_start = read.reference_start
+	shift = 0
+	# temp_test = dict()
+	for element in read.cigar:
+		# if element[0] not in temp_test:
+		# 	temp_test[element[0]] = 0
+		# temp_test[element[0]] += element[1]
+		if element[0] == 0:
+			shift += element[1]
+		# if element[0] == 1:
+		# 	shift += 1
+		if element[0] in DEL_flag and element[1] <= low_bandary:
+			shift += element[1]
+		if element[0] in DEL_flag and element[1] > low_bandary:
+
+			# +++++++++++++++++++++++BUG++++++++++++++++++++
+			# if 'chr'+Chr_name in Ref:
+			# 	MEI_contig = str(Ref['chr'+Chr_name].seq[pos_start+shift:shift+element[1]+pos_start])
+			# Normal condation
+			# MEI_contig = str(Ref[Chr_name].seq[pos_start+shift:shift+element[1]+pos_start])
+			# ++++++++++++++++++++++++++++++++++++++++++++++
+
+			# MEI_contig = read.query_alignment_sequence[shift:shift+element[1]]
+			DEL_ME_pos.append([pos_start+shift, element[1]])
+			# print read.query_name, read.reference_length, len(read.query_alignment_sequence)
+			# print temp_test, shift
+			# print read.query_name, pos_start, pos_start+shift, element[1], MEI_contig
+			shift += element[1]
+
+	# Add INS:ME type call signal
+	INS_ME_pos = list()
+	# process_signal = detect_flag(read.flag) 
+	# if process_signal == 0:
+	# 	return local_pos
 		# unmapped read
 
 	pos_start = read.reference_start
@@ -140,7 +180,7 @@ def parse_read(read, Chr_name):
 			shift += element[1]
 		if element[0] != 2:
 			_shift_read_ += element[1]
-		if element[0] in list_flag and element[1] > low_bandary:
+		if element[0] in INS_flag and element[1] > low_bandary:
 			shift += 1
 			MEI_contig = read.query_sequence[_shift_read_ - element[1]:_shift_read_]
 			# if process_signal == 2 or process_signal == 4:
@@ -158,7 +198,7 @@ def parse_read(read, Chr_name):
 			# 	MEI_contig = read.query_sequence[_shift_read_ - element[1]:_shift_read_]
 			# MEI_contig = read.query_sequence[_shift_read_-element[1]-4:_shift_read_+10]
 			# judge flag !!!!!!!!
-			local_pos.append([pos_start + shift, element[1], MEI_contig])
+			INS_ME_pos.append([pos_start + shift, element[1], MEI_contig])
 
 			# print read.query_name, "I", pos_start + shift
 			# print MEI_contig
@@ -228,9 +268,9 @@ def parse_read(read, Chr_name):
 				for k in overlap:
 					# print k
 					MEI_contig = read.query_sequence[k[0]:k[1]]
-					local_pos.append([k[2], k[1] - k[0], MEI_contig])
+					INS_ME_pos.append([k[2], k[1] - k[0], MEI_contig])
 
-	return local_pos
+	return INS_ME_pos, DEL_ME_pos
 
 def merge_siganl(chr, cluster):
 	# for i in cluster:
@@ -294,7 +334,7 @@ def merge_pos(pos_list, chr):
 	result = construct_concensus_info(pos_list, temp_clip)
 	if result != 0:
 		for i in xrange(len(result)):
-			result[i] = ">" + chr + result[i]
+			result[i] = ">INS_" + chr + result[i]
 		return result
 	else:
 		return 0
@@ -332,11 +372,64 @@ def cluster(pos_list, chr):
 	# _cluster_.append(merge_pos(temp, chr))
 	return _cluster_
 
-def load_sam(p1, p2):
+def merge_pos_del(pos_list, chr, Ref):
+	start = list()
+	end = list()
+	for ele in pos_list:
+		start.append(ele[0])
+		end.append(ele[0] + ele[1])
+
+	breakpoint = sum(start)/len(start)
+	size = sum(end)/len(end) - breakpoint
+
+	result = list()
+	if len(pos_list) < 5:
+		return result
+	else:
+		if 'chr'+chr in Ref:
+			result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])))
+	# for i in xrange(len(pos_list)):
+	# 	result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, i, pos_list[i][2]))
+	return result
+
+
+def cluster_del(pos_list, chr, Ref):
+	_cluster_ = list()
+	temp = list()
+	temp.append(pos_list[0])
+	for pos in pos_list[1:]:
+		if temp[-1][0] + 20 < pos[0]:
+			result = merge_pos_del(temp, chr, Ref)
+			if len(result) != 0:
+				_cluster_.append(result)
+			temp = list()
+			temp.append(pos)
+		else:
+			temp.append(pos)
+	result = merge_pos_del(temp, chr, Ref)
+	if len(result) != 0:
+		_cluster_.append(result)
+	return _cluster_
+
+def load_ref(ref_g):
+	print("[INFO]: Loading reference genome...")
+	return SeqIO.to_dict(SeqIO.parse(ref_g, "fasta"))
+
+def combine_result(INS, DEL):
+	# result = list()
+	# return result
+	return INS+DEL
+
+def load_sam(p1, p2, p3):
 	'''
 	Load_BAM_File
 	library:	pysam.AlignmentFile
+
+	load_Ref_Genome
+	library:	Bio
 	'''
+	Ref = load_ref(p3)
+
 	samfile = pysam.AlignmentFile(p1)
 	# print(samfile.get_index_statistics())
 	contig_num = len(samfile.get_index_statistics())
@@ -351,26 +444,42 @@ def load_sam(p1, p2):
 			# CLIP_note[Chr_name] = Q.PriorityQueue()
 			CLIP_note[Chr_name] = dict()
 
-		cluster_pos = list()
+		cluster_pos_INS = list()
+		cluster_pos_DEL = list()
 		for read in samfile.fetch(Chr_name):
-			feed_back = parse_read(read, Chr_name)
+			feed_back, feed_back_del = parse_read(read, Chr_name, Ref)
 
 			if len(feed_back) > 0:
 				for i in feed_back:
-					cluster_pos.append(i)
+					cluster_pos_INS.append(i)
+
+			if len(feed_back_del) > 0:
+				for i in feed_back_del:
+					cluster_pos_DEL.append(i)
 		# while not CLIP_note[Chr_name].empty():
 		# 	print Chr_name, CLIP_note[Chr_name].get()
 		# print CLIP_note[Chr_name][6]
-		cluster_pos = sorted(cluster_pos, key = lambda x:x[0])
-		if len(cluster_pos) == 0:
-			Cluster = list()
+		cluster_pos_INS = sorted(cluster_pos_INS, key = lambda x:x[0])
+		cluster_pos_DEL = sorted(cluster_pos_DEL, key = lambda x:x[0])
+		if len(cluster_pos_INS) == 0:
+			Cluster_INS = list()
 		else:
-			Cluster = cluster(cluster_pos, Chr_name)
-		print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster), Chr_name))
+			Cluster_INS = cluster(cluster_pos_INS, Chr_name)
+
+		if len(cluster_pos_DEL) == 0:
+			Cluster_DEL = list()
+		else:
+			Cluster_DEL = cluster_del(cluster_pos_DEL, Chr_name, Ref)
+
+		print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), Chr_name))
 		# merge_siganl(Chr_name, Cluster)
 		# break
+
+		# merge step
+		Final_result = combine_result(Cluster_INS, Cluster_DEL)
+
 		out_signal = open(p2, 'a+')
-		for i in Cluster:
+		for i in Final_result:
 			for j in i:
 				out_signal.write(j)
 		out_signal.close()
