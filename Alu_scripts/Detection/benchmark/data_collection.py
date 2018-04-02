@@ -307,13 +307,14 @@ def collect_1kg_plus(p):
 			continue
 		chr = seq[0]
 		breakpoint = int(seq[1])
-		subtype = seq[7].split(';')[3].split('=')[1]
-		if subtype[0] == "A":
-			subtype = "Alu"
-		if subtype[0] == "L":
-			subtype = "L1"
-		if subtype[0] == "S":
-			subtype = "SVA"
+		# subtype = seq[7].split(';')[3].split('=')[1]
+		subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
+		# if subtype[0] == "A":
+		# 	subtype = "Alu"
+		# if subtype[0] == "L":
+		# 	subtype = "L1"
+		# if subtype[0] == "S":
+		# 	subtype = "SVA"
 		genotype = parse_genotype(seq[432])
 		if genotype == 1:
 			if chr not in dic_1kg:
@@ -343,3 +344,20 @@ def collect_Mobster_plus(p):
 		dic_Mobster[chr].append([breakpoint, subtype, 0])
 	file.close()
 	return dic_Mobster
+
+def collect_MELT_plus(p):
+	dic_MELT = dict()
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
+		if chr not in dic_MELT:
+			dic_MELT[chr] = list()
+		dic_MELT[chr].append([breakpoint,subtype, 0])
+	file.close()
+	return dic_MELT

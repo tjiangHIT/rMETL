@@ -2,12 +2,12 @@ import sys
 from data_collection import *
 
 # standard = 20
-dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "RetroSeq.vcf", "1kg.vcf", "Mobster.txt"]
+dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "RetroSeq.vcf", "1kg.vcf", "Mobster.txt", "MELT.vcf"]
 Alu = dict()
 L1 = dict()
 SVA = dict()
 Ans = list()
-Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster"]
+Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster", "MELT"]
 
 def process_path(path):
 	load_path = list()
@@ -84,6 +84,7 @@ def load_data(path):
 	Ans.append(collect_RetroSeq_plus(path[3]))
 	Ans.append(collect_1kg_plus(path[4]))
 	Ans.append(collect_Mobster_plus(path[5]))
+	Ans.append(collect_MELT_plus(path[6]))
 
 	for i in xrange(len(Ans)):
 		Name = Ans_tag[i]
@@ -122,19 +123,19 @@ def compare(chr, pos, subtype):
 				data_ans[chr][i][3] = 1
 
 def statics():
-	Talu_0 = [0]*5
-	Talu_1 = [0]*5
+	Talu_0 = [0]*len(Ans)
+	Talu_1 = [0]*len(Ans)
 	for key in Alu:
 		for ele in Alu[key]:
 			if ele[3] == 0:
 				Talu_0[len(ele[2])-1] +=1
-				if len(ele[2]) == 5:
-					print key, ele
+				# if len(ele[2]) == 5:
+				# 	print key, ele
 			else:
 				# print ele
 				Talu_1[len(ele[2])-1] += 1
-	TL1_0 = [0]*5
-	TL1_1 = [0]*5
+	TL1_0 = [0]*len(Ans)
+	TL1_1 = [0]*len(Ans)
 	for key in L1:
 		for ele in L1[key]:
 			if ele[3] == 0:
@@ -143,8 +144,8 @@ def statics():
 				# 	print key, ele
 			else:
 				TL1_1[len(ele[2])-1] += 1 
-	TSVA_0 = [0]*5
-	TSVA_1 = [0]*5
+	TSVA_0 = [0]*len(Ans)
+	TSVA_1 = [0]*len(Ans)
 	for key in SVA:
 		for ele in SVA[key]:
 			if ele[3] == 0:
@@ -153,9 +154,9 @@ def statics():
 				TSVA_1[len(ele[2])-1] += 1
 
 	print("\tAlu\tL1\tSVA")
-	for i in xrange(5):
+	for i in xrange(len(Ans)):
 		print("%d\t%d\t%d\t%d"%(i + 1, Talu_1[i], TL1_1[i], TSVA_1[i]))
-	for i in xrange(5):
+	for i in xrange(len(Ans)):
 		print("%d\t%d\t%d\t%d"%(i + 1, Talu_0[i], TL1_0[i], TSVA_0[i]))
 
 	for i in xrange(len(Ans)):
@@ -222,7 +223,7 @@ def evaluation(p):
 		chr = seq[0]
 		breakpoint = int(seq[1])
 		subtype = seq[3]
-		subtype = subtype.split(':')[2]
+		# subtype = subtype.split(':')[2]
 		compare(chr, breakpoint, subtype)
 		compare_each_base(chr, breakpoint, subtype)
 	file.close()
