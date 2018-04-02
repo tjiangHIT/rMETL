@@ -388,7 +388,7 @@ def merge_pos_del(pos_list, chr, Ref):
 	if len(pos_list) < 5:
 		return result
 	else:
-		if 'chr'+chr in Ref:
+		if 'chr'+chr in Ref and size >= 50:
 			# result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])))
 			result.append(['DEL', chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])])
 	# for i in xrange(len(pos_list)):

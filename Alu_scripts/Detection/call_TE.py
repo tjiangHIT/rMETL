@@ -18,6 +18,13 @@ def parse_name(seq):
 	insert_size = seq.split('_')[2]
 	return chr, breakpoint, insert_size
 
+def parse_name_tp(seq):
+	Stype = seq.split('_')[0]
+	chr = seq.split('_')[1]
+	breakpoint = seq.split('_')[2]
+	insert_size = seq.split('_')[3]
+	return Stype, chr, breakpoint, insert_size
+
 def load_sam(p1):
 	# samfile = pysam.AlignmentFile(p1)
 	AlignmentFile = open(p1, 'r')
@@ -59,7 +66,7 @@ def load_sam_2(p1):
 		seq = line.strip('\n').split('\t')
 		if seq[0][0] == '@':
 			continue
-		chr, breakpoint, insert_size = parse_name(seq[0])
+		Stype, chr, breakpoint, insert_size = parse_name_tp(seq[0])
 		Flag = int(seq[1])
 		sub_type = seq[2]
 		MAPQ = int(seq[4])
@@ -68,7 +75,7 @@ def load_sam_2(p1):
 			key = "%s_%s_%s"%(chr, breakpoint, insert_size)
 			if key not in cluster_dic:
 				cluster_dic[key] = list()
-			cluster_dic[key].append(sub_type)
+			cluster_dic[key].append("%s:ME:%s"%(Stype,sub_type))
 
 			# if key not in cluster_dic:
 			# 	cluster_dic[key] = [MAPQ, sub_type]

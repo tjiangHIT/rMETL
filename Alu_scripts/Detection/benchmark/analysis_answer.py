@@ -128,8 +128,8 @@ def statics():
 		for ele in Alu[key]:
 			if ele[3] == 0:
 				Talu_0[len(ele[2])-1] +=1
-				# if len(ele[2]) == 2:
-				# 	print key, ele
+				if len(ele[2]) == 5:
+					print key, ele
 			else:
 				# print ele
 				Talu_1[len(ele[2])-1] += 1
@@ -222,6 +222,7 @@ def evaluation(p):
 		chr = seq[0]
 		breakpoint = int(seq[1])
 		subtype = seq[3]
+		subtype = subtype.split(':')[2]
 		compare(chr, breakpoint, subtype)
 		compare_each_base(chr, breakpoint, subtype)
 	file.close()
