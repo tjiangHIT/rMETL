@@ -458,11 +458,11 @@ def add_genotype(info_list, file):
 			evidence = len(info_list[i])
 			locus_cov = count_coverage(chr, start, end, file)
 			GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
-			for j in info_list[i]:
+			for j in xrange(len(info_list[i])):
 				info_list[i][j].append(GT)
 				info_list[i][j].append(GL)
 		else:
-			for j in info_list[i]:
+			for j in xrange(len(info_list[i])):
 			# if info_list[i][j][0] == 'DEL':
 				chr = info_list[i][j][1]
 				start = info_list[i][j][2]
