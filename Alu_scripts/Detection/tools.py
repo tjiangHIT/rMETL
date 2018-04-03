@@ -5,7 +5,7 @@ from concensus import *
 import cigar
 from Bio import SeqIO
 from Bio.Seq import Seq
-
+from genotype import *
 
 # list_flag = {1:'I', 4:'S', 5:'H'}
 INS_flag = {1:'I'}
@@ -422,13 +422,13 @@ def combine_result(INS, DEL):
 	result = list()
 	for i in INS:
 		for j in i:
-			key = "%s_%s_%d_%d_%s"%(j[0], j[1], j[2], j[3], j[4])
+			key = "%s_%s_%d_%d_%d_%s_%f"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
 	for i in DEL:
 		for j in i:
-			key = "%s_%s_%d_%d_%s"%(j[0], j[1], j[2], j[3], j[4])
+			key = "%s_%s_%d_%d_%d_%s_%f"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
@@ -442,6 +442,37 @@ def combine_result(INS, DEL):
 	# 	result.append(fake_seq)
 	return result
 	# return INS+DEL
+
+def count_coverage(chr, s, e, f):
+	total = 0
+	for i in f.fetch(chr, s, e):
+		total += 1
+	return total
+
+def add_genotype(info_list, file):
+	for i in xrange(len(info_list)):
+		if info_list[i][0][0] == 'INS':
+			chr = info_list[i][0][1]
+			start = info_list[i][0][2]
+			end = info_list[i][0][2] + info_list[i][0][3]
+			evidence = len(info_list[i])
+			locus_cov = count_coverage(chr, start, end, file)
+			GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
+			for j in info_list[i]:
+				info_list[i][j].append(GT)
+				info_list[i][j].append(GL)
+		else:
+			for j in info_list[i]:
+			# if info_list[i][j][0] == 'DEL':
+				chr = info_list[i][j][1]
+				start = info_list[i][j][2]
+				end = info_list[i][j][2]+info_list[i][j][3]
+				evidence = info_list[i][j][4]
+				locus_cov = count_coverage(chr, start, end, file)
+				GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
+				info_list[i][j].append(GT)
+				info_list[i][j].append(GL)
+	return info_list
 
 def load_sam(p1, p2, p3):
 	'''
@@ -499,7 +530,7 @@ def load_sam(p1, p2, p3):
 		# break
 
 		# merge step
-		Final_result = combine_result(Cluster_INS, Cluster_DEL)
+		Final_result = combine_result(add_genotype(Cluster_INS, samfile), add_genotype(Cluster_DEL,samfile))
 
 		# out_signal = open(p2, 'a+')
 		# for i in Final_result:
