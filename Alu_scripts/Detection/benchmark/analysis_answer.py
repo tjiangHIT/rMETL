@@ -223,7 +223,7 @@ def evaluation(p):
 		chr = seq[0]
 		breakpoint = int(seq[1])
 		subtype = seq[3]
-		# subtype = subtype.split(':')[2]
+		subtype = subtype.split(':')[2]
 		compare(chr, breakpoint, subtype)
 		compare_each_base(chr, breakpoint, subtype)
 	file.close()
