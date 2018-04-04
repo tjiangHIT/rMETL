@@ -30,6 +30,10 @@ def construct_concensus_info(Ins_list, Clip_list):
 	# ==============method_2=====================
 	Prob_pos_2 = sum(breakpoint)/len(breakpoint)
 	Average_size = int(sum(insert_size)/len(insert_size))
+
+	if Average_size < 50:
+		return 0
+
 	# print Average_size
 	local_info = list()
 	# local_name = "_%d_%d_"%(Prob_pos_2, Average_size)

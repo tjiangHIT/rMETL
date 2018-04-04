@@ -422,13 +422,13 @@ def combine_result(INS, DEL):
 	result = list()
 	for i in INS:
 		for j in i:
-			key = "%s_%s_%d_%d_%d_%s_%f"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
+			key = "%s_%s_%d_%d_%s_%s_%s"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
 	for i in DEL:
 		for j in i:
-			key = "%s_%s_%d_%d_%d_%s_%f"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
+			key = "%s_%s_%d_%d_%d_%s_%s"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
@@ -454,13 +454,18 @@ def add_genotype(info_list, file):
 		if info_list[i][0][0] == 'INS':
 			chr = info_list[i][0][1]
 			start = info_list[i][0][2]
-			end = info_list[i][0][2] + info_list[i][0][3]
+			# end = info_list[i][0][2] + info_list[i][0][3]
+			end = info_list[i][0][2] + 1
 			evidence = len(info_list[i])
 			locus_cov = count_coverage(chr, start, end, file)
-			GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
-			for j in xrange(len(info_list[i])):
-				info_list[i][j].append(GT)
-				info_list[i][j].append(GL)
+			# GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
+			result = simple_call_genotype(evidence, locus_cov)
+			if result != 0:
+				# GT, GL = simple_call_genotype(evidence, locus_cov)
+				GT, GL = result[0], result[1]
+				for j in xrange(len(info_list[i])):
+					info_list[i][j].append(GT)
+					info_list[i][j].append(GL)
 		else:
 			for j in xrange(len(info_list[i])):
 			# if info_list[i][j][0] == 'DEL':
@@ -469,9 +474,13 @@ def add_genotype(info_list, file):
 				end = info_list[i][j][2]+info_list[i][j][3]
 				evidence = info_list[i][j][4]
 				locus_cov = count_coverage(chr, start, end, file)
-				GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
-				info_list[i][j].append(GT)
-				info_list[i][j].append(GL)
+				# GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
+				# GT, GL = simple_call_genotype(evidence, locus_cov)
+				result = simple_call_genotype(evidence, locus_cov)
+				if result != 0:
+					GT, GL = result[0], result[1]
+					info_list[i][j].append(GT)
+					info_list[i][j].append(GL)
 	return info_list
 
 def load_sam(p1, p2, p3):
