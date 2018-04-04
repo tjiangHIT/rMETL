@@ -12,6 +12,8 @@ INS_flag = {1:'I'}
 DEL_flag = {2:'D'}
 clip_flag = {4:'S', 5:'H'}
 low_bandary = 20
+P_homozygous = 0.8
+P_heterozygous = 0.3
 
 CLIP_note = dict()
 total_signal = list()
@@ -422,12 +424,16 @@ def combine_result(INS, DEL):
 	result = list()
 	for i in INS:
 		for j in i:
+			if len(j) != 8:
+				continue
 			key = "%s_%s_%d_%d_%s_%s_%s"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
 	for i in DEL:
 		for j in i:
+			if len(j) != 8:
+				continue
 			key = "%s_%s_%d_%d_%d_%s_%s"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
@@ -459,7 +465,7 @@ def add_genotype(info_list, file):
 			evidence = len(info_list[i])
 			locus_cov = count_coverage(chr, start, end, file)
 			# GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
-			result = simple_call_genotype(evidence, locus_cov)
+			result = simple_call_genotype(evidence, locus_cov, P_heterozygous, P_homozygous)
 			if result != 0:
 				# GT, GL = simple_call_genotype(evidence, locus_cov)
 				GT, GL = result[0], result[1]
@@ -476,14 +482,14 @@ def add_genotype(info_list, file):
 				locus_cov = count_coverage(chr, start, end, file)
 				# GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
 				# GT, GL = simple_call_genotype(evidence, locus_cov)
-				result = simple_call_genotype(evidence, locus_cov)
+				result = simple_call_genotype(evidence, locus_cov, P_heterozygous, P_homozygous)
 				if result != 0:
 					GT, GL = result[0], result[1]
 					info_list[i][j].append(GT)
 					info_list[i][j].append(GL)
 	return info_list
 
-def load_sam(p1, p2, p3):
+def load_sam(args):
 	'''
 	Load_BAM_File
 	library:	pysam.AlignmentFile
@@ -491,6 +497,17 @@ def load_sam(p1, p2, p3):
 	load_Ref_Genome
 	library:	Bio
 	'''
+	p1 = args.AlignmentFile
+	p2 = args.Output_prefix
+	p3 = args.Reference
+	# global low_bandary
+	# low_bandary = args.min_distance
+	# global P_homozygous
+	# P_homozygous = args.homozygous
+	# global P_heterozygous
+	# P_heterozygous = args.heterozygous
+
+
 	Ref = load_ref(p3)
 
 	samfile = pysam.AlignmentFile(p1)

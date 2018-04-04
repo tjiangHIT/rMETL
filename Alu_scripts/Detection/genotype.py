@@ -4,18 +4,18 @@ from scipy.special import comb
 import numpy as np
 
 
-P_homozygous_ref = 0.02
-P_heterozygous = 0.5
-P_homozygous_ME = 0.98
+# P_homozygous_ref = 0.02
+# P_heterozygous = 0.5
+# P_homozygous_ME = 0.98
 
-GL_TAG = ['0/0', '0/1', '1/1']
+GL_TAG = ['./.', '0/1', '1/1']
 
-def simple_call_genotype(Nalt, Ntotal):
-	bound_low = Ntotal * 0.3
-	bound_up = Ntotal * 0.8
+def simple_call_genotype(Nalt, Ntotal, P_heterozygous, P_homozygous):
+	bound_low = Ntotal * P_heterozygous
+	bound_up = Ntotal * P_homozygous
 	if Nalt < bound_low:
-		return	0
-		# return GL_TAG[0], "%d:%d"%(Nalt, Ntotal - Nalt)
+		# return	0
+		return [GL_TAG[0], "%d:%d"%(Nalt, Ntotal - Nalt)]
 	elif bound_low <= Nalt and Nalt < bound_up:
 		return [GL_TAG[1], "%d:%d"%(Nalt, Ntotal - Nalt)]
 	else:
