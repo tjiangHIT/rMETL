@@ -29,13 +29,6 @@ def parse_name(seq):
 	GT = seq.split('_')[3]
 	return chr, breakpoint, insert_size, GT
 
-def parse_name_tp(seq):
-	Stype = seq.split('_')[0]
-	chr = seq.split('_')[1]
-	breakpoint = seq.split('_')[2]
-	insert_size = seq.split('_')[3]
-	return Stype, chr, breakpoint, insert_size
-
 def load_sam(p1):
 	# samfile = pysam.AlignmentFile(p1)
 	AlignmentFile = open(p1, 'r')
@@ -70,23 +63,42 @@ def load_sam(p1):
 		# print("%s\t%s\t%s\t%s"%(i[0], breakpoint, insert_size, final_type))
 		print "\t".join(i)
 
-def load_sam_2(p1):
+def parse_name_tp(line):
+	seq = line.split('_')
+	Type = seq[0]
+	chr = seq[1]
+	pos = seq[2]
+	len = seq[3]
+	if Type == 'DEL':
+		rc = seq[4]
+		cov = seq[5]
+	else:
+		rc = seq[5]
+		cov = seq[6]
+	GT = rc+':'+cov
+	local_info = R_INFO(Type, chr, pos, len, GT)
+	return local_info
+
+def call_bed(p1):
 	# samfile = pysam.AlignmentFile(p1)
 	AlignmentFile = open(p1, 'r')
 	for line in AlignmentFile:
 		seq = line.strip('\n').split('\t')
 		if seq[0][0] == '@':
 			continue
-		Stype, chr, breakpoint, insert_size = parse_name_tp(seq[0])
+
+		local_info = parse_name_tp(seq[0])
 		Flag = int(seq[1])
 		sub_type = seq[2]
 		MAPQ = int(seq[4])
-		if flag_dic[Flag] != 0 and int(insert_size) >= 50 and MAPQ >= 20:
+		if flag_dic[Flag] != 0 and MAPQ >= 20:
 			# to do something
-			key = "%s_%s_%s"%(chr, breakpoint, insert_size)
+			# key = "%s_%s_%s"%(chr, breakpoint, insert_size)
+			key = "%s_%s_%s_%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
 			if key not in cluster_dic:
 				cluster_dic[key] = list()
-			cluster_dic[key].append("%s:ME:%s"%(Stype,sub_type))
+			# cluster_dic[key].append("%s:ME:%s"%(Stype,sub_type))
+			cluster_dic[key].append("<%s:ME:%s>"%(local_info.Type, sub_type))
 
 			# if key not in cluster_dic:
 			# 	cluster_dic[key] = [MAPQ, sub_type]
@@ -98,7 +110,7 @@ def load_sam_2(p1):
 
 	sort_list = list()
 	for i in cluster_dic:
-		chr, breakpoint, insert_size = parse_name(i)
+		chr, breakpoint, insert_size, GT = parse_name(i)
 		final_type = acquire_count_max(cluster_dic[i])
 		# final_type = cluster_dic[i][1]
 		# final_MAPQ = cluster_dic[i][0]
@@ -107,6 +119,7 @@ def load_sam_2(p1):
 		# sort_list.append([chr, breakpoint, insert_size, final_type, strand_dic[int(final_strand)]])
 
 		# if final_MAPQ >= 20:
+		# sort_list.append([chr, breakpoint, insert_size, final_type])
 		sort_list.append([chr, breakpoint, insert_size, final_type])
 
 		# sort_list.append([chr, breakpoint, insert_size, final_type, str(final_MAPQ)])
@@ -159,7 +172,7 @@ def call_vcf(p):
 			key = "%s_%s_%s_%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
 			if key not in cluster_dic:
 				cluster_dic[key] = list()
-			cluster_dic[key].append("<%s:ME:%s>"%(local_info.Type,sub_type))
+			cluster_dic[key].append("<%s:ME:%s>"%(local_info.Type, sub_type))
 	AlignmentFile.close()
 
 	sort_list = list()

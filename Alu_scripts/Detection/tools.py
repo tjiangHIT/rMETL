@@ -434,7 +434,7 @@ def combine_result(INS, DEL):
 	# DEL_chr_pos_len_seq_rc_dp
 	for i in DEL:
 		for j in i:
-			if len(j) != 8:
+			if len(j) != 7:
 				continue
 			key = "%s_%s_%d_%d_%d_%d"%(j[0], j[1], j[2], j[3], j[4], j[6])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
@@ -464,7 +464,7 @@ def add_genotype(info_list, file):
 			start = info_list[i][0][2]-20
 			# end = info_list[i][0][2] + info_list[i][0][3]
 			end = info_list[i][0][2] + 20
-			evidence = len(info_list[i])
+			# evidence = len(info_list[i])
 			locus_cov = count_coverage(chr, start, end, file)
 			# # GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
 			# result = simple_call_genotype(evidence, locus_cov, P_heterozygous, P_homozygous)
@@ -478,12 +478,13 @@ def add_genotype(info_list, file):
 				info_list[i][j].append(locus_cov)
 
 		else:
+			# DEL_chr_pos_len_seq_rc_dp
 			for j in xrange(len(info_list[i])):
 			# if info_list[i][j][0] == 'DEL':
 				chr = info_list[i][j][1]
 				start = info_list[i][j][2]
 				end = info_list[i][j][2]+info_list[i][j][3]
-				evidence = info_list[i][j][4]
+				# evidence = info_list[i][j][4]
 				locus_cov = count_coverage(chr, start, end, file)
 				# # GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
 				# # GT, GL = simple_call_genotype(evidence, locus_cov)
@@ -558,11 +559,15 @@ def load_sam(args):
 			Cluster_DEL = cluster_del(cluster_pos_DEL, Chr_name, Ref)
 
 		print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), Chr_name))
+
+		# print Cluster_DEL
 		# merge_siganl(Chr_name, Cluster)
 		# break
 
 		# merge step
 		Final_result = combine_result(add_genotype(Cluster_INS, samfile), add_genotype(Cluster_DEL,samfile))
+
+		# print Final_result
 
 		# out_signal = open(p2, 'a+')
 		# for i in Final_result:
