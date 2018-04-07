@@ -45,12 +45,20 @@ def genotype_call_with_read_pair(concordant, discordant, std_depth=5):
             # Phred-scaled proportion of distance between the observed
             # discordant depth and expected depth for the corresponding
             # concordant depth.
-            genotype_likelihood = np.floor(-10 * np.log10(np.power(2, discordant) / np.power(2, expected_discordant_lower_bound)))
+            # genotype_likelihood = np.floor(-10 * np.log10(np.power(2, discordant) / np.power(2, expected_discordant_lower_bound)))
+            if discordant - expected_discordant_lower_bound >= 0:
+            	genotype_likelihood = np.floor(-10*np.log10(np.power(2, discordapunt - expected_discordant_lower_bound)))
+            else:
+            	genotype_likelihood = np.floor(-10*np.log10(1.0/np.power(2, expected_discordant_lower_bound - discordant)))
         elif expected_discordant_lower_bound <= discordant < expected_discordant_upper_bound:
             # Calculate likelihood of heterozygous genotype as Phred-scaled
             # proportion of distance between the observed discordant depth and
             # expected depth for the corresponding concordant depth.
-            genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound)) / np.power(2, expected_discordant_upper_bound)
+            # genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound)) / np.power(2, expected_discordant_upper_bound)
+            if np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound >= 0:
+            	genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound)
+            else:
+            	genotype_ratio = 1.0/np.power(2, expected_discordant_upper_bound - np.abs(discordant - expected_discordant_upper_bound))
             genotype_likelihood = np.floor(-10 * np.log10(1 - min(genotype_ratio, 1)))
             genotype = "1/0"
         else:
@@ -58,10 +66,15 @@ def genotype_call_with_read_pair(concordant, discordant, std_depth=5):
             # Phred-scaled proportion of distance between the observed
             # discordant depth and expected depth for the corresponding
             # concordant depth.
-            genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound)) / np.power(2, expected_discordant_upper_bound)
+            # genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound)) / np.power(2, expected_discordant_upper_bound)
+            if np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound >= 0:
+            	genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound)
+            else:
+            	genotype_ratio = 1.0/np.power(2, expected_discordant_upper_bound - np.abs(discordant - expected_discordant_upper_bound))
             genotype_likelihood = np.floor(-10 * np.log10(1 - min(genotype_ratio, 1)))
             genotype = "0/0"
 
+    print genotype, genotype_likelihood
     return genotype, genotype_likelihood
 
 def caculate_genotype_likelyhood(Nalt, Ntotal):
@@ -88,5 +101,5 @@ def caculate_genotype_likelyhood(Nalt, Ntotal):
 	# np.floor(-10 * np.log10(np.power(2, discordant) / np.power(2, expected_discordant_lower_bound)))
 	return GL_TAG[tag], final_gl
 
-# if __name__ == '__main__':
-# 	caculate_genotype_likelyhood(20, 24)
+if __name__ == '__main__':
+	genotype_call_with_read_pair(29, 5)

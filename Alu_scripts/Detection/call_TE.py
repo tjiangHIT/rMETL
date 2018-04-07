@@ -12,11 +12,22 @@ cluster_dic = {}
 
 strand_dic = {1:'+', 2:'-'}
 
+class R_INFO(object):
+	"""store the infomation of the signal sequence"""
+	def __init__(self, Type, Chr, Pos, Len, GT):
+		# super(ClassName, self).__init__()
+		self.Type = Type
+		self.Chr = Chr
+		self.Pos = Pos
+		self.Len = Len
+		self.GT = GT
+
 def parse_name(seq):
 	chr = seq.split('_')[0]
 	breakpoint = seq.split('_')[1]
 	insert_size = seq.split('_')[2]
-	return chr, breakpoint, insert_size
+	GT = seq.split('_')[3]
+	return chr, breakpoint, insert_size, GT
 
 def parse_name_tp(seq):
 	Stype = seq.split('_')[0]
@@ -105,6 +116,75 @@ def load_sam_2(p1):
 		# print("%s\t%s\t%s\t%s"%(i[0], breakpoint, insert_size, final_type))
 		print "\t".join(i)
 
+def print_vcf_head():
+	print("##fileformat=VCFv4.2")
+	print("##fileDate=XXXXX")
+	print("##source=tjiang_scripts")
+	print("##reference=")
+	print("##ALT=<ID=<DEL>,Description=\"Deletion relative to the reference\">")
+	print("##ALT=<ID=<INS>,Description=\"Insertion of sequence relative to the reference\">")
+	print("##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of the variant described in this record\">")
+	print("##INFO=<ID=SVLEN,Number=.,Type=String,Description=\"Difference in length between REF and ALT alleles\">")
+	print("##INFO=<ID=AC,Number=.,Type=Integer,Description=\"Allele count'\">")
+	print("##INFO=<ID=AF,Number=.,Type=Float,Description=\"Allele frequency'\">")
+	print("##INFO=<ID=AN,Number=.,Type=String,Description=\"Allele name'\">")
+	print("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO")
+
+
+def parse_seq_head(line):
+	seq = line.split('_')
+	Type = seq[0]
+	chr = seq[1]
+	breakpoint = seq[2]
+	size = seq[3]
+	GT = seq[5]+':'+seq[6]
+	local_info = R_INFO(Type, chr, breakpoint, size, GT)
+	return local_info
+
+def call_vcf(p):
+	AlignmentFile = open(p, 'r')
+	for line in AlignmentFile:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '@':
+			continue
+
+		local_info = parse_seq_head(seq[0])
+		Flag = int(seq[1])
+		sub_type = seq[2]
+		MAPQ = int(seq[4])
+		if flag_dic[Flag] != 0 and MAPQ >= 20:
+			# to do something
+			key = "%s_%s_%s_%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
+			if key not in cluster_dic:
+				cluster_dic[key] = list()
+			cluster_dic[key].append("<%s:ME:%s>"%(local_info.Type,sub_type))
+	AlignmentFile.close()
+
+	sort_list = list()
+	for i in cluster_dic:
+		chr, breakpoint, insert_size, GT = parse_name(i)
+		final_type = acquire_count_max(cluster_dic[i])
+		# final_type = cluster_dic[i][1]
+		# final_MAPQ = cluster_dic[i][0]
+		# final_strand = final.split('&')[1]
+		# final_strand = acquire_count_max(cluster_dic[i][1])
+		# sort_list.append([chr, breakpoint, insert_size, final_type, strand_dic[int(final_strand)]])
+
+		# if final_MAPQ >= 20:
+		sort_list.append([chr, breakpoint, insert_size, final_type, GT])
+
+		# sort_list.append([chr, breakpoint, insert_size, final_type, str(final_MAPQ)])
+		# print("%s\t%s\t%s\t%s"%(chr, breakpoint, insert_size, final_type))
+	sort_list = sorted(sort_list, key = lambda x:(x[0], int(x[1])))
+	print_vcf_head()
+	ID = 0
+	for i in sort_list:
+		# print("%s\t%s\t%s\t%s"%(i[0], breakpoint, insert_size, final_type))
+		# print "\t".join(i)
+		print("%s\t%s\t%d\t.\t%s\t.\t.\tLEN=%s\tGT:DV:DR\t%s"%(i[0], i[1], ID, i[3], i[2], i[4]))
+		ID += 1
+
+
 if __name__ == '__main__':
 	path = sys.argv[1]
-	load_sam_2(path)
+	call_vcf(path)
