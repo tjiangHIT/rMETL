@@ -117,10 +117,12 @@ def load_sam_2(p1):
 		print "\t".join(i)
 
 def print_vcf_head():
+	import time
+	Date = time.strftime("%Y%m%d")
 	print("##fileformat=VCFv4.2")
-	print("##fileDate=XXXXX")
+	print("##fileDate=%s"%(Date))
 	print("##source=tjiang_scripts")
-	print("##reference=")
+	print("##reference=Grch37")
 	print("##ALT=<ID=<DEL>,Description=\"Deletion relative to the reference\">")
 	print("##ALT=<ID=<INS>,Description=\"Insertion of sequence relative to the reference\">")
 	print("##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of the variant described in this record\">")
@@ -181,7 +183,8 @@ def call_vcf(p):
 	for i in sort_list:
 		# print("%s\t%s\t%s\t%s"%(i[0], breakpoint, insert_size, final_type))
 		# print "\t".join(i)
-		print("%s\t%s\t%d\t.\t%s\t.\t.\tLEN=%s\tGT:DV:DR\t%s"%(i[0], i[1], ID, i[3], i[2], i[4]))
+		INFO = "SVTYPE=%s;SVLEN=%d;END=%d;SAMPLE=NA12878;STRAND=%s"%(i[3][1:4], int(i[2]), int(i[1])+int(i[2])-1, '+/-')
+		print("%s\t%s\t%d\tN\t%s\t.\t.\t%s\tGT:DV:DR\t%s"%(i[0], i[1], ID, i[3], INFO, i[4]))
 		ID += 1
 
 
