@@ -129,7 +129,7 @@ def statics():
 		for ele in Alu[key]:
 			if ele[3] == 0:
 				Talu_0[len(ele[2])-1] +=1
-				# if len(ele[2]) == 5:
+				# if len(ele[2]) == 6:
 				# 	print key, ele
 			else:
 				# print ele

@@ -461,10 +461,18 @@ def add_genotype(info_list, file):
 	for i in xrange(len(info_list)):
 		if info_list[i][0][0] == 'INS':
 			chr = info_list[i][0][1]
+			'''
+			method_1
+			'''
 			start = info_list[i][0][2]-20
 			# end = info_list[i][0][2] + info_list[i][0][3]
 			end = info_list[i][0][2] + 20
 			# evidence = len(info_list[i])
+			# '''
+			# method_2
+			# '''
+			# start = int(info_list[i][0][4].split(':')[1])
+			# end = int(info_list[i][0][4].split(':')[2])
 			locus_cov = count_coverage(chr, start, end, file)
 			# # GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
 			# result = simple_call_genotype(evidence, locus_cov, P_heterozygous, P_homozygous)

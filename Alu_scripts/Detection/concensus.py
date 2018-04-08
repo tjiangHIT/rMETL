@@ -18,10 +18,15 @@ def construct_concensus_info(Ins_list, Clip_list):
 		return 0
 	breakpoint = list()
 	insert_size = list()
+
+	boundary = list()
+
 	for i in Ins_list:
 		breakpoint.append(i[0])
 		insert_size.append(i[1])
+		# boundary.append(i[0])
 	for i in Clip_list:
+		# boundary.append(i[0])
 		if i[2] == 1:
 			breakpoint.append(i[0])
 
@@ -42,11 +47,13 @@ def construct_concensus_info(Ins_list, Clip_list):
 	for i in Ins_list:
 		# info = local_name + str(local_id) + '\n' + i[2] + '\n'
 		info = local_name + [str(local_id), i[2]]
+		# info = local_name + ["%d:%d:%d"%(local_id, min(boundary), max(boundary)), i[2]]
 		local_id += 1
 		local_info.append(info)
 	for i in Clip_list:
 		# info = local_name + str(local_id) + '\n' + i[1] + '\n'
 		info = local_name + [str(local_id), i[1]]
+		# info = local_name + ["%d:%d:%d"%(local_id, min(boundary), max(boundary)), i[1]]
 		local_id += 1
 		local_info.append(info)
 			# print(">%d\n%s"%(i[0], i[2])) 

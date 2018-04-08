@@ -1,6 +1,7 @@
 import sys	
 import pysam
 from collections import Counter
+from genotype import *
 
 def acquire_count_max(_list_):
 	c = Counter(_list_)
@@ -111,6 +112,7 @@ def call_bed(p1):
 	sort_list = list()
 	for i in cluster_dic:
 		chr, breakpoint, insert_size, GT = parse_name(i)
+		# print cluster_dic[i]
 		final_type = acquire_count_max(cluster_dic[i])
 		# final_type = cluster_dic[i][1]
 		# final_MAPQ = cluster_dic[i][0]
@@ -120,6 +122,11 @@ def call_bed(p1):
 
 		# if final_MAPQ >= 20:
 		# sort_list.append([chr, breakpoint, insert_size, final_type])
+		# concordant = int(GT.split(':')[0])
+		# coverage = int(GT.split(':')[1])
+		# flag = simple_filter_genotype(concordant, coverage, 0.2)
+		# if flag == 0:
+		# 	continue
 		sort_list.append([chr, breakpoint, insert_size, final_type])
 
 		# sort_list.append([chr, breakpoint, insert_size, final_type, str(final_MAPQ)])
@@ -147,13 +154,28 @@ def print_vcf_head():
 
 
 def parse_seq_head(line):
+	# seq = line.split('_')
+	# Type = seq[0]
+	# chr = seq[1]
+	# breakpoint = seq[2]
+	# size = seq[3]
+	# GT = seq[5]+':'+seq[6]
+	# local_info = R_INFO(Type, chr, breakpoint, size, GT)
+	# return local_info
+
 	seq = line.split('_')
 	Type = seq[0]
 	chr = seq[1]
-	breakpoint = seq[2]
-	size = seq[3]
-	GT = seq[5]+':'+seq[6]
-	local_info = R_INFO(Type, chr, breakpoint, size, GT)
+	pos = seq[2]
+	len = seq[3]
+	if Type == 'DEL':
+		rc = seq[4]
+		cov = seq[5]
+	else:
+		rc = seq[5]
+		cov = seq[6]
+	GT = rc+':'+cov
+	local_info = R_INFO(Type, chr, pos, len, GT)
 	return local_info
 
 def call_vcf(p):
@@ -197,10 +219,22 @@ def call_vcf(p):
 		# print("%s\t%s\t%s\t%s"%(i[0], breakpoint, insert_size, final_type))
 		# print "\t".join(i)
 		INFO = "SVTYPE=%s;SVLEN=%d;END=%d;SAMPLE=NA12878;STRAND=%s"%(i[3][1:4], int(i[2]), int(i[1])+int(i[2])-1, '+/-')
-		print("%s\t%s\t%d\tN\t%s\t.\t.\t%s\tGT:DV:DR\t%s"%(i[0], i[1], ID, i[3], INFO, i[4]))
+		concordant = int(i[4].split(':')[0])
+		discordant = int(i[4].split(':')[1]) - int(i[4].split(':')[0])
+		if discordant < 0:
+			discordant = 0
+		# print concordant, discordant
+		# GT, GL = genotype_call_with_read_pair(concordant, discordant)
+		# print GT, GL
+		GT, GL = simple_call_genotype(concordant, concordant+discordant, 0.3, 0.8)
+		print("%s\t%s\t%d\tN\t%s\t.\t.\t%s\tGT:DV:DR\t%s:%s"%(i[0], i[1], ID, i[3], INFO, GT, GL))
 		ID += 1
 
 
 if __name__ == '__main__':
-	path = sys.argv[1]
-	call_vcf(path)
+	path = sys.argv[2]
+	choice = sys.argv[1]
+	if choice == 'bed':
+		call_bed(path)
+	elif choice == 'vcf':
+		call_vcf(path)

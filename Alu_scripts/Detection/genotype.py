@@ -8,18 +8,27 @@ import numpy as np
 # P_heterozygous = 0.5
 # P_homozygous_ME = 0.98
 
-GL_TAG = ['./.', '0/1', '1/1']
+GL_TAG = ['0/0', '0/1', '1/1']
 
 def simple_call_genotype(Nalt, Ntotal, P_heterozygous, P_homozygous):
 	bound_low = Ntotal * P_heterozygous
 	bound_up = Ntotal * P_homozygous
 	if Nalt < bound_low:
 		# return	0
-		return [GL_TAG[0], "%d:%d"%(Nalt, Ntotal - Nalt)]
+		return GL_TAG[0], "%d:%d"%(Nalt, Ntotal - Nalt)
 	elif bound_low <= Nalt and Nalt < bound_up:
-		return [GL_TAG[1], "%d:%d"%(Nalt, Ntotal - Nalt)]
+		return GL_TAG[1], "%d:%d"%(Nalt, Ntotal - Nalt)
 	else:
-		return [GL_TAG[2], "%d:%d"%(Nalt, Ntotal - Nalt)]
+		return GL_TAG[2], "%d:%d"%(Nalt, Ntotal - Nalt)
+
+def simple_filter_genotype(Nalt, Ntotal, P_heterozygous):
+    bound_low = Ntotal * P_heterozygous
+    # bound_up = Ntotal * P_homozygous
+    if Nalt < bound_low:
+        # return    0
+        return 0
+    else:
+        return 1
 
 def genotype_call_with_read_pair(concordant, discordant, std_depth=5):
     """
@@ -46,20 +55,28 @@ def genotype_call_with_read_pair(concordant, discordant, std_depth=5):
             # discordant depth and expected depth for the corresponding
             # concordant depth.
             # genotype_likelihood = np.floor(-10 * np.log10(np.power(2, discordant) / np.power(2, expected_discordant_lower_bound)))
-            if discordant - expected_discordant_lower_bound >= 0:
-            	genotype_likelihood = np.floor(-10*np.log10(np.power(2, discordapunt - expected_discordant_lower_bound)))
-            else:
-            	genotype_likelihood = np.floor(-10*np.log10(1.0/np.power(2, expected_discordant_lower_bound - discordant)))
+            # '''
+            # if discordant - expected_discordant_lower_bound >= 0:
+            # 	genotype_likelihood = np.floor(-10*np.log10(np.power(2, discordapunt - expected_discordant_lower_bound)))
+            # else:
+            # 	genotype_likelihood = np.floor(-10*np.log10(1.0/np.power(2, expected_discordant_lower_bound - discordant)))
+            genotype_likelihood = np.floor(-10*np.log10(1.0/np.power(2, expected_discordant_lower_bound - discordant)))
+            # '''
         elif expected_discordant_lower_bound <= discordant < expected_discordant_upper_bound:
             # Calculate likelihood of heterozygous genotype as Phred-scaled
             # proportion of distance between the observed discordant depth and
             # expected depth for the corresponding concordant depth.
             # genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound)) / np.power(2, expected_discordant_upper_bound)
+            # '''
             if np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound >= 0:
-            	genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound)
+            	# genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound)
+                genotype_ratio = np.power(2, discordant)
             else:
-            	genotype_ratio = 1.0/np.power(2, expected_discordant_upper_bound - np.abs(discordant - expected_discordant_upper_bound))
+                print np.power(2, discordant)
+            	# genotype_ratio = 1.0/np.power(2, expected_discordant_upper_bound - np.abs(discordant - expected_discordant_upper_bound))
+                genotype_ratio = 1.0 / np.power(2, discordant)
             genotype_likelihood = np.floor(-10 * np.log10(1 - min(genotype_ratio, 1)))
+            # '''
             genotype = "1/0"
         else:
             # Calculate likelihood of homozygous "reference" genotype as
@@ -67,15 +84,18 @@ def genotype_call_with_read_pair(concordant, discordant, std_depth=5):
             # discordant depth and expected depth for the corresponding
             # concordant depth.
             # genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound)) / np.power(2, expected_discordant_upper_bound)
+            # '''
             if np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound >= 0:
             	genotype_ratio = np.power(2, np.abs(discordant - expected_discordant_upper_bound) - expected_discordant_upper_bound)
             else:
             	genotype_ratio = 1.0/np.power(2, expected_discordant_upper_bound - np.abs(discordant - expected_discordant_upper_bound))
             genotype_likelihood = np.floor(-10 * np.log10(1 - min(genotype_ratio, 1)))
+            # '''
             genotype = "0/0"
 
-    print genotype, genotype_likelihood
+    # print genotype, genotype_likelihood
     return genotype, genotype_likelihood
+    # return genotype
 
 def caculate_genotype_likelyhood(Nalt, Ntotal):
 	ref_ref = 1.0 / 3
