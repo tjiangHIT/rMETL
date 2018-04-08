@@ -17,7 +17,8 @@ def main():
 	print("[INFO]: The path of the Alignment File: %s"%(alignment))
 	print("[INFO]: The path of the Signal File: %s"%(output))
 	print("[INFO]: The path of the Reference File: %s"%(ref))
-	tools.load_sam(args)
+	# tools.load_sam(args)
+	tools.load_sam_multi_processes(args)
 	print("[INFO]: Finished in %0.2f seconds."%(time.time() - starttime))
 	print("[INFO]: Have a nice day! ^.^ ")
 

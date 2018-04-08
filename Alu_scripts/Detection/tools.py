@@ -6,6 +6,7 @@ import cigar
 from Bio import SeqIO
 from Bio.Seq import Seq
 from genotype import *
+from multiprocessing import Pool
 
 # list_flag = {1:'I', 4:'S', 5:'H'}
 INS_flag = {1:'I'}
@@ -590,4 +591,80 @@ def load_sam(args):
 	# for i in total_signal:
 	# 	out_signal.write(i)
 	# out_signal.close()
+	samfile.close()
+
+def single_pipe(out_path, chr_id, Ref_path, bam_path):
+	# print out_path, chr_id, Ref, bam_path
+	samfile = pysam.AlignmentFile(bam_path)
+	chr = samfile.get_reference_name(chr_id)
+	print("[INFO]: Resolving the chromsome %s."%(chr))
+	if chr not in CLIP_note:
+		CLIP_note[chr] = dict()
+	cluster_pos_INS = list()
+	cluster_pos_DEL = list()
+	for read in samfile.fetch(chr):
+		feed_back, feed_back_del = parse_read(read, chr)
+		if len(feed_back) > 0:
+			for i in feed_back:
+				cluster_pos_INS.append(i)
+
+		if len(feed_back_del) > 0:
+			for i in feed_back_del:
+				cluster_pos_DEL.append(i)
+	cluster_pos_INS = sorted(cluster_pos_INS, key = lambda x:x[0])
+	cluster_pos_DEL = sorted(cluster_pos_DEL, key = lambda x:x[0])
+	if len(cluster_pos_INS) == 0:
+		Cluster_INS = list()
+	else:
+		Cluster_INS = cluster(cluster_pos_INS, chr)
+
+	if len(cluster_pos_DEL) == 0:
+		Cluster_DEL = list()
+	else:
+		Ref = load_ref(Ref_path)
+		Cluster_DEL = cluster_del(cluster_pos_DEL, chr, Ref)
+
+	print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
+	Final_result = combine_result(add_genotype(Cluster_INS, samfile), add_genotype(Cluster_DEL, samfile))
+	samfile.close()
+	path = out_path+chr+'.fa'
+	SeqIO.write(Final_result, path, "fasta")
+
+def multi_run_wrapper(args):
+   return single_pipe(*args)
+
+def load_sam_multi_processes(args):
+	'''
+	Load_BAM_File
+	library:	pysam.AlignmentFile
+
+	load_Ref_Genome
+	library:	Bio
+	'''
+	p1 = args.AlignmentFile
+	p2 = args.Output_prefix
+	p3 = args.Reference
+	threads = args.threads
+
+	# Major Steps:
+	# loading alignment file: bam format
+	samfile = pysam.AlignmentFile(p1)
+	# loading reference genome
+	# Ref = load_ref(p3)
+
+	# acquire the total numbers of the ref contigs
+	contig_num = len(samfile.get_index_statistics())
+	print("[INFO]: The total number of chromsomes: %d"%(contig_num))
+
+	# start to establish multiprocesses
+	analysis_pools = Pool(processes=threads)
+	# Acquire_Chr_name
+	for _num_ in xrange(contig_num):
+		# single_pipe(out_path, chr_id, Ref, samfile):
+		# para = [(p2, _num_, Ref, samfile)]
+		para = [(p2, _num_, p3, p1)]
+		analysis_pools.map_async(multi_run_wrapper, para)
+	analysis_pools.close()
+	analysis_pools.join()
+
 	samfile.close()
