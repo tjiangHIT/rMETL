@@ -18,6 +18,7 @@ P_heterozygous = 0.3
 
 CLIP_note = dict()
 total_signal = list()
+global_ref = list()
 # clip_store = Q.PriorityQueue()
 
 def revcom_complement(s): 
@@ -593,10 +594,10 @@ def load_sam(args):
 	# out_signal.close()
 	samfile.close()
 
-def single_pipe(out_path, chr_id, Ref_path, bam_path):
+def single_pipe(out_path, chr, bam_path):
 	# print out_path, chr_id, Ref, bam_path
 	samfile = pysam.AlignmentFile(bam_path)
-	chr = samfile.get_reference_name(chr_id)
+	# chr = samfile.get_reference_name(chr_id)
 	print("[INFO]: Resolving the chromsome %s."%(chr))
 	if chr not in CLIP_note:
 		CLIP_note[chr] = dict()
@@ -621,7 +622,7 @@ def single_pipe(out_path, chr_id, Ref_path, bam_path):
 	if len(cluster_pos_DEL) == 0:
 		Cluster_DEL = list()
 	else:
-		Ref = load_ref(Ref_path)
+		Ref = global_ref[0]
 		Cluster_DEL = cluster_del(cluster_pos_DEL, chr, Ref)
 
 	print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
@@ -650,19 +651,28 @@ def load_sam_multi_processes(args):
 	# loading alignment file: bam format
 	samfile = pysam.AlignmentFile(p1)
 	# loading reference genome
-	# Ref = load_ref(p3)
+	Ref = load_ref(p3)
+	global_ref.append(Ref)
 
 	# acquire the total numbers of the ref contigs
 	contig_num = len(samfile.get_index_statistics())
 	print("[INFO]: The total number of chromsomes: %d"%(contig_num))
 
+	# Thread scheduling
+	process_list = list()
+	for i in samfile.get_index_statistics():
+		process_list.append([i[0], i[3]])
+		# #chr #read
+	process_list = sorted(process_list, key = lambda x:-x[1])
+
 	# start to establish multiprocesses
 	analysis_pools = Pool(processes=threads)
 	# Acquire_Chr_name
-	for _num_ in xrange(contig_num):
+	for i in process_list:
 		# single_pipe(out_path, chr_id, Ref, samfile):
 		# para = [(p2, _num_, Ref, samfile)]
-		para = [(p2, _num_, p3, p1)]
+		# print i
+		para = [(p2, i[0], p1)]
 		analysis_pools.map_async(multi_run_wrapper, para)
 	analysis_pools.close()
 	analysis_pools.join()
