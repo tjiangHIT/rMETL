@@ -23,7 +23,7 @@ def collect_Tea_plus(p1, p2):
 		chr = chr[3:]
 		breakpoint = int(seq[1])
 		# subtype = parse_Tea_subtype(seq[3])
-		subtype = "Alu"
+		subtype = "AI"
 		if chr not in dic_tea:
 			dic_tea[chr] = list()
 		dic_tea[chr].append([breakpoint, subtype, 0])
@@ -38,7 +38,7 @@ def collect_Tea_plus(p1, p2):
 		chr = chr[3:]
 		breakpoint = int(seq[1])
 		# subtype = parse_Tea_subtype(seq[3])
-		subtype = "L1"
+		subtype = "LI"
 		if chr not in dic_tea:
 			dic_tea[chr] = list()
 		dic_tea[chr].append([breakpoint, subtype, 0])
@@ -91,13 +91,13 @@ def collect_Tangram_plus(p):
 		breakpoint = int(seq[1])
 		subtype = seq[4][-3:-1]
 		if subtype[0] == 'A':
-			subtype = "Alu"
+			subtype = "AI"
 		elif subtype[0] == 'L':
-			subtype = "L1"
+			subtype = "LI"
 		elif subtype[0] == "S":
-			subtype = "SVA"
+			subtype = "SI"
 		else:
-			subtype = "HERV"
+			subtype = "HI"
 		# strand = seq[7].split()
 		# genotype = seq[9]
 
@@ -139,9 +139,9 @@ def collect_RetroSeq_plus(p):
 		breakpoint = int(seq[1])
 		subtype = seq[7].split('=')[1].split(',')[0]
 		if subtype[0] == 'A':
-			subtype = "Alu"
+			subtype = "AI"
 		if subtype[0] == "L":
-			subtype = "L1"
+			subtype = "LI"
 		if chr not in dic_retroseq:
 			dic_retroseq[chr] = list()
 		dic_retroseq[chr].append([breakpoint, subtype, 0])
@@ -309,17 +309,18 @@ def collect_1kg_plus(p):
 		breakpoint = int(seq[1])
 		# subtype = seq[7].split(';')[3].split('=')[1]
 		subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
+		# TYPE = seq[4][1:4]
 		# if subtype[0] == "A":
 		# 	subtype = "Alu"
 		# if subtype[0] == "L":
 		# 	subtype = "L1"
 		# if subtype[0] == "S":
 		# 	subtype = "SVA"
-		genotype = parse_genotype(seq[432])
-		if genotype == 1:
-			if chr not in dic_1kg:
-				dic_1kg[chr] = list()
-			dic_1kg[chr].append([breakpoint, subtype, 0])
+		# genotype = parse_genotype(seq[432])
+		# if genotype == 1:
+		if chr not in dic_1kg:
+			dic_1kg[chr] = list()
+		dic_1kg[chr].append([breakpoint, subtype, 0])
 	file.close()
 	return dic_1kg
 
@@ -334,11 +335,11 @@ def collect_Mobster_plus(p):
 		breakpoint = int(seq[4])
 		subtype = seq[3]
 		if subtype[0] == "A":
-			subtype = "Alu"
+			subtype = "AI"
 		if subtype[0] == "L":
-			subtype = "L1"
+			subtype = "LI"
 		if subtype[0] == "S":
-			subtype = "SVA"
+			subtype = "SI"
 		if chr not in dic_Mobster:
 			dic_Mobster[chr] = list()
 		dic_Mobster[chr].append([breakpoint, subtype, 0])

@@ -4,8 +4,11 @@ from data_collection import *
 # standard = 20
 dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "RetroSeq.vcf", "1kg.vcf", "Mobster.txt", "MELT.vcf"]
 Alu = dict()
+Alu_D = dict()
 L1 = dict()
+L1_D = dict()
 SVA = dict()
+SVA_D = dict()
 Ans = list()
 Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster", "MELT"]
 
@@ -57,6 +60,9 @@ def adjust():
 		# for j in Alu[i]:
 			# print("chr%s\t%d\t%s"%(i, j[0], j[1]))
 			# print i, j[0], j[1], j[2]
+	for i in Alu_D:
+		Alu_D[i] = sorted(Alu_D[i], key = lambda x:x[0])
+		Alu_D[i] = cluster(Alu_D[i])
 
 	# print "L1"
 	for i in L1:
@@ -64,13 +70,18 @@ def adjust():
 		L1[i] = cluster(L1[i])
 		# for j in L1[i]:
 			# print i, j[0], j[1], j[2]
-
+	for i in L1_D:
+		L1_D[i] = sorted(L1_D[i], key = lambda x:x[0])
+		L1_D[i] = cluster(L1_D[i])
 	# print "SVA"
 	for i in SVA:
 		SVA[i] = sorted(SVA[i], key = lambda x:x[0])
 		SVA[i] = cluster(SVA[i])
 		# for j in SVA[i]:
 		# 	print i, j[0], j[1], j[2]
+	for i in SVA_D:
+		SVA_D[i] = sorted(SVA_D[i], key = lambda x:x[0])
+		SVA_D[i] = cluster(SVA_D[i])
 
 def load_data(path):
 	# Tea = collect_Tea_plus(path[0], path[1])
@@ -91,29 +102,50 @@ def load_data(path):
 		dic = Ans[i]
 		for chr in dic:
 			for element in dic[chr]:
-				if element[1][0] == "A":
+				if element[1] == "AI":
 					if chr not in Alu:
 						Alu[chr] = list()
 					Alu[chr].append([element[0], Name])
-				if element[1][0] == "L":
+				elif element[1] == "AD":
+					if chr not in Alu_D:
+						Alu_D[chr] = list()
+					Alu_D[chr].append([element[0], Name])
+				elif element[1] == "LI":
 					if chr not in L1:
 						L1[chr] = list()
 					L1[chr].append([element[0], Name])
-				if element[1][0] == 'S':
+				elif element[1] == "LD":
+					if chr not in L1_D:
+						L1_D[chr] = list()
+					L1_D[chr].append([element[0], Name])
+				elif element[1] == 'SI':
 					if chr not in SVA:
 						SVA[chr] = list()
 					SVA[chr].append([element[0], Name])
+				elif element[1] == "SD":
+					if chr not in SVA_D:
+						SVA_D[chr] = list()
+					SVA_D[chr].append([element[0], Name])
 	adjust()
 
 def compare(chr, pos, subtype):
-	if subtype[0] == 'A':
+	if subtype == 'AI':
 		data_ans = Alu
 		standard = 20
-	if subtype[0] == 'L':
+	if subtype == 'AD':
+		data_ans = Alu_D
+		standard = 20
+	if subtype == 'LI':
 		data_ans = L1
 		standard = 50
-	if subtype[0] == 'S':
+	if subtype == 'LD':
+		data_ans = L1_D
+		standard = 50
+	if subtype == 'SI':
 		data_ans = SVA
+		standard = 50
+	if subtype == 'SD':
+		data_ans = SVA_D
 		standard = 50
 
 	if chr in data_ans:
@@ -121,6 +153,23 @@ def compare(chr, pos, subtype):
 		# for ele in data_ans[chr]:
 			if data_ans[chr][i][0] - standard <= pos and pos <= data_ans[chr][i][1] + standard:
 				data_ans[chr][i][3] = 1
+
+def compare_sniffles(chr, pos, subtype):
+	if subtype == 'XI':
+		data_ans = [Alu, L1, SVA]
+	if subtype == 'XD':
+		data_ans = [Alu_D, L1_D, SVA_D]
+
+	for k in xrange(len(data_ans)):
+		if k == 0:
+			standard = 20
+		else:
+			standard = 50
+		if chr in data_ans[k]:
+			for i in xrange(len(data_ans[k][chr])):
+		# for ele in data_ans[chr]:
+				if data_ans[k][chr][i][0] - standard <= pos and pos <= data_ans[k][chr][i][1] + standard:
+					data_ans[k][chr][i][3] = 1
 
 def statics():
 	Talu_0 = [0]*len(Ans)
@@ -134,6 +183,14 @@ def statics():
 			else:
 				# print ele
 				Talu_1[len(ele[2])-1] += 1
+	for key in Alu_D:
+		for ele in Alu_D[key]:
+			if ele[3] == 0:
+				Talu_0[len(ele[2])-1] +=1
+			else:
+				Talu_1[len(ele[2])-1] += 1
+
+
 	TL1_0 = [0]*len(Ans)
 	TL1_1 = [0]*len(Ans)
 	for key in L1:
@@ -144,10 +201,26 @@ def statics():
 				# 	print key, ele
 			else:
 				TL1_1[len(ele[2])-1] += 1 
+
+	for key in L1_D:
+		for ele in L1_D[key]:
+			if ele[3] == 0:
+				TL1_0[len(ele[2])-1] +=1
+				# if len(ele[2]) == 2:
+				# 	print key, ele
+			else:
+				TL1_1[len(ele[2])-1] += 1  
+				
 	TSVA_0 = [0]*len(Ans)
 	TSVA_1 = [0]*len(Ans)
 	for key in SVA:
 		for ele in SVA[key]:
+			if ele[3] == 0:
+				TSVA_0[len(ele[2])-1] +=1
+			else:
+				TSVA_1[len(ele[2])-1] += 1
+	for key in SVA_D:
+		for ele in SVA_D[key]:
 			if ele[3] == 0:
 				TSVA_0[len(ele[2])-1] +=1
 			else:
@@ -208,12 +281,37 @@ def compare_each_base(chr, breakpoint, subtype):
 				if Ans[i][chr][j][1][0] == 'L' and Ans[i][chr][j][2] == 0:
 					Ans[i][chr][j][2] = -2
 
-				if Ans[i][chr][j][0] - standard <= breakpoint and Ans[i][chr][j][0] + standard >= breakpoint and Ans[i][chr][j][1][0] == subtype[0]:
+				if Ans[i][chr][j][0] - standard <= breakpoint and Ans[i][chr][j][0] + standard >= breakpoint and Ans[i][chr][j][1] == subtype:
 					if subtype[0] == 'A':
 						Ans[i][chr][j][2] = 1
 					if subtype[0] == 'L':
 						Ans[i][chr][j][2] = 2
 					if subtype[0] == 'S':
+						Ans[i][chr][j][2] = 3
+
+def compare_each_base_sniffles(chr, breakpoint, subtype):
+
+	for i in xrange(len(Ans)):
+		if chr in Ans[i]:
+			for j in xrange(len(Ans[i][chr])):
+				if Ans[i][chr][j][1][0] == 'A' and Ans[i][chr][j][2] == 0:
+					Ans[i][chr][j][2] = -1
+				if Ans[i][chr][j][1][0] == 'S' and Ans[i][chr][j][2] == 0:
+					Ans[i][chr][j][2] = -3
+				if Ans[i][chr][j][1][0] == 'L' and Ans[i][chr][j][2] == 0:
+					Ans[i][chr][j][2] = -2
+
+				if Ans[i][chr][j][1][0] == 'A':
+					standard = 20
+				else:
+					standard = 50
+
+				if Ans[i][chr][j][0] - standard <= breakpoint and Ans[i][chr][j][0] + standard >= breakpoint and Ans[i][chr][j][1][1] == subtype[1]:
+					if Ans[i][chr][j][1][0] == 'A':
+						Ans[i][chr][j][2] = 1
+					if Ans[i][chr][j][1][0] == 'L':
+						Ans[i][chr][j][2] = 2
+					if Ans[i][chr][j][1][0] == 'S':
 						Ans[i][chr][j][2] = 3
 
 def evaluation(p):
@@ -222,10 +320,49 @@ def evaluation(p):
 		seq = line.strip('\n').split('\t')
 		chr = seq[0]
 		breakpoint = int(seq[1])
-		subtype = seq[3]
-		subtype = subtype.split(':')[2]
+		# subtype = seq[3]
+		# subtype = subtype.split(':')[2]
+		subtype = seq[3][8]+seq[3][1]
 		compare(chr, breakpoint, subtype)
 		compare_each_base(chr, breakpoint, subtype)
+	file.close()
+	statics()
+
+def evaluation_sniffles(p):
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		# subtype = seq[3]
+		# subtype = subtype.split(':')[2]
+		if seq[4][1:4] == "DEL":
+			subtype = 'XD'
+		if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
+			subtype = 'XI'
+		compare_sniffles(chr, breakpoint, subtype)
+		compare_each_base_sniffles(chr, breakpoint, subtype)
+	file.close()
+	statics()
+
+def evaluation_tag(p):
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split(' ')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[1]
+		breakpoint = int(seq[2])
+		# subtype = seq[3]
+		# subtype = subtype.split(':')[2]
+		if seq[0][1:4] == "DEL":
+			subtype = 'XD'
+		if seq[0][1:4] == "INS":
+			subtype = 'XI'
+		compare_sniffles(chr, breakpoint, subtype)
+		compare_each_base_sniffles(chr, breakpoint, subtype)
 	file.close()
 	statics()
 
@@ -235,7 +372,8 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	evaluation(call_path)
+	# evaluation(call_path)
+	evaluation_tag(call_path)
 
 
 if __name__ == '__main__':
