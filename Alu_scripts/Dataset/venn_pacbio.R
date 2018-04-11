@@ -1,0 +1,46 @@
+library(VennDiagram)
+venn.plot <- draw.quintuple.venn(
+area1 = 1205,
+area2 = 1549,
+area3 = 1764,
+area4 = 1253,
+area5 = 5683,
+n12 = 1027,
+n13 = 852,
+n14 = 988,
+n15 = 1123,
+n23 = 937,
+n24 = 1063,
+n25 = 1289,
+n34 = 948,
+n35 = 1710,
+n45 = 1185,
+n123 = 808,
+n124 = 927,
+n125 = 1020,
+n134 = 808,
+n135 = 848,
+n145 = 982,
+n234 = 867,
+n235 = 931,
+n245 = 1060,
+n345 = 940,
+n1234 = 774,
+n1235 = 805,
+n1245 = 924,
+n1345 = 806,
+n2345 = 865,
+n12345 = 772,
+category = c("A", "B", "C", "D", "E"),
+fill = c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3"),
+cat.col = c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3"),
+cat.cex = 2,
+margin = 0.05,
+cex = c(1.5, 1.5, 1.5, 1.5, 1.5, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8,
+1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 1, 1, 1, 1, 1.5),
+ind = TRUE
+);
+# Writing to file
+tiff(filename = "pacbio.tiff", compression = "lzw");
+grid.draw(venn.plot);
+dev.off();

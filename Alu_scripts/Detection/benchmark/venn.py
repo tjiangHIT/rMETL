@@ -2,7 +2,8 @@ import sys
 from data_collection import *
 
 # standard = 20
-dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "RetroSeq.vcf", "1kg.vcf", "Mobster.txt", "MELT.vcf"]
+# dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "RetroSeq.vcf", "1kg.vcf", "Mobster.txt", "MELT.vcf"]
+dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "1kg.vcf", "Mobster.txt"]
 Alu = dict()
 Alu_D = dict()
 L1 = dict()
@@ -10,7 +11,8 @@ L1_D = dict()
 SVA = dict()
 SVA_D = dict()
 Ans = list()
-Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster", "MELT"]
+# Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster", "MELT"]
+Ans_tag = ["Tea", "Tangram", "1kG", "Mobster"]
 
 def process_path(path):
 	load_path = list()
@@ -92,10 +94,10 @@ def load_data(path):
 
 	Ans.append(collect_Tea_plus(path[0], path[1]))
 	Ans.append(collect_Tangram_plus(path[2]))
-	Ans.append(collect_RetroSeq_plus(path[3]))
-	Ans.append(collect_1kg_plus(path[4]))
-	Ans.append(collect_Mobster_plus(path[5]))
-	Ans.append(collect_MELT_plus(path[6]))
+	# Ans.append(collect_RetroSeq_plus(path[3]))
+	Ans.append(collect_1kg_plus(path[3]))
+	Ans.append(collect_Mobster_plus(path[4]))
+	# Ans.append(collect_MELT_plus(path[6]))
 
 	for i in xrange(len(Ans)):
 		Name = Ans_tag[i]
@@ -266,6 +268,128 @@ def statics():
 		else:
 			print("[INFO]: SVA\tFor %s, True is %d, False is %d.\t%0.5f"%(Ans_tag[i], Tr_S, Tw_S, 0.0))
 
+def statics_new():
+	test_list = [Alu, Alu_D, L1, L1_D, SVA, SVA_D]
+	sta = 0
+	A = "Tea"
+	B = "Tangram"
+	C = "1kG"
+	D = "Mobster"
+	for i in test_list:
+		for chr in i:
+			for j in i[chr]:
+				if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 0:
+					sta += 1
+					print chr, j	
+	# print A,B, "tjiang"
+	print sta
+
+
+
+	# Talu_0 = [0]*len(Ans)
+	# Talu_1 = [0]*len(Ans)
+	
+	# for key in Alu:
+	# 	for ele in Alu[key]:
+	# 		if ele[3] == 0:
+	# 			Talu_0[len(ele[2])-1] +=1
+	# 			# if A in ele[2] and B in ele[2] and len(ele[2]) == 2:
+	# 			# if A in ele[2] and B in ele[2] and C in ele[2] and len(ele[2]) == 3:
+	# 			if A in ele[2] and B in ele[2] and C in ele[2] and D in ele[2] and len(ele[2]) == 4:
+	# 				sta += 1
+	# 		else:
+	# 			Talu_1[len(ele[2])-1] += 1
+	# 			# if "Mobster" in ele[2] and len(ele[2]) == 1:
+	# 			# if "Tea" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 2:
+	# 			# if "Tangram" in ele[2] and "Mobster" in ele[2] and "Tea" in ele[2] and len(ele[2]) == 3:
+	# 			# if "Tea" in ele[2] and "Tangram" in ele[2] and "1kG" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 4:
+	# 				# sta += 1
+	# for key in Alu_D:
+	# 	for ele in Alu_D[key]:
+	# 		if ele[3] == 0:
+	# 			Talu_0[len(ele[2])-1] +=1
+	# 			# if A in ele[2] and B in ele[2] and len(ele[2]) == 2:
+	# 			# if A in ele[2] and B in ele[2] and C in ele[2] and len(ele[2]) == 3:
+	# 			if A in ele[2] and B in ele[2] and C in ele[2] and D in ele[2] and len(ele[2]) == 4:
+	# 				sta += 1
+	# 		else:
+	# 			Talu_1[len(ele[2])-1] += 1
+	# 			# if "Mobster" in ele[2] and len(ele[2]) == 1:
+	# 			# if "Tea" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 2:
+	# 			# if "Tangram" in ele[2] and "Mobster" in ele[2] and "Tea" in ele[2] and len(ele[2]) == 3:
+	# 			# if "Tea" in ele[2] and "Tangram" in ele[2] and "1kG" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 4:
+	# 				# sta += 1
+	# TL1_0 = [0]*len(Ans)
+	# TL1_1 = [0]*len(Ans)
+	# for key in L1:
+	# 	for ele in L1[key]:
+	# 		if ele[3] == 0:
+	# 			TL1_0[len(ele[2])-1] +=1
+	# 			# if A in ele[2] and B in ele[2] and len(ele[2]) == 2:
+	# 			# if A in ele[2] and B in ele[2] and C in ele[2] and len(ele[2]) == 3:
+	# 			if A in ele[2] and B in ele[2] and C in ele[2] and D in ele[2] and len(ele[2]) == 4:
+	# 				sta += 1
+	# 		else:
+	# 			TL1_1[len(ele[2])-1] += 1 
+	# 			# if "Mobster" in ele[2] and len(ele[2]) == 1:
+	# 			# if "Tea" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 2:
+	# 			# if "Tangram" in ele[2] and "Mobster" in ele[2] and "Tea" in ele[2] and len(ele[2]) == 3:
+	# 			# if "Tea" in ele[2] and "Tangram" in ele[2] and "1kG" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 4:
+	# 				# sta += 1
+	# for key in L1_D:
+	# 	for ele in L1_D[key]:
+	# 		if ele[3] == 0:
+	# 			TL1_0[len(ele[2])-1] +=1
+	# 			# if A in ele[2] and B in ele[2] and len(ele[2]) == 2:
+	# 			# if A in ele[2] and B in ele[2] and C in ele[2] and len(ele[2]) == 3:
+	# 			if A in ele[2] and B in ele[2] and C in ele[2] and D in ele[2] and len(ele[2]) == 4:
+	# 				sta += 1
+	# 		else:
+	# 			TL1_1[len(ele[2])-1] += 1  
+	# 			# if "Mobster" in ele[2] and len(ele[2]) == 1:
+	# 			# if "Tea" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 2:
+	# 			# if "Tangram" in ele[2] and "Mobster" in ele[2] and "Tea" in ele[2] and len(ele[2]) == 3:
+	# 			# if "Tea" in ele[2] and "Tangram" in ele[2] and "1kG" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 4:
+	# 				# sta += 1
+	# TSVA_0 = [0]*len(Ans)
+	# TSVA_1 = [0]*len(Ans)
+	# for key in SVA:
+	# 	for ele in SVA[key]:
+	# 		if ele[3] == 0:
+	# 			TSVA_0[len(ele[2])-1] +=1
+	# 			# if A in ele[2] and B in ele[2] and len(ele[2]) == 2:
+	# 			# if A in ele[2] and B in ele[2] and C in ele[2] and len(ele[2]) == 3:
+	# 			if A in ele[2] and B in ele[2] and C in ele[2] and D in ele[2] and len(ele[2]) == 4:
+	# 				sta += 1
+	# 		else:
+	# 			TSVA_1[len(ele[2])-1] += 1
+	# 			# if "Mobster" in ele[2] and len(ele[2]) == 1:
+	# 			# if "Tea" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 2:
+	# 			# if "Tangram" in ele[2] and "Mobster" in ele[2] and "Tea" in ele[2] and len(ele[2]) == 3:
+	# 			# if "Tea" in ele[2] and "Tangram" in ele[2] and "1kG" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 4:
+	# 				# sta += 1
+	# for key in SVA_D:
+	# 	for ele in SVA_D[key]:
+	# 		if ele[3] == 0:
+	# 			TSVA_0[len(ele[2])-1] +=1
+	# 			# if A in ele[2] and B in ele[2] and len(ele[2]) == 2:
+	# 			# if A in ele[2] and B in ele[2] and C in ele[2] and len(ele[2]) == 3:
+	# 			if A in ele[2] and B in ele[2] and C in ele[2] and D in ele[2] and len(ele[2]) == 4:
+	# 				sta += 1
+	# 		else:
+	# 			TSVA_1[len(ele[2])-1] += 1
+	# 			# if "Mobster" in ele[2] and len(ele[2]) == 1:
+	# 			# if "Tea" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 2:
+	# 			# if "Tangram" in ele[2] and "Mobster" in ele[2] and "Tea" in ele[2] and len(ele[2]) == 3:
+	# 			# if "Tea" in ele[2] and "Tangram" in ele[2] and "1kG" in ele[2] and "Mobster" in ele[2] and len(ele[2]) == 4:
+	# 				# sta += 1
+	# # print "Mobster"+"_"+"tjiang"
+	# # print "Tea"+"_"+"Mobster"+"_"+"tjiang"
+	# # print "Tangram"+"_"+"Mobster"+"_"+"Tea"+"_"+"tjiang"
+	# # print "Tea"+"_"+"Tangram"+"_"+"1kG"+"_"+"Mobster"+"_"+"tjiang"
+	# print A, B, C, D
+	# print sta
+
 def compare_each_base(chr, breakpoint, subtype):
 	if subtype[0] == 'A':
 		standard = 20
@@ -324,9 +448,9 @@ def evaluation(p):
 		# subtype = subtype.split(':')[2]
 		subtype = seq[3][8]+seq[3][1]
 		compare(chr, breakpoint, subtype)
-		compare_each_base(chr, breakpoint, subtype)
+		# compare_each_base(chr, breakpoint, subtype)
 	file.close()
-	statics()
+	statics_new()
 
 def evaluation_sniffles(p):
 	file = open(p, 'r')
@@ -374,6 +498,48 @@ def main():
 	call_path = sys.argv[2]
 	evaluation(call_path)
 	# evaluation_tag(call_path)
+	# sta = 0
+	# for i in Alu:
+	# 	for j in Alu[i]:
+	# 		# if '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 2:
+	# 		# if '1kG' in j[2] and 'Tea' in j[2] and "Mobster" in j[2] and len(j[2]) == 3:
+	# 		if 'Tea' in j[2] and 'Tangram' in j[2] and '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 4:
+	# 			sta += 1
+	# for i in Alu_D:
+	# 	for j in Alu_D[i]:
+	# 		# if '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 2:
+	# 		# if '1kG' in j[2] and 'Tea' in j[2] and "Mobster" in j[2] and len(j[2]) == 3:
+	# 		if 'Tea' in j[2] and 'Tangram' in j[2] and '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 4:
+	# 			sta += 1
+	# for i in L1:
+	# 	for j in L1[i]:
+	# 		# if '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 2:
+	# 		# if '1kG' in j[2] and 'Tea' in j[2] and "Mobster" in j[2] and len(j[2]) == 3:
+	# 		if 'Tea' in j[2] and 'Tangram' in j[2] and '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 4:
+	# 			sta += 1
+	# for i in L1_D:
+	# 	for j in L1_D[i]:
+	# 		# if '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 2:
+	# 		# if '1kG' in j[2] and 'Tea' in j[2] and "Mobster" in j[2] and len(j[2]) == 3:
+	# 		if 'Tea' in j[2] and 'Tangram' in j[2] and '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 4:
+	# 			sta += 1
+	# for i in SVA:
+	# 	for j in SVA[i]:
+	# 		# if '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 2:
+	# 		# if '1kG' in j[2] and 'Tea' in j[2] and "Mobster" in j[2] and len(j[2]) == 3:
+	# 		if 'Tea' in j[2] and 'Tangram' in j[2] and '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 4:
+	# 			sta += 1
+	# for i in SVA_D:
+	# 	for j in SVA_D[i]:
+	# 		# if '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 2:
+	# 		# if '1kG' in j[2] and 'Tea' in j[2] and "Mobster" in j[2] and len(j[2]) == 3:
+	# 		if 'Tea' in j[2] and 'Tangram' in j[2] and '1kG' in j[2] and 'Mobster' in j[2] and len(j[2]) == 4:
+	# 			sta += 1
+	# # print "1kG"+"_"+"Mobster"
+	# # print "1kG"+"_"+"Tea"+"_"+"Mobster"
+	# print "Tea"+"_"+"Tangram"+"_"+"1kG"+"_"+"Mobster"
+	# print sta
+
 
 
 if __name__ == '__main__':
