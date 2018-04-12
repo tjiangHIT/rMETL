@@ -135,8 +135,8 @@ def nofound_alu(flag):
 
 def compare(p1, p2, p3, p4):
 
-	out_script = p4 + "_script.uncovered"
-	out_sniffles = p4 + "_sniffles.uncovered"
+	# out_script = p4 + "_script.uncovered"
+	# out_sniffles = p4 + "_sniffles.uncovered"
 	count_1 = 0
 	count_2 = 0
 	total = 0
@@ -160,12 +160,13 @@ def compare(p1, p2, p3, p4):
 	predict_file = open(p2, 'r')
 	print("[INFO]: Processing the scripts' prediction...")
 	for line in predict_file:
-		seq = line.strip('\n').split('\t')
+		seq = line.strip('\n').split(' ')
 		# print seq
 		chr = seq[0]
 		start_pos = int(seq[1])
+		# print start_pos
 		length = int(seq[2])
-		read_count = int(seq[3])
+		# read_count = int(seq[3])
 		truth = find_common(chr, start_pos, length, 1)
 		if len(truth):
 			count_1 += 1
@@ -174,10 +175,10 @@ def compare(p1, p2, p3, p4):
 	predict_file.close()
 	# print len(nofound_alu(1))
 	script_nofound = nofound_alu(1)
-	o1 = open(out_script, 'w')
-	for i in script_nofound:
-		o1.write(i)
-	o1.close
+	# o1 = open(out_script, 'w')
+	# for i in script_nofound:
+	# 	o1.write(i)
+	# o1.close
 
 	sniffles_file = open(p3, 'r')
 	print("[INFO]: Processing the Sniffles's prediction...")
@@ -197,10 +198,10 @@ def compare(p1, p2, p3, p4):
 	sniffles_file.close()
 	# print len(nofound_alu(2))
 	sniffles_nofound = nofound_alu(2)
-	o2 = open(out_sniffles, 'w')
-	for i in sniffles_nofound:
-		o2.write(i)
-	o2.close
+	# o2 = open(out_sniffles, 'w')
+	# for i in sniffles_nofound:
+	# 	o2.write(i)
+	# o2.close
 	return count_1, count_2, total, total - len(script_nofound), total - len(sniffles_nofound)
 
 
