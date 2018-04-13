@@ -271,17 +271,18 @@ def statics():
 def statics_new():
 	test_list = [Alu, Alu_D, L1, L1_D, SVA, SVA_D]
 	sta = 0
-	A = "Tea"
-	B = "Tangram"
+	A = "Tangram"
+	B = "1kG"
 	C = "1kG"
 	D = "Mobster"
 	for i in test_list:
 		for chr in i:
 			for j in i[chr]:
-				if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 0:
+				if A in j[2] and B in j[2] and  D in j[2] and j[3] == 1:
+				# if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 0:
 					sta += 1
-					print chr, j	
-	# print A,B, "tjiang"
+					# print chr, j	
+	print A,B,D, "tjiang"
 	print sta
 
 
@@ -467,9 +468,9 @@ def evaluation_sniffles(p):
 		if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
 			subtype = 'XI'
 		compare_sniffles(chr, breakpoint, subtype)
-		compare_each_base_sniffles(chr, breakpoint, subtype)
+		# compare_each_base_sniffles(chr, breakpoint, subtype)
 	file.close()
-	statics()
+	statics_new()
 
 def evaluation_tag(p):
 	file = open(p, 'r')
@@ -496,8 +497,12 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	evaluation(call_path)
+	# evaluation(call_path)
 	# evaluation_tag(call_path)
+	evaluation_sniffles(call_path)
+
+
+
 	# sta = 0
 	# for i in Alu:
 	# 	for j in Alu[i]:

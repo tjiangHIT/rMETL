@@ -230,6 +230,12 @@ def call_vcf(p):
 		print("%s\t%s\t%d\tN\t%s\t.\t.\t%s\tGT:DV:DR\t%s:%s"%(i[0], i[1], ID, i[3], INFO, GT, GL))
 		ID += 1
 
+def parseArgs(argv):
+	pass
+
+def run(argv):
+    args = parseArgs(argv)
+
 
 if __name__ == '__main__':
 	path = sys.argv[2]
