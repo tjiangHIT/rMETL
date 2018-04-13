@@ -1,7 +1,7 @@
 import argparse
 import sys
 import pysam
-import tools, Map, call_TE
+import extract, Map, call_TE
 # from process import *
 
 def main():
@@ -23,7 +23,7 @@ def main():
 	print("[INFO]: Finished in %0.2f seconds."%(time.time() - starttime))
 	print("[INFO]: Have a nice day! ^.^ ")
 
-STAGES = {"extract": tools.run, \
+STAGES = {"extract": extract.run, \
           "map": Map.run, \
           "call": call_TE.run}
 
