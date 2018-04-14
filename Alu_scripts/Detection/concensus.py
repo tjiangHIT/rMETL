@@ -12,9 +12,9 @@ def revcom_complement(s):
     letters = [basecomplement[base] for base in letters] 
     return ''.join(letters)[::-1]
 
-def construct_concensus_info(Ins_list, Clip_list):
+def construct_concensus_info(Ins_list, Clip_list, evidence_read, SV_size):
 	total_count = len(Ins_list) + len(Clip_list)
-	if total_count < 5:
+	if total_count < evidence_read:
 		return 0
 	breakpoint = list()
 	insert_size = list()
@@ -36,7 +36,7 @@ def construct_concensus_info(Ins_list, Clip_list):
 	Prob_pos_2 = sum(breakpoint)/len(breakpoint)
 	Average_size = int(sum(insert_size)/len(insert_size))
 
-	if Average_size < 50:
+	if Average_size < SV_size:
 		return 0
 
 	# print Average_size
