@@ -437,7 +437,7 @@ def combine_result(INS, DEL):
 		for j in i:
 			if len(j) != 8:
 				continue
-			key = "%s_%s_%d_%d_%s_%d_%d"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
+			key = "%s*%s*%d*%d*%s*%d*%d"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
@@ -446,7 +446,7 @@ def combine_result(INS, DEL):
 		for j in i:
 			if len(j) != 7:
 				continue
-			key = "%s_%s_%d_%d_%d_%d"%(j[0], j[1], j[2], j[3], j[4], j[6])
+			key = "%s*%s*%d*%d*%d*%d"%(j[0], j[1], j[2], j[3], j[4], j[6])
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
