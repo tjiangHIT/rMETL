@@ -34,10 +34,10 @@ class R_INFO(object):
 		self.GT = GT
 
 def parse_name(seq):
-	chr = seq.split('_')[0]
-	breakpoint = seq.split('_')[1]
-	insert_size = seq.split('_')[2]
-	GT = seq.split('_')[3]
+	chr = seq.split('*')[0]
+	breakpoint = seq.split('*')[1]
+	insert_size = seq.split('*')[2]
+	GT = seq.split('*')[3]
 	return chr, breakpoint, insert_size, GT
 
 def load_sam(p1):
@@ -108,7 +108,7 @@ def call_bed(args):
 		if flag_dic[Flag] != 0 and MAPQ >= args.min_mapq:
 			# to do something
 			# key = "%s_%s_%s"%(chr, breakpoint, insert_size)
-			key = "%s_%s_%s_%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
+			key = "%s*%s*%s*%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
 			if key not in cluster_dic:
 				cluster_dic[key] = list()
 			# cluster_dic[key].append("%s:ME:%s"%(Stype,sub_type))
@@ -220,7 +220,7 @@ def call_vcf(args):
 		MAPQ = int(seq[4])
 		if flag_dic[Flag] != 0 and MAPQ >= args.min_mapq:
 			# to do something
-			key = "%s_%s_%s_%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
+			key = "%s*%s*%s*%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
 			if key not in cluster_dic:
 				cluster_dic[key] = list()
 			cluster_dic[key].append("<%s:ME:%s>\t%d"%(local_info.Type, sub_type, flag_dic[Flag]))
@@ -258,6 +258,8 @@ def call_vcf(args):
 		# print "\t".join(i)
 		INFO = "SVTYPE=%s;SVLEN=%d;END=%d;SAMPLE=%s;STRAND=%s"%(i[3][1:4], int(i[2]), int(i[1])+int(i[2])-1, args.sample, i[5])
 		concordant = int(i[4].split(':')[0])
+		# print i
+		# print int(i[4].split(':')[1]) - int(i[4].split(':')[0])
 		discordant = int(i[4].split(':')[1]) - int(i[4].split(':')[0])
 		if discordant < 0:
 			discordant = 0
