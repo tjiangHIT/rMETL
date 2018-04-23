@@ -372,8 +372,8 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	evaluation(call_path)
-	# evaluation_tag(call_path)
+	# evaluation(call_path)
+	evaluation_tag(call_path)
 
 
 if __name__ == '__main__':

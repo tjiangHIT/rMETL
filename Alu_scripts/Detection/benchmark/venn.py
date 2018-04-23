@@ -271,18 +271,20 @@ def statics():
 def statics_new():
 	test_list = [Alu, Alu_D, L1, L1_D, SVA, SVA_D]
 	sta = 0
-	A = "Tangram"
-	B = "1kG"
+	A = "Tea"
+	B = "Tangram"
 	C = "1kG"
 	D = "Mobster"
 	for i in test_list:
 		for chr in i:
 			for j in i[chr]:
-				if A in j[2] and B in j[2] and  D in j[2] and j[3] == 1:
+				if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 1:
+				# if A in j[2] and B in j[2] and  D in j[2] and j[3] == 1:
 				# if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 0:
 					sta += 1
 					# print chr, j	
-	print A,B,D, "tjiang"
+	# print A,B,D, "tjiang"
+	print A, "tjiang"
 	print sta
 
 
@@ -497,9 +499,9 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	# evaluation(call_path)
+	evaluation(call_path)
 	# evaluation_tag(call_path)
-	evaluation_sniffles(call_path)
+	# evaluation_sniffles(call_path)
 
 
 

@@ -154,7 +154,7 @@ def call_bed(args):
 	file.close()
 
 
-def print_vcf_head():
+def print_vcf_head(ref):
 	import time
 	Date = time.strftime("%Y%m%d")
 	head = list()
@@ -162,13 +162,25 @@ def print_vcf_head():
 	head.append("##fileDate=%s\n"%(Date))
 	head.append("##source=tjiang_scripts\n")
 	head.append("##reference=Grch37\n")
+
+	for i in ref:
+		head.append("##contig=<ID=%s,length=%d>\n"%(i, len(ref[i])))
+
+
 	head.append("##ALT=<ID=<DEL>,Description=\"Deletion relative to the reference\">\n")
 	head.append("##ALT=<ID=<INS>,Description=\"Insertion of sequence relative to the reference\">\n")
+
 	head.append("##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of the variant described in this record\">\n")
 	head.append("##INFO=<ID=SVLEN,Number=.,Type=String,Description=\"Difference in length between REF and ALT alleles\">\n")
+
 	head.append("##INFO=<ID=AC,Number=.,Type=Integer,Description=\"Allele count'\">\n")
 	head.append("##INFO=<ID=AF,Number=.,Type=Float,Description=\"Allele frequency'\">\n")
 	head.append("##INFO=<ID=AN,Number=.,Type=String,Description=\"Allele name'\">\n")
+
+	head.append("FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n")
+	head.append("FORMAT=<ID=DV,Number=1,Type=Integer,Description=\"#High-quality variant reads\">\n")
+	head.append("FORMAT=<ID=DR,Number=1,Type=Integer,Description=\"#Reference reads\">\n")
+
 	head.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
 	return head
 
@@ -244,7 +256,7 @@ def call_vcf(args):
 		# sort_list.append([chr, breakpoint, insert_size, final_type, str(final_MAPQ)])
 		# print("%s\t%s\t%s\t%s"%(chr, breakpoint, insert_size, final_type))
 	sort_list = sorted(sort_list, key = lambda x:(x[0], int(x[1])))
-	head_info = print_vcf_head()
+	head_info = print_vcf_head(ref)
 
 	file = open(out_path, 'w')
 	logging.info("Writing results into disk...")
@@ -272,7 +284,7 @@ def call_vcf(args):
 			REF = ref[i[0]][int(i[1])-1]
 		except:
 			REF = "N"
-		file.write("%s\t%s\t%d\t%s\t%s\t.\t.\t%s\tGT:DV:DR\t%s:%s\n"%(i[0], i[1], ID, REF, i[3], INFO, GT, GL))
+		file.write("%s\t%s\t%d\t%s\t%s\t.\tPASS\t%s\tGT:DV:DR\t%s:%s\n"%(i[0], i[1], ID, REF, i[3], INFO, GT, GL))
 		ID += 1
 
 	file.close()
