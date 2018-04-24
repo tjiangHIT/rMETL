@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+''' 
+ * All rights Reserved, Designed By HIT-Bioinformatics   
+ * @Title:  process.py
+ * @Package: argparse, pysam, sys
+ * @Description: Control the nTED pipeline
+ * @author: tjiang
+ * @date: Apr 24 2018
+ * @version V1.0     
+'''
+
 import argparse
 import sys
 import pysam

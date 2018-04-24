@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+''' 
+ * All rights Reserved, Designed By HIT-Bioinformatics   
+ * @Title:  Map.py
+ * @Package: argparse, sys, os, logging
+ * @Description: Classify the TE types
+ * @author: tjiang
+ * @date: Apr 24 2018
+ * @version V1.0     
+'''
+
 import os
 import argparse
 import logging

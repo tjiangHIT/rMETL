@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+''' 
+ * All rights Reserved, Designed By HIT-Bioinformatics   
+ * @Title:  call_TE.py
+ * @Package: argparse, sys, os, logging, pysam, Bio
+ * @Description: Establish the TE callset
+ * @author: tjiang
+ * @date: Apr 24 2018
+ * @version V1.0     
+'''
+
 import pysam
 from collections import Counter
 from genotype import *
@@ -292,7 +302,7 @@ def call_vcf(args):
 VERSION="1.0"
 
 USAGE="""\
-	Non-reference TE calling and genotyping.
+	nTED calling and genotyping.
 
 	Optional output format: .bed and .vcf
 """

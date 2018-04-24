@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+
+''' 
+ * All rights Reserved, Designed By HIT-Bioinformatics   
+ * @Title:  extract.py
+ * @Package: argparse, pysam, sys, Bio, os, logging
+ * @Description: Parse the TE signals from alignments
+ * @author: tjiang
+ * @date: Apr 24 2018
+ * @version V1.0     
+'''
 
 import pysam
 import Queue as Q
