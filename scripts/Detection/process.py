@@ -21,7 +21,7 @@ STAGES = {"extract": extract.run, \
           "call": call_TE.run}
 
 USAGE = """\
-   nTED - Non-reference transposable element detecting with long sequencing reads
+   nTED - Non-reference transposable elements detection with long sequencing reads
 
    STAGE is one of
    	 extract    detect non-ref TE signals
