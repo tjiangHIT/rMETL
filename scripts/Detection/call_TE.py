@@ -103,7 +103,7 @@ def parse_name_tp(line):
 def call_bed(args):
 	# samfile = pysam.AlignmentFile(p1)
 	path = args.input
-	out_path = args.temp_dir + "calling.bed"
+	out_path = args.output + "calling.bed"
 	AlignmentFile = open(path, 'r')
 	logging.info("Loading ME alignmets...")
 	for line in AlignmentFile:
@@ -225,7 +225,7 @@ def parse_seq_head(line):
 
 def call_vcf(args):
 	path = args.input
-	out_path = args.temp_dir + "calling.vcf"
+	out_path = args.output + "calling.vcf"
 
 	ref = load_ref(args.Reference)
 
@@ -313,7 +313,7 @@ def parseArgs(argv):
 	parser.add_argument("input", metavar="SAM", type=str, help="Input ME seqs to be mapped")
 	parser.add_argument("Reference", metavar="REFERENCE", type=str, help="the reference genome(fasta format)")
 	parser.add_argument("format", metavar="[BED,VCF]", type=str, help="The format of the output file. [%(default)s]", default = "bed")
-	parser.add_argument('temp_dir', type=str, help = "temporary directory to use for distributed jobs")
+	parser.add_argument('output', type=str, help = "the prefix of final call set")
 	# parser.add_argument("--temp", type=str, default=tempfile.gettempdir(), help="Where to save temporary files")
 
 	# parser.add_argument('-s', '--min_support', help = "Mininum number of reads that support a TE.[%(default)s]", default = 5, type = int)

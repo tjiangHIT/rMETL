@@ -757,7 +757,8 @@ def load_sam_multi_processes(args):
 		TE_list += res.get()[0]
 
 	logging.info("Writing into disk")
-	path = p2+'potential_ME.fa'
+	# path = p2+'potential_ME.fa'
+	path = args.output+'potential_ME.fa'
 	# print TE_list
 	SeqIO.write(TE_list, path, "fasta")
 
@@ -788,6 +789,7 @@ def parseArgs(argv):
 	parser.add_argument("Reference", metavar="REFERENCE", type=str, help="the reference genome(fasta format)")
 	parser.add_argument('temp_dir', type=str, help = "temporary directory to use for distributed jobs")
 	# parser.add_argument("--temp", type=str, default=tempfile.gettempdir(), help="Where to save temporary files")
+	parser.add_argument('output', type=str, help = "the prefix of potential ME loci output")
 
 	parser.add_argument('-s', '--min_support', help = "Mininum number of reads that support a ME.[%(default)s]", default = 5, type = int)
 	parser.add_argument('-l', '--min_length', help = "Mininum length of ME to be reported.[%(default)s]", default = 50, type = int)
