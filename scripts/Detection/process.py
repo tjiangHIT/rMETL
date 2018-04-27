@@ -21,6 +21,13 @@ STAGES = {"extract": extract.run, \
           "call": call_TE.run}
 
 USAGE = """\
+           _  ___  _   _____   _______   _
+     _ _  | ^_   _^ | |  ___| |__   __| | |
+    | ^_| | | | | | | | |__      | |    | |
+    | |   | | | | | | |  __|     | |    | |
+    | |   | | | | | | | |___     | |    | |___
+    |_|   |_| |_| |_| |_____|    |_|    |_____|
+
     rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
   STAGE is one of

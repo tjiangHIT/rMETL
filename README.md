@@ -3,12 +3,12 @@ rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
 ---
 ### Getting Start
-		       __  ___ _   _____   _______   _
-		 _ __ |  _^  _^ | |  ___| |__   __| | |
+		       _  ___  _   _____   _______   _
+		 _ _  | ^_   _^ | |  ___| |__   __| | |
 		| ^_| | | | | | | | |__      | |    | |
 		| |   | | | | | | |  __|     | |    | |
-		| |   | | | | | | | |___     | |    | |____
-		|_|   |_| |_| |_| |_____|    |_|    |______|
+		| |   | | | | | | | |___     | |    | |___
+		|_|   |_| |_| |_| |_____|    |_|    |_____|
      
 	
 	$ git clone https://github.com/hitbc/rMETL.git (git clone https://github.com/tjiangHIT/rMETL.git)
