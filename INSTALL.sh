@@ -1,3 +1,3 @@
 #!/usr/bin/bash
 
-ln -s scripts/Detection/process.py nTED.py
+ln -s scripts/Detection/process.py rMETL.py

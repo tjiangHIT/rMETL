@@ -21,14 +21,14 @@ STAGES = {"extract": extract.run, \
           "call": call_TE.run}
 
 USAGE = """\
-   nTED - Non-reference transposable elements detection with long sequencing reads
+    rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
-   STAGE is one of
-   	 extract    detect non-ref TE signals
-   	 map        aligne signal seqs to TE librarys
-   	 call       cluster TE seqs and genotyping
+  STAGE is one of
+    extract    detect Mobile Element signals
+    map        realigne signal loci to transposable element concensus librarys
+    call       Mobile Element calling and genotyping
     
-   See Readme.txt for documentation or --help for details\
+  See README.md for documentation or --help for details\
 """
 
 def parseArgs():

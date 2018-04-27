@@ -4,7 +4,7 @@
  * All rights Reserved, Designed By HIT-Bioinformatics   
  * @Title:  extract.py
  * @Package: argparse, pysam, sys, Bio, os, logging
- * @Description: Parse the TE signals from alignments
+ * @Description: Parse the ME signals from alignments
  * @author: tjiang
  * @date: Apr 24 2018
  * @version V1.0     
@@ -757,7 +757,7 @@ def load_sam_multi_processes(args):
 		TE_list += res.get()[0]
 
 	logging.info("Writing into disk")
-	path = p2+'potential_TE.fa'
+	path = p2+'potential_ME.fa'
 	# print TE_list
 	SeqIO.write(TE_list, path, "fasta")
 
@@ -774,11 +774,11 @@ USAGE="""\
 	If input is a .sam, we convert and sort it to be a bam, 
 	and then make an index for it.  
 
-	If your input is a .bam, we extract the TE signals and
+	If your input is a .bam, we extract the ME signals and
 	collect the sub-sequence of them.
 
 	The output is a .fasta file contains potentials non-reference
-	TE clusters.
+	ME clusters.
 """
 
 def parseArgs(argv):
@@ -789,9 +789,9 @@ def parseArgs(argv):
 	parser.add_argument('temp_dir', type=str, help = "temporary directory to use for distributed jobs")
 	# parser.add_argument("--temp", type=str, default=tempfile.gettempdir(), help="Where to save temporary files")
 
-	parser.add_argument('-s', '--min_support', help = "Mininum number of reads that support a TE.[%(default)s]", default = 5, type = int)
-	parser.add_argument('-l', '--min_length', help = "Mininum length of TE to be reported.[%(default)s]", default = 50, type = int)
-	parser.add_argument('-d', '--min_distance', help = "Mininum distance of two TE clusters.[%(default)s]", default = 20, type = int)
+	parser.add_argument('-s', '--min_support', help = "Mininum number of reads that support a ME.[%(default)s]", default = 5, type = int)
+	parser.add_argument('-l', '--min_length', help = "Mininum length of ME to be reported.[%(default)s]", default = 50, type = int)
+	parser.add_argument('-d', '--min_distance', help = "Mininum distance of two ME clusters.[%(default)s]", default = 20, type = int)
 	# parser.add_argument('-hom', '--homozygous', help = "The mininum score of a genotyping reported as a homozygous.[%(default)s]", default = 0.8, type = float)
 	# parser.add_argument('-het','--heterozygous', help = "The mininum score of a genotyping reported as a heterozygous.[%(default)s]", default = 0.3, type = float)
 	# parser.add_argument('-q', '--min_mapq', help = "Mininum mapping quality.[20]", default = 20, type = int)

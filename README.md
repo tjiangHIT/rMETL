@@ -1,20 +1,20 @@
-# nTED: 
-non-reference Transposable Elements detection with long sequencing reads
+# rMETL: 
+rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
 ---
 ### Getting Start
-		         _______   _____   ___
-		 _ ___  |__   __| |  ___| |  _ \
-		| ^_  \    | |    | |___  | | \ |
-		| | | |    | |    |  ___| | | | |
-		| | | |    | |    | |___  | |_/ |
-		|_| |_|    |_|    |_____| |____/
+		       __  ___ _   _____   _______   _
+		 _ __ |  _^  _^ | |  ___| |__   __| | |
+		| ^_| | | | | | | | |__      | |    | |
+		| |   | | | | | | |  __|     | |    | |
+		| |   | | | | | | | |___     | |    | |____
+		|_|   |_| |_| |_| |_____|    |_|    |______|
      
 	
-	$ git clone https://github.com/hitbc/nTED.git (git clone https://github.com/tjiangHIT/nTED.git)
-	$ cd nTED/
+	$ git clone https://github.com/hitbc/rMETL.git (git clone https://github.com/tjiangHIT/rMETL.git)
+	$ cd rMETL/
 	$ bash INSTALL.sh
-	$ ./nTED.py
+	$ ./rMETL.py
 
 ---	
 ### Introduction
@@ -24,12 +24,12 @@ non-reference Transposable Elements detection with long sequencing reads
 ---
 ### Simulated datasets
 
-The simulated datasets use for benchmarking are available at: https://drive.google.com/open?id=0Bxxw-cTRcGuHUVVUS01BeW5aRXc
+The simulated datasets use for benchmarking are available at: https://drive.google.com/open?id=1ujV2C8e1PNAVhSkh9vKtjWLdG_OHcH-k
 
 ---
 ### Memory usage
 
-The memory usage of nTED can fit the configurations of most modern servers and workstations.
+The memory usage of rMETL can fit the configurations of most modern servers and workstations.
 Its peak memory footprint is about 16.7G Gigabytes (default setting), on a server with Intel Xeon CPU at 2.00 GHz, 1 Terabytes RAM running Linux Ubuntu 14.04. These reads were aligned to human reference genome hs37d5.
 
 ---
@@ -45,9 +45,9 @@ Its peak memory footprint is about 16.7G Gigabytes (default setting), on a serve
 ---
 ### Installation
 
-Current version of nTED needs to be run on Linux operating system.
-The source code is written in python, and can be directly download from: https://github.com/hitbc/nTED 
-A mirror is also in: https://github.com/tjiangHIT/nTED
+Current version of rMETL needs to be run on Linux operating system.
+The source code is written in python, and can be directly download from: https://github.com/hitbc/rMETL 
+A mirror is also in: https://github.com/tjiangHIT/rMETL
 The INSTALL.sh is attached. Use the make command for generating the executable file.
 
 ---
