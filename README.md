@@ -52,14 +52,48 @@ The INSTALL.sh is attached. Use the make command for generating the executable f
 
 ---
 ### Synopsis
+Detect Mobile Element signals.
 
+	rMETL.py extract <alignments> <reference> <temp_dir> <output>
 
+Realigne signal loci to transposable element concensus librarys.
+
+	rMETL.py map <FASTA> <TEREF> <output>
+
+Mobile Element calling and genotyping.
+
+	rMETL.py call <SAM> <reference> <out_type> <output>
 
 ---
-### Commands and options
+### Optional Parameters
 
+#### extract
 
+| Parameters | Descriptions | Defaults |
+| :------------ |:---------------|:---------------|
+| MIN_SUPPORT   |Mininum number of reads that support a ME.| 5 |
+| MIN_LENGTH    | Mininum length of ME to be reported.        |50|
+| MIN_DISTANCE  | Mininum distance of two ME clusters. |20|
+| THREADS       |Number of threads to use.|1|
+| PRESETS       |The sequencing type <pacbio,ont> of the reads.|pacbio|
 
+#### map
+
+| Parameters | Descriptions | Defaults |
+| :------------ |:---------------|:---------------|
+| THREADS       |Number of threads to use.|1|
+| PRESETS       |The sequencing type <pacbio,ont> of the reads.|pacbio|
+| SUBREAD_LENGTH       |Length of fragments reads are split into.|128|
+| SUBREAD_CORRIDOR       |Length of corridor sub-reads are aligned with.|20|
+
+#### call
+
+| Parameters | Descriptions | Defaults |
+| :------------ |:---------------|:---------------|
+| HOMOZYGOUS       |The mininum score of a genotyping reported as a homozygous.|0.8|
+| HETEROZYGOUS       |The mininum score of a genotyping reported as a heterozygous.|0.3|
+| MIN_MAPQ       |Mininum mapping quality.|20|
+| SAMPLE       |The name of the sample which be noted.|None|
 
 ---
 ### Reference
