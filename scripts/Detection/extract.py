@@ -185,7 +185,7 @@ def parse_read(read, Chr_name, low_bandary):
 			shift += element[1]
 
 	# Add INS:ME type call signal
-	INS_ME_pos = list()
+	# INS_ME_pos = list()
 	# process_signal = detect_flag(read.flag) 
 	# if process_signal == 0:
 	# 	return local_pos
@@ -350,10 +350,15 @@ def merge_pos(pos_list, chr, evidence_read, SV_size):
 
 	search_down = min(start) - 10
 	search_up = max(start) + 10
+
+	start = []
+	end = []
+
 	temp_clip = acquire_clip_locus(search_down, search_up, chr)
 
 	# concensus, ref_pos = construct_concensus_seq(pos_list, temp_clip)
 	result = construct_concensus_info(pos_list, temp_clip, evidence_read, SV_size)
+	del temp_clip[:]
 	if result != 0:
 		for i in xrange(len(result)):
 			# result[i] = ">INS_" + chr + result[i]
@@ -390,6 +395,7 @@ def cluster(pos_list, chr, evidence_read, SV_size, low_bandary):
 		else:
 			temp.append(pos)
 	result = merge_pos(temp, chr, evidence_read, SV_size)
+	temp = []
 	if result != 0:
 		_cluster_.append(result)
 	# _cluster_.append(merge_pos(temp, chr))
@@ -404,6 +410,9 @@ def merge_pos_del(pos_list, chr, Ref, evidence_read, SV_size):
 
 	breakpoint = sum(start)/len(start)
 	size = sum(end)/len(end) - breakpoint
+
+	start = []
+	end = []
 
 	result = list()
 	if len(pos_list) < evidence_read:
@@ -433,6 +442,7 @@ def cluster_del(pos_list, chr, Ref, evidence_read, SV_size, low_bandary):
 		else:
 			temp.append(pos)
 	result = merge_pos_del(temp, chr, Ref, evidence_read, SV_size)
+	temp = []
 	if len(result) != 0:
 		_cluster_.append(result)
 	return _cluster_
@@ -581,11 +591,13 @@ def load_sam(args):
 			Cluster_INS = list()
 		else:
 			Cluster_INS = cluster(cluster_pos_INS, Chr_name, evidence_read, SV_size)
+			del cluster_pos_INS[:]
 
 		if len(cluster_pos_DEL) == 0:
 			Cluster_DEL = list()
 		else:
 			Cluster_DEL = cluster_del(cluster_pos_DEL, Chr_name, Ref)
+			del cluster_pos_DEL[:]
 
 		logging.info("%d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), Chr_name))
 
@@ -688,16 +700,20 @@ def single_pipe(out_path, chr, bam_path, low_bandary, evidence_read, SV_size):
 		Cluster_INS = list()
 	else:
 		Cluster_INS = cluster(cluster_pos_INS, chr, evidence_read, SV_size, low_bandary)
+		del cluster_pos_INS[:]
 
 	if len(cluster_pos_DEL) == 0:
 		Cluster_DEL = list()
 	else:
 		Ref = global_ref[0]
 		Cluster_DEL = cluster_del(cluster_pos_DEL, chr, Ref, evidence_read, SV_size, low_bandary)
+		del cluster_pos_DEL[:]
 
 	# print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
 	logging.info("%d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
 	Final_result = combine_result(add_genotype(Cluster_INS, samfile, low_bandary), add_genotype(Cluster_DEL, samfile, low_bandary))
+	del Cluster_INS[:]
+	del Cluster_DEL[:]
 	samfile.close()
 	# path = out_path+chr+'.fa'
 	# SeqIO.write(Final_result, path, "fasta")
@@ -755,6 +771,7 @@ def load_sam_multi_processes(args):
 	for res in Final_result:
 		# print res.get()[0]
 		TE_list += res.get()[0]
+	del Final_result[:]
 
 	logging.info("Writing into disk")
 	# path = p2+'potential_ME.fa'

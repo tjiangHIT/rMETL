@@ -328,6 +328,22 @@ def evaluation(p):
 	file.close()
 	statics()
 
+def evaluation_vcf(p):
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		# subtype = seq[3]
+		# subtype = subtype.split(':')[2]
+		subtype = seq[4][8]+seq[4][1]
+		compare(chr, breakpoint, subtype)
+		compare_each_base(chr, breakpoint, subtype)
+	file.close()
+	statics()
+
 def evaluation_sniffles(p):
 	file = open(p, 'r')
 	for line in file:
@@ -373,7 +389,8 @@ def main():
 	load_data(load_path)
 	call_path = sys.argv[2]
 	# evaluation(call_path)
-	evaluation_tag(call_path)
+	# evaluation_tag(call_path)
+	evaluation_sniffles(call_path)
 
 
 if __name__ == '__main__':
