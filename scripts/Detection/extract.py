@@ -352,15 +352,13 @@ def merge_pos(pos_list, chr, evidence_read, SV_size):
 	search_down = min(start) - 10
 	search_up = max(start) + 10
 
-	start = []
-	end = []
 	temp_clip = acquire_clip_locus(search_down, search_up, chr)
-	# del CLIP_note[chr]
-	gc.collect()
+	# temp_clip = list()
+	# gc.collect()
 
 	# concensus, ref_pos = construct_concensus_seq(pos_list, temp_clip)
 	result = construct_concensus_info(pos_list, temp_clip, evidence_read, SV_size)
-	# del temp_clip[:]
+
 	if result != 0:
 		for i in xrange(len(result)):
 			# result[i] = ">INS_" + chr + result[i]
@@ -397,7 +395,6 @@ def cluster(pos_list, chr, evidence_read, SV_size, low_bandary):
 		else:
 			temp.append(pos)
 	result = merge_pos(temp, chr, evidence_read, SV_size)
-	temp = []
 	if result != 0:
 		_cluster_.append(result)
 	# _cluster_.append(merge_pos(temp, chr))
@@ -412,10 +409,6 @@ def merge_pos_del(pos_list, chr, Ref, evidence_read, SV_size):
 
 	breakpoint = sum(start)/len(start)
 	size = sum(end)/len(end) - breakpoint
-
-	start = []
-	end = []
-	gc.collect()
 
 	result = list()
 	if len(pos_list) < evidence_read:
@@ -445,7 +438,6 @@ def cluster_del(pos_list, chr, Ref, evidence_read, SV_size, low_bandary):
 		else:
 			temp.append(pos)
 	result = merge_pos_del(temp, chr, Ref, evidence_read, SV_size)
-	temp = []
 	if len(result) != 0:
 		_cluster_.append(result)
 	return _cluster_
@@ -465,7 +457,8 @@ def combine_result(INS, DEL):
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
-	INS = []
+	# INS = list()
+	del INS
 	gc.collect()
 	# DEL_chr_pos_len_seq_rc_dp
 	for i in DEL:
@@ -476,7 +469,8 @@ def combine_result(INS, DEL):
 			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 			fake_seq.seq = Seq(j[5])
 			result.append(fake_seq)
-	DEL = []
+	# DEL = list()
+	del DEL
 	gc.collect()
 	# print INS+DEL
 	# Temp = sorted(INS + DEL, key = lambda x:x[2])
@@ -598,13 +592,11 @@ def load_sam(args):
 			Cluster_INS = list()
 		else:
 			Cluster_INS = cluster(cluster_pos_INS, Chr_name, evidence_read, SV_size)
-			del cluster_pos_INS[:]
 
 		if len(cluster_pos_DEL) == 0:
 			Cluster_DEL = list()
 		else:
 			Cluster_DEL = cluster_del(cluster_pos_DEL, Chr_name, Ref)
-			del cluster_pos_DEL[:]
 
 		logging.info("%d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), Chr_name))
 
@@ -684,7 +676,6 @@ def call_samtools(file, tempdir):
 
 
 def single_pipe(out_path, chr, bam_path, low_bandary, evidence_read, SV_size):
-	gc.collect()
 	# print out_path, chr_id, Ref, bam_path
 	samfile = pysam.AlignmentFile(bam_path)
 	# chr = samfile.get_reference_name(chr_id)
@@ -694,40 +685,42 @@ def single_pipe(out_path, chr, bam_path, low_bandary, evidence_read, SV_size):
 	cluster_pos_INS = list()
 	cluster_pos_DEL = list()
 	for read in samfile.fetch(chr):
-		cluster_pos_INS, cluster_pos_DEL = parse_read(read, chr, low_bandary)
-		# if len(feed_back) > 0:
-		# 	for i in feed_back:
-		# 		cluster_pos_INS.append(i)
+		feed_back, feed_back_del = parse_read(read, chr, low_bandary)
+		if len(feed_back) > 0:
+			for i in feed_back:
+				cluster_pos_INS.append(i)
+			# feed_back = list()
+			# gc.collect()
 
-		# if len(feed_back_del) > 0:
-		# 	for i in feed_back_del:
-		# 		cluster_pos_DEL.append(i)
+		if len(feed_back_del) > 0:
+			for i in feed_back_del:
+				cluster_pos_DEL.append(i)
+			# feed_back_del = list()
+			# gc.collect()
 	cluster_pos_INS = sorted(cluster_pos_INS, key = lambda x:x[0])
 	cluster_pos_DEL = sorted(cluster_pos_DEL, key = lambda x:x[0])
 	if len(cluster_pos_INS) == 0:
 		Cluster_INS = list()
 	else:
 		Cluster_INS = cluster(cluster_pos_INS, chr, evidence_read, SV_size, low_bandary)
-
-	CLIP_note[chr] = dict()		
-	cluster_pos_INS = []
-	gc.collect()
+		# cluster_pos_INS = list()
+		del cluster_pos_INS
+		# CLIP_note[chr] = dict()
+		del CLIP_note[chr]
+		gc.collect()
 
 	if len(cluster_pos_DEL) == 0:
 		Cluster_DEL = list()
 	else:
 		Ref = global_ref[0]
 		Cluster_DEL = cluster_del(cluster_pos_DEL, chr, Ref, evidence_read, SV_size, low_bandary)
-
-	cluster_pos_DEL = []
-	gc.collect()
+		# cluster_pos_DEL = list()
+		del cluster_pos_DEL
+		gc.collect()
 
 	# print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
 	logging.info("%d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
 	Final_result = combine_result(add_genotype(Cluster_INS, samfile, low_bandary), add_genotype(Cluster_DEL, samfile, low_bandary))
-	# del Cluster_INS[:]
-	# del Cluster_DEL[:]
-	# gc.collect()
 	samfile.close()
 	# path = out_path+chr+'.fa'
 	# SeqIO.write(Final_result, path, "fasta")
@@ -744,25 +737,22 @@ def load_sam_multi_processes(args):
 	load_Ref_Genome
 	library:	Bio
 	'''
-	# p1 = args.input
-	# p2 = args.temp_dir
-	# p3 = args.Reference
-	# threads = args.threads
+	p1 = args.input
+	p2 = args.temp_dir
+	p3 = args.Reference
+	threads = args.threads
 
 	# Major Steps:
 	# loading alignment file: bam format
-	samfile = pysam.AlignmentFile(args.input)
+	samfile = pysam.AlignmentFile(p1)
 	# loading reference genome
-	# Ref = load_ref(args.Reference)
-	global_ref.append(load_ref(args.Reference))
+	Ref = load_ref(p3)
+	global_ref.append(Ref)
 
 	# acquire the total numbers of the ref contigs
 	contig_num = len(samfile.get_index_statistics())
 	# print("[INFO]: The total number of chromsomes: %d"%(contig_num))
 	logging.info("The total number of chromsomes: %d"%(contig_num))
-
-	# del contig_num
-	# gc.collect()
 
 	# Thread scheduling
 	process_list = list()
@@ -772,18 +762,15 @@ def load_sam_multi_processes(args):
 	process_list = sorted(process_list, key = lambda x:-x[1])
 
 	# start to establish multiprocesses
-	analysis_pools = Pool(processes=args.threads)
+	analysis_pools = Pool(processes=threads)
 	# Acquire_Chr_name
 	Final_result = list()
 	for i in process_list:
 		# single_pipe(out_path, chr_id, Ref, samfile):
-		# para = [(args.temp_dir, _num_, Ref, samfile)]
+		# para = [(p2, _num_, Ref, samfile)]
 		# print i
-		para = [(args.temp_dir, i[0], args.input, args.min_distance, args.min_support, args.min_length)]
+		para = [(p2, i[0], p1, args.min_distance, args.min_support, args.min_length)]
 		Final_result.append(analysis_pools.map_async(multi_run_wrapper, para))
-
-	process_list = []
-	gc.collect()
 	analysis_pools.close()
 	analysis_pools.join()
 
@@ -791,11 +778,12 @@ def load_sam_multi_processes(args):
 	for res in Final_result:
 		# print res.get()[0]
 		TE_list += res.get()[0]
-	Final_result = []
+	# Final_result = list()
+	del Final_result
 	gc.collect()
 
 	logging.info("Writing into disk")
-	# path = args.temp_dir+'potential_ME.fa'
+	# path = p2+'potential_ME.fa'
 	path = args.output+'potential_ME.fa'
 	# print TE_list
 	SeqIO.write(TE_list, path, "fasta")
