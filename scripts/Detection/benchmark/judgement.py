@@ -50,8 +50,9 @@ def find_common(chr, start_pos, length, note):
 						# CLIP_note[chr][key_1-1][key_2]
 						# print this_s, this_e
 						if (this_s <= down and this_e >= down) or (this_s <= up and this_e >= up) or (this_s >= down and this_e <= up):
-							answer = CLIP_note[chr][key_1][key_2][z]
-							CLIP_note[chr][key_1][key_2][z][3] = note
+							# print up, down
+							answer = CLIP_note[chr][key_1-1][key_2][z]
+							CLIP_note[chr][key_1-1][key_2][z][3] = note
 
 
 		if key_1 not in CLIP_note[chr]:
