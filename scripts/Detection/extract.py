@@ -790,7 +790,7 @@ def load_sam_multi_processes(args):
 
 	samfile.close()
 
-VERSION="1.0"
+# VERSION="1.0"
 
 USAGE="""\
 	Maps Reads Using NGMLR and Samtools to produce .bam file.

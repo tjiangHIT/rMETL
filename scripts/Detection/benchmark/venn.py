@@ -155,6 +155,9 @@ def compare(chr, pos, subtype):
 		# for ele in data_ans[chr]:
 			if data_ans[chr][i][0] - standard <= pos and pos <= data_ans[chr][i][1] + standard:
 				data_ans[chr][i][3] = 1
+				return 1
+			else:
+				return 0
 
 def compare_sniffles(chr, pos, subtype):
 	if subtype == 'XI':
@@ -172,6 +175,9 @@ def compare_sniffles(chr, pos, subtype):
 		# for ele in data_ans[chr]:
 				if data_ans[k][chr][i][0] - standard <= pos and pos <= data_ans[k][chr][i][1] + standard:
 					data_ans[k][chr][i][3] = 1
+					return 1
+				else:
+					return 0
 
 def statics():
 	Talu_0 = [0]*len(Ans)
@@ -278,14 +284,15 @@ def statics_new():
 	for i in test_list:
 		for chr in i:
 			for j in i[chr]:
-				if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 1:
+				if A not in j[2] and B not in j[2] and C not in j[2] and D not in j[2] and j[3] == 1:
+					print chr, j
 				# if A in j[2] and B in j[2] and  D in j[2] and j[3] == 1:
 				# if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 0:
-					sta += 1
+					# sta += 1
 					# print chr, j	
 	# print A,B,D, "tjiang"
-	print A, "tjiang"
-	print sta
+	# print A, "tjiang"
+	# print sta
 
 
 
@@ -450,8 +457,10 @@ def evaluation(p):
 		# subtype = seq[3]
 		# subtype = subtype.split(':')[2]
 		subtype = seq[3][8]+seq[3][1]
-		compare(chr, breakpoint, subtype)
+		ans = compare(chr, breakpoint, subtype)
 		# compare_each_base(chr, breakpoint, subtype)
+		if ans == 0:
+			print("%s\t%d\t%s"%(chr, breakpoint, subtype))
 	file.close()
 	statics_new()
 
@@ -469,7 +478,9 @@ def evaluation_sniffles(p):
 			subtype = 'XD'
 		if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
 			subtype = 'XI'
-		compare_sniffles(chr, breakpoint, subtype)
+		ans = compare_sniffles(chr, breakpoint, subtype)
+		if ans == 0:
+			print("%s\t%d\t%s"%(chr, breakpoint, seq[4])) 
 		# compare_each_base_sniffles(chr, breakpoint, subtype)
 	file.close()
 	statics_new()
@@ -547,7 +558,43 @@ def main():
 	# print "Tea"+"_"+"Tangram"+"_"+"1kG"+"_"+"Mobster"
 	# print sta
 
+def cmp(p1, p2):
+	d1 = dict()
+	file = open(p1, 'r')
+	for line in file:
+		seq = line.strip().split('\t')
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		type = seq[2][1:4]
+		if type == "DEL":
+			type = 'D'
+		elif type == "INS":
+			type = 'I'
+		elif type == "DUP":
+			type = 'I'
+		else:
+			continue
+		if chr not in d1:
+			d1[chr] = list()
+		d1[chr].append([breakpoint, type])
+	file.close()
 
+	file = open(p2, 'r')
+	for line in file:
+		flag = 0
+		seq = line.strip().split('\t')
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		type = seq[2][1]
+		if chr in d1:
+			for i in d1[chr]:
+				if type == d1[chr][1]:
+					if breakpoint - 50 <= d1[chr][0] and d1[chr][0] <= breakpoint + 50:
+						flag = 1
+		if flag == 0:
+			print line,
+	file.close()
 
 if __name__ == '__main__':
-	main()
+	# main()
+	cmp(sys.argv[1], sys.argv[2])

@@ -8,18 +8,20 @@ import numpy as np
 # P_heterozygous = 0.5
 # P_homozygous_ME = 0.98
 
-GL_TAG = ['0/0', '0/1', '1/1']
+GL_TAG = ['1/0', '0/1', '1/1']
 
 def simple_call_genotype(Nalt, Ntotal, P_heterozygous, P_homozygous):
 	bound_low = Ntotal * P_heterozygous
 	bound_up = Ntotal * P_homozygous
 	if Nalt < bound_low:
-		# return	0
-		return GL_TAG[0], "%d:%d"%(Nalt, Ntotal - Nalt)
+        # reliability = 0
+		return GL_TAG[0], "%d:%d"%(Nalt, Ntotal - Nalt), 0
 	elif bound_low <= Nalt and Nalt < bound_up:
-		return GL_TAG[1], "%d:%d"%(Nalt, Ntotal - Nalt)
+        # reliability = 1
+		return GL_TAG[1], "%d:%d"%(Nalt, Ntotal - Nalt), 1
 	else:
-		return GL_TAG[2], "%d:%d"%(Nalt, Ntotal - Nalt)
+        # reliability = 1
+		return GL_TAG[2], "%d:%d"%(Nalt, Ntotal - Nalt), 1
 
 def simple_filter_genotype(Nalt, Ntotal, P_heterozygous):
     bound_low = Ntotal * P_heterozygous

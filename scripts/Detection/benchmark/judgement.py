@@ -135,7 +135,7 @@ def nofound_alu(flag):
 
 def compare(p1, p2, p3, p4):
 
-	# out_script = p4 + "_script.uncovered"
+	out_script = p4 + "rMETL.uncovered"
 	# out_sniffles = p4 + "_sniffles.uncovered"
 	count_1 = 0
 	count_2 = 0
@@ -160,7 +160,8 @@ def compare(p1, p2, p3, p4):
 	predict_file = open(p2, 'r')
 	print("[INFO]: Processing the scripts' prediction...")
 	for line in predict_file:
-		seq = line.strip('\n').split(' ')
+		seq = line.strip('\n').split('\t')
+		# seq = line.strip('\n').split(' ')
 		# print seq
 		chr = seq[0]
 		start_pos = int(seq[1])
@@ -202,6 +203,13 @@ def compare(p1, p2, p3, p4):
 	# for i in sniffles_nofound:
 	# 	o2.write(i)
 	# o2.close
+
+	o1 = open(out_script, 'w')
+	for i in script_nofound:
+		if i not in sniffles_nofound:
+			o1.write(i)
+	o1.close()
+
 	return count_1, count_2, total, total - len(script_nofound), total - len(sniffles_nofound)
 
 

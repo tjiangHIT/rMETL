@@ -27,7 +27,7 @@ def acquire_count_max(_list_):
 
 flag_dic = {0:1, 16:2, 2048:0, 2064:0, 4:0}
 
-STRAND = {'1':'+', '2':'-'}
+STRAND = {'1':'+', '2':'-', '*':'+-'}
 
 cluster_dic = {}
 
@@ -132,6 +132,24 @@ def call_bed(args):
 
 	AlignmentFile.close()
 
+	if args.MEI == 'False':
+		AlignmentFile = open(path, 'r')
+		for line in AlignmentFile:
+			seq = line.strip('\n').split('\t')
+			if seq[0][0] == '@':
+				continue
+			local_info = parse_name_tp(seq[0])
+			Flag = int(seq[1])
+			sub_type = seq[2]
+			if sub_type == '*':
+				key = "%s*%s*%s*%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
+				if key not in cluster_dic:
+					cluster_dic[key] = list()
+					# cluster_dic[key].append("<%s:ME:%s>"%(local_info.Type, sub_type))
+					cluster_dic[key].append("<%s>"%(local_info.Type))
+		AlignmentFile.close()
+
+
 	sort_list = list()
 	for i in cluster_dic:
 		chr, breakpoint, insert_size, GT = parse_name(i)
@@ -182,6 +200,8 @@ def print_vcf_head(ref):
 
 	head.append("##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of the variant described in this record\">\n")
 	head.append("##INFO=<ID=SVLEN,Number=.,Type=String,Description=\"Difference in length between REF and ALT alleles\">\n")
+	head.append("##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description=\"Imprecise structural variation\">\n")
+	head.append("##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description=\"Precise structural variation\">\n")
 
 	head.append("##INFO=<ID=AC,Number=.,Type=Integer,Description=\"Allele count'\">\n")
 	head.append("##INFO=<ID=AF,Number=.,Type=Float,Description=\"Allele frequency'\">\n")
@@ -248,6 +268,23 @@ def call_vcf(args):
 			cluster_dic[key].append("<%s:ME:%s>\t%d"%(local_info.Type, sub_type, flag_dic[Flag]))
 	AlignmentFile.close()
 
+	if args.MEI == 'False':
+		AlignmentFile = open(path, 'r')
+		for line in AlignmentFile:
+			seq = line.strip('\n').split('\t')
+			if seq[0][0] == '@':
+				continue
+			local_info = parse_name_tp(seq[0])
+			Flag = int(seq[1])
+			sub_type = seq[2]
+			if sub_type == '*':
+				key = "%s*%s*%s*%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
+				if key not in cluster_dic:
+					cluster_dic[key] = list()
+					# cluster_dic[key].append("<%s:ME:%s>"%(local_info.Type, sub_type))
+					cluster_dic[key].append("<%s>\t%s"%(local_info.Type, '*'))
+		AlignmentFile.close()
+
 	sort_list = list()
 	for i in cluster_dic:
 		chr, breakpoint, insert_size, GT = parse_name(i)
@@ -278,7 +315,7 @@ def call_vcf(args):
 	for i in sort_list:
 		# print("%s\t%s\t%s\t%s"%(i[0], breakpoint, insert_size, final_type))
 		# print "\t".join(i)
-		INFO = "SVTYPE=%s;SVLEN=%d;END=%d;SAMPLE=%s;STRAND=%s"%(i[3][1:4], int(i[2]), int(i[1])+int(i[2])-1, args.sample, i[5])
+		# INFO = "SVTYPE=%s;SVLEN=%d;END=%d;SAMPLE=%s;STRAND=%s"%(i[3][1:4], int(i[2]), int(i[1])+int(i[2])-1, args.sample, i[5])
 		concordant = int(i[4].split(':')[0])
 		# print i
 		# print int(i[4].split(':')[1]) - int(i[4].split(':')[0])
@@ -288,8 +325,14 @@ def call_vcf(args):
 		# print concordant, discordant
 		# GT, GL = genotype_call_with_read_pair(concordant, discordant)
 		# print GT, GL
-		GT, GL = simple_call_genotype(concordant, concordant+discordant, args.heterozygous, args.homozygous)
+		GT, GL, reliability = simple_call_genotype(concordant, concordant+discordant, args.heterozygous, args.homozygous)
 		# print("%s\t%s\t%d\tN\t%s\t.\t.\t%s\tGT:DV:DR\t%s:%s"%(i[0], i[1], ID, i[3], INFO, GT, GL))
+
+		if reliability == 1:
+			INFO = "PRECISE;SVTYPE=%s;SVLEN=%d;END=%d;SAMPLE=%s;STRAND=%s"%(i[3][1:4], int(i[2]), int(i[1])+int(i[2])-1, args.sample, i[5])
+		else:
+			INFO = "IMPRECISE;SVTYPE=%s;SVLEN=%d;END=%d;SAMPLE=%s;STRAND=%s"%(i[3][1:4], int(i[2]), int(i[1])+int(i[2])-1, args.sample, i[5])
+
 		try:
 			REF = ref[i[0]][int(i[1])-1]
 		except:
@@ -323,6 +366,8 @@ def parseArgs(argv):
 	parser.add_argument('-het','--heterozygous', help = "The mininum score of a genotyping reported as a heterozygous.[%(default)s]", default = 0.3, type = float)
 	parser.add_argument('-q', '--min_mapq', help = "Mininum mapping quality.[%(default)s]", default = 20, type = int)
 	parser.add_argument('--sample', help = "The name of the sample which be noted.", default = "None", type = str)
+
+	parser.add_argument('--MEI', help = "Enables rMETL to display MEI/MED only.[%(default)s]", default = "False", type = str)
 	# parser.add_argument('-t', '--threads', help = "Number of threads to use.[%(default)s]", default = 1, type = int)
 	# parser.add_argument('-x', '--presets', help = "The sequencing type <pacbio,ont> of the reads.[%(default)s]", default = "pacbio", type = str)
 	# parser.add_argument('--subread_length', help = "Length of fragments reads are split into [%(default)s]", default = 128, type = int)

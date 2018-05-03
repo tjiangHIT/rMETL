@@ -20,6 +20,8 @@ STAGES = {"extract": extract.run, \
           "map": Map.run, \
           "call": call_TE.run}
 
+VERSION="1.0.1"
+
 USAGE = """\
            _  ___  _   _____   _______   _
      _ _  | ^_   _^ | |  ___| |__   __| | |
@@ -35,8 +37,10 @@ USAGE = """\
     map        realigne signal loci to transposable element concensus librarys
     call       Mobile Element calling and genotyping
     
-  See README.md for documentation or --help for details\
-"""
+  See README.md for documentation or --help for details
+  
+  rMETL V%s
+"""%(VERSION)
 
 def parseArgs():
 

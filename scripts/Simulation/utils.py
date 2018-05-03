@@ -139,7 +139,8 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 		strand = seq[-1]
 
 		flag = check_family(class_ele)
-		if flag == 1:
+		# if flag == 1:
+		if flag != 0:
 			if locus_chr not in chr_list:
 				continue
 
@@ -148,10 +149,40 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 			locus_dic[locus_chr].append([start_pos, end_pos, class_ele])
 	# random deletion
 	for key in locus_dic:
-		kept = int(0.2*len(locus_dic[key]))
-		locus_dic[key] = random.sample(locus_dic[key],kept)
+		# kept = int(0.2*len(locus_dic[key]))
+		# locus_dic[key] = random.sample(locus_dic[key],kept)
+		print(len(locus_dic[key]))
+		locus_dic[key] = random.sample(locus_dic[key],20670)
 		locus_dic[key] = sorted(locus_dic[key], key=lambda x:x[0])
-		file.close()
+	file.close()
+	return locus_dic
+
+def acquire_loci(genome_locus_path, chr_list):
+	locus_dic = dict()
+	_id_ = 0
+	file = open(genome_locus_path, 'r')
+	for line in file:
+		_id_ += 1
+		seq = line.strip('\n').split('\t')
+		locus_chr = seq[0]
+		start_pos = int(seq[1])
+		end_pos = int(seq[2])
+		class_ele = seq[3]
+		strand = seq[-1]
+
+		flag = check_family(class_ele)
+		# if flag == 1:
+		if flag != 0:
+			if locus_chr not in chr_list:
+				continue
+
+			if locus_chr not in locus_dic:
+				locus_dic[locus_chr] = list()
+			locus_dic[locus_chr].append([start_pos, end_pos, class_ele, _id_])
+	# random deletion
+	for key in locus_dic:
+		locus_dic[key] = sorted(locus_dic[key], key=lambda x:x[0])
+	file.close()
 	return locus_dic
 
 def sum_dict(dic):
