@@ -128,6 +128,7 @@ def acquire_locus(genome_locus_path, chr_list):
 
 def acquire_locus_random_del(genome_locus_path, chr_list):
 	locus_dic = dict()
+	locus_dic_ = dict()
 
 	file = open(genome_locus_path, 'r')
 	for line in file:
@@ -146,16 +147,26 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 
 			if locus_chr not in locus_dic:
 				locus_dic[locus_chr] = list()
+				locus_dic_[locus_chr] = list()
 			locus_dic[locus_chr].append([start_pos, end_pos, class_ele])
 	# random deletion
 	for key in locus_dic:
 		# kept = int(0.2*len(locus_dic[key]))
 		# locus_dic[key] = random.sample(locus_dic[key],kept)
-		print(len(locus_dic[key]))
-		locus_dic[key] = random.sample(locus_dic[key],20670)
+		# print(len(locus_dic[key]))
+		# locus_dic[key] = random.sample(locus_dic[key],20670)
 		locus_dic[key] = sorted(locus_dic[key], key=lambda x:x[0])
+		te = 0
+		for i in locus_dic[key]:
+			if te < i[0]:
+				te = i[1]
+				locus_dic_[key].append(i)
+			if len(locus_dic_[key]) == 20000:
+				break
+		# print len(locus_dic_[key])
+		# locus_dic_[key] = random.sample(locus_dic_[key],20000)
 	file.close()
-	return locus_dic
+	return locus_dic_
 
 def acquire_loci(genome_locus_path, chr_list):
 	locus_dic = dict()
