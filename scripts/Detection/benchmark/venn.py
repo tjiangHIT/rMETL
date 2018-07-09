@@ -130,6 +130,35 @@ def load_data(path):
 					SVA_D[chr].append([element[0], Name])
 	adjust()
 
+# def compare(chr, pos, subtype):
+# 	if subtype == 'AI':
+# 		data_ans = Alu
+# 		standard = 20
+# 	if subtype == 'AD':
+# 		data_ans = Alu_D
+# 		standard = 20
+# 	if subtype == 'LI':
+# 		data_ans = L1
+# 		standard = 50
+# 	if subtype == 'LD':
+# 		data_ans = L1_D
+# 		standard = 50
+# 	if subtype == 'SI':
+# 		data_ans = SVA
+# 		standard = 50
+# 	if subtype == 'SD':
+# 		data_ans = SVA_D
+# 		standard = 50
+
+# 	if chr in data_ans:
+# 		for i in xrange(len(data_ans[chr])):
+# 		# for ele in data_ans[chr]:
+# 			if data_ans[chr][i][0] - standard <= pos and pos <= data_ans[chr][i][1] + standard:
+# 				data_ans[chr][i][3] = 1
+# 				return 1
+# 			else:
+# 				return 0
+
 def compare(chr, pos, subtype):
 	if subtype == 'AI':
 		data_ans = Alu
@@ -155,9 +184,26 @@ def compare(chr, pos, subtype):
 		# for ele in data_ans[chr]:
 			if data_ans[chr][i][0] - standard <= pos and pos <= data_ans[chr][i][1] + standard:
 				data_ans[chr][i][3] = 1
-				return 1
-			else:
-				return 0
+
+# def compare_sniffles(chr, pos, subtype):
+# 	if subtype == 'XI':
+# 		data_ans = [Alu, L1, SVA]
+# 	if subtype == 'XD':
+# 		data_ans = [Alu_D, L1_D, SVA_D]
+
+# 	for k in xrange(len(data_ans)):
+# 		if k == 0:
+# 			standard = 20
+# 		else:
+# 			standard = 50
+# 		if chr in data_ans[k]:
+# 			for i in xrange(len(data_ans[k][chr])):
+# 		# for ele in data_ans[chr]:
+# 				if data_ans[k][chr][i][0] - standard <= pos and pos <= data_ans[k][chr][i][1] + standard:
+# 					data_ans[k][chr][i][3] = 1
+# 					return 1
+# 				else:
+# 					return 0
 
 def compare_sniffles(chr, pos, subtype):
 	if subtype == 'XI':
@@ -175,9 +221,6 @@ def compare_sniffles(chr, pos, subtype):
 		# for ele in data_ans[chr]:
 				if data_ans[k][chr][i][0] - standard <= pos and pos <= data_ans[k][chr][i][1] + standard:
 					data_ans[k][chr][i][3] = 1
-					return 1
-				else:
-					return 0
 
 def statics():
 	Talu_0 = [0]*len(Ans)
@@ -284,15 +327,16 @@ def statics_new():
 	for i in test_list:
 		for chr in i:
 			for j in i[chr]:
-				if A not in j[2] and B not in j[2] and C not in j[2] and D not in j[2] and j[3] == 1:
-					print chr, j
+				# if C in j[2] and A in j[2] and D in j[2] and j[3] == 1:
+				if j[3] == 1 or j[3] == 0:
+					# print chr, j
 				# if A in j[2] and B in j[2] and  D in j[2] and j[3] == 1:
-				# if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 0:
-					# sta += 1
+				# if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 1:
+					sta += 1
 					# print chr, j	
 	# print A,B,D, "tjiang"
-	# print A, "tjiang"
-	# print sta
+	# print A, "rMETL"
+	print sta
 
 
 
@@ -459,8 +503,8 @@ def evaluation(p):
 		subtype = seq[3][8]+seq[3][1]
 		ans = compare(chr, breakpoint, subtype)
 		# compare_each_base(chr, breakpoint, subtype)
-		if ans == 0:
-			print("%s\t%d\t%s"%(chr, breakpoint, subtype))
+		# if ans == 0:
+		# 	print("%s\t%d\t%s"%(chr, breakpoint, subtype))
 	file.close()
 	statics_new()
 
@@ -471,16 +515,20 @@ def evaluation_sniffles(p):
 		if seq[0][0] == '#':
 			continue
 		chr = seq[0]
-		breakpoint = int(seq[1])
+		breakpoint = int(seq[13])
 		# subtype = seq[3]
 		# subtype = subtype.split(':')[2]
-		if seq[4][1:4] == "DEL":
+		# if seq[10][1:4] == "DEL":
+		# 	subtype = 'XD'
+		# if seq[10][1:4] == "INS" or seq[4][1:4] == "DUP":
+		# 	subtype = 'XI'
+		if seq[10][:3] == "DEL":
 			subtype = 'XD'
-		if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
+		if seq[10][:3] == "INS" or seq[10][:3] == "DUP":
 			subtype = 'XI'
-		ans = compare_sniffles(chr, breakpoint, subtype)
-		if ans == 0:
-			print("%s\t%d\t%s"%(chr, breakpoint, seq[4])) 
+		compare_sniffles(chr, breakpoint, subtype)
+		# if ans == 0:
+		# 	print("%s\t%d\t%s"%(chr, breakpoint, seq[4])) 
 		# compare_each_base_sniffles(chr, breakpoint, subtype)
 	file.close()
 	statics_new()
@@ -510,9 +558,9 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	evaluation(call_path)
+	# evaluation(call_path)
 	# evaluation_tag(call_path)
-	# evaluation_sniffles(call_path)
+	evaluation_sniffles(call_path)
 
 
 
@@ -596,5 +644,5 @@ def cmp(p1, p2):
 	file.close()
 
 if __name__ == '__main__':
-	# main()
-	cmp(sys.argv[1], sys.argv[2])
+	main()
+	# cmp(sys.argv[1], sys.argv[2])

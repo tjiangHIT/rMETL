@@ -37,7 +37,8 @@ def call(path):
 		local_info = parse_name_tp(seq[0])
 
 		sub_type = seq[2]
-		if sub_type != "*":
+		MAPQ = int(seq[4])
+		if sub_type != "*" and MAPQ >= 20:
 			if local_info[0] not in id_dic and local_info[1] == 'chr1':
 				id_dic[local_info[0]] = 0
 	AlignmentFile.close()

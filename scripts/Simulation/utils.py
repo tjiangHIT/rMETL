@@ -158,13 +158,14 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 		locus_dic[key] = sorted(locus_dic[key], key=lambda x:x[0])
 		te = 0
 		for i in locus_dic[key]:
-			if te < i[0]:
+			if te < i[0] and i[1]-i[0] > 50:
 				te = i[1]
 				locus_dic_[key].append(i)
-			if len(locus_dic_[key]) == 20000:
-				break
+			# if len(locus_dic_[key]) == 20000:
+			# 	break
 		# print len(locus_dic_[key])
-		# locus_dic_[key] = random.sample(locus_dic_[key],20000)
+		locus_dic_[key] = random.sample(locus_dic_[key],20000)
+		locus_dic_[key] = sorted(locus_dic_[key], key=lambda x:x[0])
 	file.close()
 	return locus_dic_
 

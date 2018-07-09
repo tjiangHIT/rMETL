@@ -177,10 +177,10 @@ def compare(p1, p2, p3, p4):
 	predict_file.close()
 	# print len(nofound_alu(1))
 	script_nofound = nofound_alu(1)
-	# o1 = open(out_script, 'w')
-	# for i in script_nofound:
-	# 	o1.write(i)
-	# o1.close
+	o1 = open(out_script, 'w')
+	for i in script_nofound:
+		o1.write(i)
+	o1.close
 
 	sniffles_file = open(p3, 'r')
 	print("[INFO]: Processing the Sniffles's prediction...")
@@ -225,7 +225,7 @@ def main():
 	print("[INFO]: 1. The path of the grand truth: %s"%(truth_path))
 	print("[INFO]: 2. The path of the scripts' predictions: %s"%(predict_path))
 	print("[INFO]: 3. The path of the Sniffles' answer: %s"%(sniffles_path))
-	# print("[INFO]: 4. The prefix path of output files: %s"%(pre_out))
+	print("[INFO]: 4. The prefix path of output files: %s"%(pre_out))
 	# print("[INFO]: This script is uesd for simulate Alus on the reference genome.")
 
 	count_1, count_2, total , real_count_1, real_count_2= compare(truth_path, predict_path, sniffles_path, pre_out)
