@@ -39,6 +39,7 @@ Its peak memory footprint is about 16.7G Gigabytes (default setting), on a serve
 	2. Biopython
 	3. ngmlr
 	4. samtools
+	5. cigar
 
 	Python version 2.7
 
