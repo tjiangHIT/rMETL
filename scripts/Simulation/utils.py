@@ -141,7 +141,7 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 
 		flag = check_family(class_ele)
 		# if flag == 1:
-		if flag != 0:
+		if flag == 0:
 			if locus_chr not in chr_list:
 				continue
 
@@ -153,7 +153,7 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 	for key in locus_dic:
 		# kept = int(0.2*len(locus_dic[key]))
 		# locus_dic[key] = random.sample(locus_dic[key],kept)
-		# print(len(locus_dic[key]))
+		print("[INFO] Before filtering is %d in %s."%(len(locus_dic[key]), key))
 		# locus_dic[key] = random.sample(locus_dic[key],20670)
 		locus_dic[key] = sorted(locus_dic[key], key=lambda x:x[0])
 		te = 0
@@ -164,7 +164,12 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 			# if len(locus_dic_[key]) == 20000:
 			# 	break
 		# print len(locus_dic_[key])
-		locus_dic_[key] = random.sample(locus_dic_[key],20000)
+		print("[INFO] After filtering is %d in %s."%(len(locus_dic[key]), key))
+		if len(locus_dic[key]) < 20000:
+			sample_size = len(locus_dic[key])
+		else:
+			sample_size = 20000
+		locus_dic_[key] = random.sample(locus_dic_[key],sample_size)
 		locus_dic_[key] = sorted(locus_dic_[key], key=lambda x:x[0])
 	file.close()
 	return locus_dic_
