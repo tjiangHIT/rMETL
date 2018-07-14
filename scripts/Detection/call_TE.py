@@ -155,6 +155,12 @@ def call_bed(args):
 		chr, breakpoint, insert_size, GT = parse_name(i)
 		# print cluster_dic[i]
 		final_type = acquire_count_max(cluster_dic[i])
+
+		# ************bug test**************
+		# if len(cluster_dic[i]) < 5:
+		# 	continue
+		# ************bug test**************
+
 		# final_type = cluster_dic[i][1]
 		# final_MAPQ = cluster_dic[i][0]
 		# final_strand = final.split('&')[1]

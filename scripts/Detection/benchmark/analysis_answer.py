@@ -453,12 +453,12 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	# evaluation(call_path)
+	evaluation(call_path)
 	# evaluation_output_nagitive(call_path)
 	# evaluation_sniffles_output_negitive(call_path)
 	# evaluation_tag(call_path)
 	# evaluation_sniffles(call_path)
-	evaluation_sniffles_vcf(call_path)
+	# evaluation_sniffles_vcf(call_path)
 
 
 if __name__ == '__main__':
