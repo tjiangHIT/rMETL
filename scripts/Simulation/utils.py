@@ -174,6 +174,41 @@ def acquire_locus_random_del(genome_locus_path, chr_list):
 	file.close()
 	return locus_dic_
 
+def acquire_locus_random_del_NonME_chr1(ref_genome, chr_list):
+	locus_dic = dict()
+	locus_dic_ = dict()
+
+	L_Alu = [random.gauss(280,10) for i in xrange(250000)]
+	L_L1 = [random.gauss(6000,50) for i in xrange(50000)]
+	L_SVA = [random.gauss(1500,30) for i in xrange(10000)]
+	L_total = L_Alu + L_L1 + L_SVA
+	random.shuffle(L_total)
+
+	file = Fasta(ref_genome)
+
+	loci_list = random.sample(xrange(len(file[chr_list[0]])), 300000)
+	locus_dic[chr_list[0]] = list()
+	locus_dic_[chr_list[0]] = list()
+	for i in xrange(300000):
+		locus_dic[chr_list[0]].append([loci_list[i], loci_list[i]+int(L_total[i]), ""])
+	locus_dic[chr_list[0]] = sorted(locus_dic[chr_list[0]], key=lambda x:x[0])
+	print("[INFO] Before filtering is %d in %s."%(len(locus_dic[chr_list[0]]), chr_list[0]))
+		
+	te = 0
+	for i in locus_dic[chr_list[0]]:
+		if te < i[0]:
+			te = i[1]
+			locus_dic_[chr_list[0]].append(i)
+	print("[INFO] After filtering is %d in %s."%(len(locus_dic_[chr_list[0]]), chr_list[0]))
+	if len(locus_dic[chr_list[0]]) < 20000:
+		sample_size = len(locus_dic[chr_list[0]])
+	else:
+		sample_size = 20000
+	locus_dic_[chr_list[0]] = random.sample(locus_dic_[chr_list[0]],sample_size)
+	locus_dic_[chr_list[0]] = sorted(locus_dic_[chr_list[0]], key=lambda x:x[0])
+
+	return locus_dic_
+
 def acquire_loci(genome_locus_path, chr_list):
 	locus_dic = dict()
 	_id_ = 0
