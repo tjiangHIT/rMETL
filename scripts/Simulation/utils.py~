@@ -224,17 +224,14 @@ def acquire_locus_random_del_NonME_chr1_plus(genome_locus_path, chr_list):
 		end_pos = int(seq[2])
 
 		if posflag + 1000 < start_pos:
-			templist.append([posflag, start_pos, ''])
+			templist.append([posflag, start_pos])
 		posflag = end_pos
-
-	print("[INFO] Before filtering is %d in %s."%(len(templist), "chr1"))
 
 	# for ele in templist:
 	for i in xrange(len(templist)):
 		section_size = templist[i][1] - templist[i][0]
-		section_pos = random.randint(templist[i][0]+100, templist[i][0]+int(section_size/2))
+		section_pos = random.randint(templist[i][0]+100, int(section_size/2))
 		section_length = random.gauss(300,5)
-		# print templist[i][0], templist[i][1], section_pos, section_pos + int(section_length)
 		templist[i][0] = section_pos
 		templist[i][1] = section_pos + int(section_length)
 
