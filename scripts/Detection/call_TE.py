@@ -20,6 +20,7 @@ import tempfile
 import sys, time
 from CommandRunner import *
 from Bio import SeqIO
+import cigar
 
 def acquire_count_max(_list_):
 	c = Counter(_list_)
@@ -100,6 +101,30 @@ def parse_name_tp(line):
 	local_info = R_INFO(Type, chr, pos, len, GT)
 	return local_info
 
+def clip_analysis(deal_cigar):
+	seq = list(cigar.Cigar(deal_cigar).items())
+	if seq[0][1] == 'S':
+		first_pos = seq[0][0]
+	else:
+		first_pos = 0
+	if seq[-1][1] == 'S':
+		last_pos = seq[-1][0]
+	else:
+		last_pos = 0
+	
+	total_len = first_pos + last_pos
+	signal_len = 0
+	for i in seq:
+		signal_len += i[0]
+
+	if signal_len == 0:
+		return 0
+
+	if total_len*1.0 / signal_len >= 0.5:
+		return 0
+	else:
+		return 1
+
 def call_bed(args):
 	# samfile = pysam.AlignmentFile(p1)
 	path = args.input
@@ -115,7 +140,9 @@ def call_bed(args):
 		Flag = int(seq[1])
 		sub_type = seq[2]
 		MAPQ = int(seq[4])
-		if flag_dic[Flag] != 0 and MAPQ >= args.min_mapq:
+		cigar = seq[5]
+		cigar_flag = clip_analysis(cigar)
+		if flag_dic[Flag] != 0 and MAPQ >= args.min_mapq and cigar_flag == 1:
 			# to do something
 			# key = "%s_%s_%s"%(chr, breakpoint, insert_size)
 			key = "%s*%s*%s*%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
@@ -266,7 +293,7 @@ def call_vcf(args):
 		Flag = int(seq[1])
 		sub_type = seq[2]
 		MAPQ = int(seq[4])
-		if flag_dic[Flag] != 0 and MAPQ >= args.min_mapq:
+		if flag_dic[Flag] != 0 and MAPQ >= args.min_mapq and cigar_flag == 1:
 			# to do something
 			key = "%s*%s*%s*%s"%(local_info.Chr, local_info.Pos, local_info.Len, local_info.GT)
 			if key not in cluster_dic:
