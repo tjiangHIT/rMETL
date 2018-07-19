@@ -30,7 +30,7 @@ The simulated datasets use for benchmarking are available at: https://drive.goog
 ### Memory usage
 
 The memory usage of rMETL can fit the configurations of most modern servers and workstations.
-Its peak memory footprint is about 16.7G Gigabytes (default setting), on a server with Intel Xeon CPU at 2.00 GHz, 1 Terabytes RAM running Linux Ubuntu 14.04. These reads were aligned to human reference genome hs37d5.
+Its peak memory footprint is about 12.18 Gigabytes (default setting), on a server with Intel Xeon CPU at 2.00 GHz, 1 Terabytes RAM running Linux Ubuntu 14.04. These reads were aligned to human reference genome hs37d5.
 
 ---
 ### Dependences
@@ -78,7 +78,7 @@ Mobile Element calling and genotyping.
 | THREADS       |Number of threads to use.|1|
 | PRESETS       |The sequencing type <pacbio,ont> of the reads.|pacbio|
 
-#### map
+#### realign
 
 | Parameters | Descriptions | Defaults |
 | :------------ |:---------------|:---------------|

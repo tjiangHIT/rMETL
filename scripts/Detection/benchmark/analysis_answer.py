@@ -131,10 +131,10 @@ def load_data(path):
 def compare(chr, pos, subtype):
 	if subtype == 'AI':
 		data_ans = Alu
-		standard = 20
+		standard = 50
 	if subtype == 'AD':
 		data_ans = Alu_D
-		standard = 20
+		standard = 50
 	if subtype == 'LI':
 		data_ans = L1
 		standard = 50
@@ -166,7 +166,7 @@ def compare_sniffles(chr, pos, subtype):
 	flag = 0
 	for k in xrange(len(data_ans)):
 		if k == 0:
-			standard = 20
+			standard = 50
 		else:
 			standard = 50
 		if chr in data_ans[k]:
@@ -274,7 +274,7 @@ def statics():
 
 def compare_each_base(chr, breakpoint, subtype):
 	if subtype[0] == 'A':
-		standard = 20
+		standard = 50
 	else:
 		standard = 50
 	for i in xrange(len(Ans)):
@@ -308,7 +308,7 @@ def compare_each_base_sniffles(chr, breakpoint, subtype):
 					Ans[i][chr][j][2] = -2
 
 				if Ans[i][chr][j][1][0] == 'A':
-					standard = 20
+					standard = 50
 				else:
 					standard = 50
 
@@ -453,10 +453,10 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	evaluation(call_path)
+	# evaluation(call_path)
 	# evaluation_output_nagitive(call_path)
 	# evaluation_sniffles_output_negitive(call_path)
-	# evaluation_tag(call_path)
+	evaluation_tag(call_path)
 	# evaluation_sniffles(call_path)
 	# evaluation_sniffles_vcf(call_path)
 

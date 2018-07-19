@@ -17,7 +17,7 @@ import extract, Map, call_TE
 # from process import *
 
 STAGES = {"extract": extract.run, \
-          "map": Map.run, \
+          "realign": Map.run, \
           "call": call_TE.run}
 
 VERSION="1.0.1"
@@ -34,7 +34,7 @@ USAGE = """\
 
   STAGE is one of
     extract    detect Mobile Element signals
-    map        realigne signal loci to transposable element concensus librarys
+    realign    realigne signal loci to transposable element concensus librarys
     call       Mobile Element calling and genotyping
     
   See README.md for documentation or --help for details
