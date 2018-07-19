@@ -94,6 +94,7 @@ Mobile Element calling and genotyping.
 | HOMOZYGOUS       |The mininum score of a genotyping reported as a homozygous.|0.8|
 | HETEROZYGOUS       |The mininum score of a genotyping reported as a heterozygous.|0.3|
 | MIN_MAPQ       |Mininum mapping quality.|20|
+| CLIPPING_THRESHOLD  |Mininum threshold of realignment clipping.|0.5|
 | SAMPLE       |The name of the sample which be noted.|None|
 | MEI       |Enables rMETL to display MEI/MED only.|False|
 
