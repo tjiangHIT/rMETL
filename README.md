@@ -68,7 +68,7 @@ Mobile Element Insertion calling.
 ---
 ### Optional Parameters
 
-#### extract
+#### Detection
 
 | Parameters | Descriptions | Defaults |
 | :------------ |:---------------|:---------------|
@@ -78,7 +78,7 @@ Mobile Element Insertion calling.
 | THREADS       |Number of threads to use.|1|
 | PRESETS       |The sequencing type <pacbio,ont> of the reads.|pacbio|
 
-#### realign
+#### Realignment
 
 | Parameters | Descriptions | Defaults |
 | :------------ |:---------------|:---------------|
@@ -87,7 +87,7 @@ Mobile Element Insertion calling.
 | SUBREAD_LENGTH       |Length of fragments reads are split into.|128|
 | SUBREAD_CORRIDOR       |Length of corridor sub-reads are aligned with.|20|
 
-#### call
+#### Calling
 
 | Parameters | Descriptions | Defaults |
 | :------------ |:---------------|:---------------|
