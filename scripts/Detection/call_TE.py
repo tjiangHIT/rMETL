@@ -208,7 +208,7 @@ def call_bed(args):
 	sort_list = sorted(sort_list, key = lambda x:(x[0], int(x[1])))
 	file = open(out_path, 'w')
 	logging.info("Writing results into disk...")
-	# file.write("Chromsome\tBreakpoint\tSV length\tMEI Type")
+	file.write("# Chromsome\tBreakpoint\tSV length\tMEI Type")
 	for i in sort_list:
 		# print("%s\t%s\t%s\t%s"%(i[0], breakpoint, insert_size, final_type))
 		# print "\t".join(i)
@@ -381,9 +381,9 @@ def call_vcf(args):
 VERSION="1.0"
 
 USAGE="""\
-	rMETL calling and genotyping.
+	rMETL MEI calling.
 
-	Optional output format: .bed and .vcf
+	Optional output format: .bed or .vcf
 """
 
 def parseArgs(argv):

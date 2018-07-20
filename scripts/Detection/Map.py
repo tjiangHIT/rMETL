@@ -20,7 +20,7 @@ from CommandRunner import *
 VERSION="1.0"
 
 USAGE="""\
-	Maps the potential ME seqs to the TE refs.
+	Realignment of chimeric read parts.
 
 	Aligner: NGMLR version 0.2.6
 	TE refs: Alu families

@@ -49,21 +49,21 @@ Its peak memory footprint is about 12.18 Gigabytes (default setting), on a serve
 Current version of rMETL needs to be run on Linux operating system.
 The source code is written in python, and can be directly download from: https://github.com/hitbc/rMETL 
 A mirror is also in: https://github.com/tjiangHIT/rMETL
-The INSTALL.sh is attached. Use the make command for generating the executable file.
+The INSTALL.sh is attached. Use the bash command for generating the executable file.
 
 ---
 ### Synopsis
-Detect Mobile Element signals.
+Inference of putative MEI loci.
 
-	rMETL.py extract <alignments> <reference> <temp_dir> <output>
+	rMETL.py detection <alignments> <reference> <temp_dir> <output>
 
-Realigne signal loci to transposable element concensus librarys.
+Realignment of chimeric read parts.
 
-	rMETL.py map <FASTA> <TEREF> <output>
+	rMETL.py realignment <FASTA> <MEREF> <output>
 
-Mobile Element calling and genotyping.
+Mobile Element Insertion calling.
 
-	rMETL.py call <SAM> <reference> <out_type> <output>
+	rMETL.py calling <SAM> <reference> <out_type> <output>
 
 ---
 ### Optional Parameters

@@ -162,10 +162,10 @@ def load_data(path):
 def compare(chr, pos, subtype):
 	if subtype == 'AI':
 		data_ans = Alu
-		standard = 20
+		standard = 50
 	if subtype == 'AD':
 		data_ans = Alu_D
-		standard = 20
+		standard = 50
 	if subtype == 'LI':
 		data_ans = L1
 		standard = 50
@@ -213,7 +213,7 @@ def compare_sniffles(chr, pos, subtype):
 
 	for k in xrange(len(data_ans)):
 		if k == 0:
-			standard = 20
+			standard = 50
 		else:
 			standard = 50
 		if chr in data_ans[k]:
@@ -328,10 +328,10 @@ def statics_new():
 		for chr in i:
 			for j in i[chr]:
 				# if C in j[2] and A in j[2] and D in j[2] and j[3] == 1:
-				if j[3] == 1 or j[3] == 0:
+				# if j[3] == 1 or j[3] == 0:
 					# print chr, j
 				# if A in j[2] and B in j[2] and  D in j[2] and j[3] == 1:
-				# if A in j[2] and B in j[2] and C in j[2] and D in j[2] and j[3] == 1:
+				if B in j[2] and C in j[2] and D in j[2] and j[3] == 1:
 					sta += 1
 					# print chr, j	
 	# print A,B,D, "tjiang"
@@ -446,7 +446,7 @@ def statics_new():
 
 def compare_each_base(chr, breakpoint, subtype):
 	if subtype[0] == 'A':
-		standard = 20
+		standard = 50
 	else:
 		standard = 50
 	for i in xrange(len(Ans)):
@@ -480,7 +480,7 @@ def compare_each_base_sniffles(chr, breakpoint, subtype):
 					Ans[i][chr][j][2] = -2
 
 				if Ans[i][chr][j][1][0] == 'A':
-					standard = 20
+					standard = 50
 				else:
 					standard = 50
 
@@ -521,6 +521,10 @@ def evaluation_sniffles(p):
 		# if seq[10][1:4] == "DEL":
 		# 	subtype = 'XD'
 		# if seq[10][1:4] == "INS" or seq[4][1:4] == "DUP":
+		# 	subtype = 'XI'
+		# if seq[4][1:4] == "DEL":
+		# 	subtype = 'XD'
+		# if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
 		# 	subtype = 'XI'
 		if seq[10][:3] == "DEL":
 			subtype = 'XD'

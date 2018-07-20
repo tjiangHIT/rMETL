@@ -417,9 +417,13 @@ def evaluation_sniffles_output_negitive(p):
 		f2 = 0
 		if seq[10][:3] == "DEL":
 			subtype = 'XD'
+		# if seq[4][1:4] == "DEL":
+		# 	subtype = 'XD'
 			f2 = 1
 		if seq[10][:3] == "INS" or seq[10][:3] == "DUP":
 			subtype = 'XI'
+		# if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
+		# 	subtype = 'XI'
 			f2 = 1
 		flag = compare_sniffles(chr, breakpoint, subtype)
 		if flag == 0 and f2 == 1:
@@ -455,8 +459,8 @@ def main():
 	call_path = sys.argv[2]
 	# evaluation(call_path)
 	# evaluation_output_nagitive(call_path)
-	# evaluation_sniffles_output_negitive(call_path)
-	evaluation_tag(call_path)
+	evaluation_sniffles_output_negitive(call_path)
+	# evaluation_tag(call_path)
 	# evaluation_sniffles(call_path)
 	# evaluation_sniffles_vcf(call_path)
 

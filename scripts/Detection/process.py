@@ -16,9 +16,9 @@ import pysam
 import extract, Map, call_TE
 # from process import *
 
-STAGES = {"extract": extract.run, \
-          "realign": Map.run, \
-          "call": call_TE.run}
+STAGES = {"detection": extract.run, \
+          "realignment": Map.run, \
+          "calling": call_TE.run}
 
 VERSION="1.0.1"
 
@@ -33,9 +33,9 @@ USAGE = """\
     rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
   STAGE is one of
-    extract    detect Mobile Element signals
-    realign    realigne signal loci to transposable element concensus librarys
-    call       Mobile Element calling and genotyping
+    detection    Inference of putative MEI loci.
+    realignment  Realignment of chimeric read parts.
+    calling      Mobile Element Insertion calling.
     
   See README.md for documentation or --help for details
   
