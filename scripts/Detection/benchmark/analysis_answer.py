@@ -10,7 +10,8 @@ L1_D = dict()
 SVA = dict()
 SVA_D = dict()
 Ans = list()
-Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster", "MELT"]
+# Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster", "MELT"]
+Ans_tag = ["Tea", "Tangram", "1kG", "Mobster"]
 
 def process_path(path):
 	load_path = list()
@@ -92,10 +93,10 @@ def load_data(path):
 
 	Ans.append(collect_Tea_plus(path[0], path[1]))
 	Ans.append(collect_Tangram_plus(path[2]))
-	Ans.append(collect_RetroSeq_plus(path[3]))
+	# Ans.append(collect_RetroSeq_plus(path[3]))
 	Ans.append(collect_1kg_plus(path[4]))
 	Ans.append(collect_Mobster_plus(path[5]))
-	Ans.append(collect_MELT_plus(path[6]))
+	# Ans.append(collect_MELT_plus(path[6]))
 
 	for i in xrange(len(Ans)):
 		Name = Ans_tag[i]
@@ -458,8 +459,8 @@ def main():
 	load_data(load_path)
 	call_path = sys.argv[2]
 	# evaluation(call_path)
-	# evaluation_output_nagitive(call_path)
-	evaluation_sniffles_output_negitive(call_path)
+	evaluation_output_nagitive(call_path)
+	# evaluation_sniffles_output_negitive(call_path)
 	# evaluation_tag(call_path)
 	# evaluation_sniffles(call_path)
 	# evaluation_sniffles_vcf(call_path)

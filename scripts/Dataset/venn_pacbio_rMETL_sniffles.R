@@ -1,9 +1,9 @@
 
 library(VennDiagram)
 venn.plot <- draw.pairwise.venn(
-area1 = 3351,
+area1 = 3864,
 area2 = 27772,
-cross.area = 3223,
+cross.area = 3726,
 category = c("A", "B"),
 fill = c("blue", "red"),
 cat.col = c("blue", "red"),
