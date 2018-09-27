@@ -216,14 +216,14 @@ def call_bed(args):
 	file.close()
 
 
-def print_vcf_head(ref):
+def print_vcf_head(ref, sample):
 	import time
 	Date = time.strftime("%Y%m%d")
 	head = list()
 	head.append("##fileformat=VCFv4.2\n")
 	head.append("##fileDate=%s\n"%(Date))
 	head.append("##source=rMETL\n")
-	head.append("##reference=Grch37\n")
+	# head.append("##reference=Grch37\n")
 	# exust a bug
 
 	for i in ref:
@@ -242,11 +242,11 @@ def print_vcf_head(ref):
 	head.append("##INFO=<ID=AF,Number=.,Type=Float,Description=\"Allele frequency'\">\n")
 	head.append("##INFO=<ID=AN,Number=.,Type=String,Description=\"Allele name'\">\n")
 
-	head.append("FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n")
-	head.append("FORMAT=<ID=DV,Number=1,Type=Integer,Description=\"#High-quality variant reads\">\n")
-	head.append("FORMAT=<ID=DR,Number=1,Type=Integer,Description=\"#Reference reads\">\n")
+	head.append("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n")
+	head.append("##FORMAT=<ID=DV,Number=1,Type=Integer,Description=\"#High-quality variant reads\">\n")
+	head.append("##FORMAT=<ID=DR,Number=1,Type=Integer,Description=\"#Reference reads\">\n")
 
-	head.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tGENOTYPE\n")
+	head.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t%s\n"%(sample))
 	return head
 
 def load_ref(ref_g):
@@ -340,7 +340,7 @@ def call_vcf(args):
 		# sort_list.append([chr, breakpoint, insert_size, final_type, str(final_MAPQ)])
 		# print("%s\t%s\t%s\t%s"%(chr, breakpoint, insert_size, final_type))
 	sort_list = sorted(sort_list, key = lambda x:(x[0], int(x[1])))
-	head_info = print_vcf_head(ref)
+	head_info = print_vcf_head(ref, args.sample)
 
 	file = open(out_path, 'w')
 	logging.info("Writing results into disk...")

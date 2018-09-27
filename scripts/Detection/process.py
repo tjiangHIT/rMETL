@@ -20,7 +20,7 @@ STAGES = {"detection": extract.run, \
           "realignment": Map.run, \
           "calling": call_TE.run}
 
-VERSION="1.0.1"
+VERSION="1.0.2"
 
 USAGE = """\
            _  ___  _   _____   _______   _
