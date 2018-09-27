@@ -222,8 +222,9 @@ def print_vcf_head(ref):
 	head = list()
 	head.append("##fileformat=VCFv4.2\n")
 	head.append("##fileDate=%s\n"%(Date))
-	head.append("##source=tjiang_scripts\n")
+	head.append("##source=rMETL\n")
 	head.append("##reference=Grch37\n")
+	# exust a bug
 
 	for i in ref:
 		head.append("##contig=<ID=%s,length=%d>\n"%(i, len(ref[i])))
@@ -235,7 +236,7 @@ def print_vcf_head(ref):
 	head.append("##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of the variant described in this record\">\n")
 	head.append("##INFO=<ID=SVLEN,Number=.,Type=String,Description=\"Difference in length between REF and ALT alleles\">\n")
 	head.append("##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description=\"Imprecise structural variation\">\n")
-	head.append("##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description=\"Precise structural variation\">\n")
+	head.append("##INFO=<ID=PRECISE,Number=0,Type=Flag,Description=\"Precise structural variation\">\n")
 
 	head.append("##INFO=<ID=AC,Number=.,Type=Integer,Description=\"Allele count'\">\n")
 	head.append("##INFO=<ID=AF,Number=.,Type=Float,Description=\"Allele frequency'\">\n")
@@ -245,7 +246,7 @@ def print_vcf_head(ref):
 	head.append("FORMAT=<ID=DV,Number=1,Type=Integer,Description=\"#High-quality variant reads\">\n")
 	head.append("FORMAT=<ID=DR,Number=1,Type=Integer,Description=\"#Reference reads\">\n")
 
-	head.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
+	head.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tGENOTYPE\n")
 	return head
 
 def load_ref(ref_g):
@@ -404,7 +405,7 @@ def parseArgs(argv):
 	parser.add_argument('-c', '--clipping_threshold', help = "Mininum threshold of realignment clipping.[%(default)s]", default = 0.5, type = float)
 	parser.add_argument('--sample', help = "The name of the sample which be noted.", default = "None", type = str)
 
-	parser.add_argument('--MEI', help = "Enables rMETL to display MEI/MED only.[%(default)s]", default = "False", type = str)
+	parser.add_argument('--MEI', help = "Enables rMETL to display MEI/MED only.[%(default)s]", default = "True", type = str)
 	# parser.add_argument('-t', '--threads', help = "Number of threads to use.[%(default)s]", default = 1, type = int)
 	# parser.add_argument('-x', '--presets', help = "The sequencing type <pacbio,ont> of the reads.[%(default)s]", default = "pacbio", type = str)
 	# parser.add_argument('--subread_length', help = "Length of fragments reads are split into [%(default)s]", default = 128, type = int)

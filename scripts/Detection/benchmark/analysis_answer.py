@@ -185,8 +185,8 @@ def statics():
 		for ele in Alu[key]:
 			if ele[3] == 0:
 				Talu_0[len(ele[2])-1] +=1
-				# if len(ele[2]) == 6:
-				# 	print key, ele
+				if len(ele[2]) == 3:
+					print key, ele
 			else:
 				# print ele
 				Talu_1[len(ele[2])-1] += 1
@@ -204,7 +204,7 @@ def statics():
 		for ele in L1[key]:
 			if ele[3] == 0:
 				TL1_0[len(ele[2])-1] +=1
-				# if len(ele[2]) == 2:
+				# if len(ele[2]) == 2 or len(ele[2]) == 3 or len(ele[2]) == 4:
 				# 	print key, ele
 			else:
 				TL1_1[len(ele[2])-1] += 1 
@@ -326,6 +326,8 @@ def evaluation(p):
 	for line in file:
 		seq = line.strip('\n').split('\t')
 		chr = seq[0]
+		if seq[0][0] == '#':
+			continue
 		breakpoint = int(seq[1])
 		# subtype = seq[3]
 		# subtype = subtype.split(':')[2]
@@ -458,8 +460,8 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	# evaluation(call_path)
-	evaluation_output_nagitive(call_path)
+	evaluation(call_path)
+	# evaluation_output_nagitive(call_path)
 	# evaluation_sniffles_output_negitive(call_path)
 	# evaluation_tag(call_path)
 	# evaluation_sniffles(call_path)

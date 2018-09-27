@@ -165,6 +165,8 @@ def compare(p1, p2, p3, p4):
 		# seq = line.strip('\n').split(' ')
 		# print seq
 		chr = seq[0]
+		if seq[0][0] == "#":
+			continue
 		start_pos = int(seq[1])
 		# print start_pos
 		length = int(seq[2])
