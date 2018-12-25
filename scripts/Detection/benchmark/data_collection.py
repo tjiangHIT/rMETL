@@ -309,6 +309,8 @@ def collect_1kg_plus(p):
 		breakpoint = int(seq[1])
 		# subtype = seq[7].split(';')[3].split('=')[1]
 		subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
+		# if seq[4].split(':')[0][1] == 'D':
+		# 	continue
 		# TYPE = seq[4][1:4]
 		# if subtype[0] == "A":
 		# 	subtype = "Alu"
@@ -323,6 +325,51 @@ def collect_1kg_plus(p):
 		dic_1kg[chr].append([breakpoint, subtype, 0])
 	file.close()
 	return dic_1kg
+
+def collect_MELT_plus(p, pp):
+	dic_MELT2 = dict()
+	file = open(p, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		# subtype = seq[7].split(';')[3].split('=')[1]
+		subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
+		# if seq[4].split(':')[0][1] == 'D':
+		# 	continue
+		# TYPE = seq[4][1:4]
+		# if subtype[0] == "A":
+		# 	subtype = "Alu"
+		# if subtype[0] == "L":
+		# 	subtype = "L1"
+		# if subtype[0] == "S":
+		# 	subtype = "SVA"
+		# genotype = parse_genotype(seq[432])
+		# if genotype == 1:
+		if chr not in dic_MELT2:
+			dic_MELT2[chr] = list()
+		dic_MELT2[chr].append([breakpoint, subtype, 0])
+	file.close()
+
+	file = open(pp, 'r')
+	for line in file:
+		seq = line.strip('\n').split('\t')
+		if seq[0][0] == '#':
+			continue
+		chr = seq[0]
+		breakpoint = int(seq[1])
+		svtype = seq[7].split(';')[0].split('=')[1]
+		if svtype[:3] == "Alu" or svtype[:2] == "L1":
+			subtype = svtype[0]+"D"
+			# subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
+		if chr not in dic_MELT2:
+			dic_MELT2[chr] = list()
+		dic_MELT2[chr].append([breakpoint, subtype, 0])
+	file.close()
+
+	return dic_MELT2
 
 def collect_Mobster_plus(p):
 	dic_Mobster = dict()
@@ -346,19 +393,19 @@ def collect_Mobster_plus(p):
 	file.close()
 	return dic_Mobster
 
-def collect_MELT_plus(p):
-	dic_MELT = dict()
-	file = open(p, 'r')
-	for line in file:
-		seq = line.strip('\n').split('\t')
-		if seq[0][0] == '#':
-			continue
+# def collect_MELT_plus(p):
+# 	dic_MELT = dict()
+# 	file = open(p, 'r')
+# 	for line in file:
+# 		seq = line.strip('\n').split('\t')
+# 		if seq[0][0] == '#':
+# 			continue
 
-		chr = seq[0]
-		breakpoint = int(seq[1])
-		subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
-		if chr not in dic_MELT:
-			dic_MELT[chr] = list()
-		dic_MELT[chr].append([breakpoint,subtype, 0])
-	file.close()
-	return dic_MELT
+# 		chr = seq[0]
+# 		breakpoint = int(seq[1])
+# 		subtype = seq[4].split(':')[2][0]+seq[4].split(':')[0][1]
+# 		if chr not in dic_MELT:
+# 			dic_MELT[chr] = list()
+# 		dic_MELT[chr].append([breakpoint,subtype, 0])
+# 	file.close()
+# 	return dic_MELT

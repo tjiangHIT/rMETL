@@ -2,12 +2,12 @@
 
 ''' 
  * All rights Reserved, Designed By HIT-Bioinformatics   
- * @Title:  extract.py
+ * @Title:  extract_simple.py
  * @Package: argparse, pysam, sys, Bio, os, logging
- * @Description: Parse the ME signals from alignments
- * @author: tjiang
+ * @Description: Parse the ME signatures from alignments
+ * @author: Jiang Tao (tjiang@hit.edu.cn)
  * @date: Apr 24 2018
- * @version V1.0     
+ * @version V1.0.2     
 '''
 
 import pysam
@@ -18,7 +18,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from genotype import *
 from CommandRunner import *
-from multiprocessing import Pool, Manager
+from multiprocessing import Pool
 import os
 import argparse
 import logging
@@ -34,12 +34,10 @@ clip_flag = {4:'S', 5:'H'}
 P_homozygous = 0.8
 P_heterozygous = 0.3
 
-CLIP_note = dict()
-total_signal = list()
+# CLIP_note = dict()
+# total_signal = list()
 global_ref = list()
 # clip_store = Q.PriorityQueue()
-man = Manager()
-final_seq = man.dict()
 
 def revcom_complement(s): 
 	basecomplement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'a': 'T', 'c': 'G', 'g': 'C', 't': 'A'} 
@@ -63,7 +61,7 @@ def detect_flag(Flag):
 # def acquire_ins_part():
 # 	# about insert sequence
 
-def store_clip_pos(locus, chr, seq, flag):
+def store_clip_pos(locus, chr, seq, flag, CLIP_note):
 	# about collecting breakpoint from clipping 
 	hash_1 = int(locus /10000)
 	mod = locus % 10000
@@ -91,23 +89,10 @@ def acquire_clip_pos(deal_cigar):
 		last_pos = seq[-1][0]
 	else:
 		last_pos = 0
-	# seq = cigar.split('S')
-	# if len(seq) == 3:
-	# 	first_pos = int(seq[0])
-	# 	last_pos = int(seq[1].split('M')[-1])
-	# 	return [first_pos, last_pos]
-	# if len(seq) == 1:
-	# 	return []
-	# if len(seq) == 2:
-	# 	if seq[1] == '':
-	# 		return []
-	# 	first_pos = int(seq[0])
-	# 	last_pos = 0
 	bias = 0
 	for i in seq:
 		if i[1] == 'M' or i[1] == 'D':
 			bias += i[0]
-
 	return [first_pos, last_pos, bias]
 
 def organize_split_signal(chr, primary_info, Supplementary_info, total_L, low_bandary):
@@ -117,9 +102,7 @@ def organize_split_signal(chr, primary_info, Supplementary_info, total_L, low_ba
 		local_chr = seq[0]
 		local_start = int(seq[1])
 		local_cigar = seq[3]
-
 		dic_starnd = {1:'+', 2: '-'}
-
 		if dic_starnd[primary_info[4]] != seq[2]:
 			continue
 		if chr != local_chr:
@@ -135,16 +118,9 @@ def organize_split_signal(chr, primary_info, Supplementary_info, total_L, low_ba
 			if local_set[1]+primary_info[2]-total_L > low_bandary:
 				overlap.append([total_L - local_set[1], primary_info[2], local_start+local_set[2]-1])
 			# exist some bugs
-
-		# if local_start <= primary_end + 50 and local_start >= primary_end - 50:
-		# 	local_set = acquire_clip_pos(local_cigar)
-		# 	if len(local_set) != 0:
-		# 		overlap.append([primary_clip, sum(local_set) - primary_clip])
 	return overlap
 
-
-
-def parse_read(read, Chr_name, low_bandary):
+def parse_read(read, Chr_name, low_bandary, CLIP_note):
 	'''
 	Check:	1.Flag
 			2.Supplementary mapping
@@ -157,18 +133,11 @@ def parse_read(read, Chr_name, low_bandary):
 		return INS_ME_pos, DEL_ME_pos
 
 	# Add DEL:ME type call signal
-	# DEL_ME_pos = list()
 	pos_start = read.reference_start
 	shift = 0
-	# temp_test = dict()
 	for element in read.cigar:
-		# if element[0] not in temp_test:
-		# 	temp_test[element[0]] = 0
-		# temp_test[element[0]] += element[1]
 		if element[0] == 0:
 			shift += element[1]
-		# if element[0] == 1:
-		# 	shift += 1
 		if element[0] in DEL_flag and element[1] <= low_bandary:
 			shift += element[1]
 		if element[0] in DEL_flag and element[1] > low_bandary:
@@ -179,21 +148,10 @@ def parse_read(read, Chr_name, low_bandary):
 			# Normal condation
 			# MEI_contig = str(Ref[Chr_name].seq[pos_start+shift:shift+element[1]+pos_start])
 			# ++++++++++++++++++++++++++++++++++++++++++++++
-
-			# MEI_contig = read.query_alignment_sequence[shift:shift+element[1]]
 			DEL_ME_pos.append([pos_start+shift, element[1]])
-			# print read.query_name, read.reference_length, len(read.query_alignment_sequence)
-			# print temp_test, shift
-			# print read.query_name, pos_start, pos_start+shift, element[1], MEI_contig
 			shift += element[1]
 
 	# Add INS:ME type call signal
-	# INS_ME_pos = list()
-	# process_signal = detect_flag(read.flag) 
-	# if process_signal == 0:
-	# 	return local_pos
-		# unmapped read
-
 	pos_start = read.reference_start
 	shift = 0
 	_shift_read_ = 0
@@ -208,73 +166,21 @@ def parse_read(read, Chr_name, low_bandary):
 		if element[0] in INS_flag and element[1] > low_bandary:
 			shift += 1
 			MEI_contig = read.query_sequence[_shift_read_ - element[1]:_shift_read_]
-			# if process_signal == 2 or process_signal == 4:
-				# MEI_contig = revcom_complement(MEI_contig)
-			# if process_signal == 2 or process_signal == 4:
-			# 	# strategy 1:
-			# 	read_length = len(read.query_sequence)
-			# 	# local_SEQ = read.query_sequence[read_length - _shift_read_:read_length - _shift_read_ + element[1]]
-			# 	# MEI_contig = revcom_complement(local_SEQ)
-			# 	# strategy 2:
-			# 	local_SEQ = revcom_complement(read.query_sequence)
-			# 	# MEI_contig = local_SEQ[_shift_read_ - element[1]:_shift_read_]
-			# 	MEI_contig = local_SEQ[read_length - _shift_read_:read_length - _shift_read_ + element[1]]
-			# else:
-			# 	MEI_contig = read.query_sequence[_shift_read_ - element[1]:_shift_read_]
-			# MEI_contig = read.query_sequence[_shift_read_-element[1]-4:_shift_read_+10]
-			# judge flag !!!!!!!!
 			INS_ME_pos.append([pos_start + shift, element[1], MEI_contig])
-
-			# print read.query_name, "I", pos_start + shift
-			# print MEI_contig
-
 		if element[0] in clip_flag:
-
 			if shift == 0:
 				primary_clip_0 = element[1]
 			else:
 				primary_clip_1 = element[1]
-
 			if element[1] > low_bandary:
 				if shift == 0:
 					clip_pos = pos_start - 1
 					clip_contig = read.query_sequence[:element[1]]
-					store_clip_pos(clip_pos, Chr_name, clip_contig, 0)
-
-					# primary_clip_0 = element[1]
-					# left clip size
-
+					store_clip_pos(clip_pos, Chr_name, clip_contig, 0, CLIP_note)
 				else:
 					clip_pos = pos_start + shift - 1
-					# primary_clip = read.query_length - element[1]
 					clip_contig = read.query_sequence[read.query_length - element[1]:]
-					store_clip_pos(clip_pos, Chr_name, clip_contig, 1)
-
-					# primary_clip_1 = read.query_length - element[1]
-					# right clip size
-
-
-				# store_clip_pos(clip_pos, Chr_name, clip_contig)
-				# print read.query_name, "S"
-				# print clip_contig
-				# hash_1 = int(clip_pos / 10000)
-				# mod_1 = int(clip_pos % 10000)
-				# hash_2 = int(mod_1 / 50)
-				# if hash_1 not in CLIP_note[Chr_name]:
-				# 	CLIP_note[Chr_name][hash_1] = dict()
-				# 	CLIP_note[Chr_name][hash_1][hash_2] = list()
-				# 	CLIP_note[Chr_name][hash_1][hash_2].append(clip_pos)
-				# else:
-				# 	if hash_2 not in CLIP_note[Chr_name][hash_1]:
-				# 		CLIP_note[Chr_name][hash_1][hash_2]
-				# # if clip_pos not in CLIP_note[Chr_name]:
-				# # 	CLIP_note[Chr_name][clip_pos] = 1
-				# # else:
-				# # 	CLIP_note[Chr_name][clip_pos] += 1
-				# CLIP_note[Chr_name].put(clip_pos)
-				# print Chr_name, clip_pos
-	# cluster_pos = sorted(cluster_pos, key = lambda x:x[0])
-			# return [r_start + shift, element[1]]
+					store_clip_pos(clip_pos, Chr_name, clip_contig, 1, CLIP_note)
 
 	if process_signal == 1 or process_signal == 2:
 		Tags = read.get_tags()
@@ -285,10 +191,6 @@ def parse_read(read, Chr_name, low_bandary):
 		for i in Tags:
 			if i[0] == 'SA':
 				Supplementary_info = i[1].split(';')[:-1]
-				# print process_signal
-				# print chr, primary_info, read.query_length
-				# print read.cigar
-				# print i[1].split(';')[-1]
 				overlap = organize_split_signal(chr, primary_info, Supplementary_info, read.query_length, low_bandary)
 				for k in overlap:
 					# print k
@@ -297,16 +199,7 @@ def parse_read(read, Chr_name, low_bandary):
 
 	return INS_ME_pos, DEL_ME_pos
 
-def merge_siganl(chr, cluster):
-	# for i in cluster:
-	# 	if i[2] >= 5:
-	# 		total_signal.append("%s\t%d\t%d\t%d\t%s\n"%(chr, i[0], i[1], i[2], i[3]))
-	# 		# print("%s\t%d\t%d\t%d"%(chr, i[0], i[1], i[2]))
-	for i in cluster:
-		for j in i:
-			total_signal.append(j)
-
-def acquire_clip_locus(down, up, chr):
+def acquire_clip_locus(down, up, chr, CLIP_note):
 	list_clip = list()
 	if int(up/10000) == int(down/10000):
 		key_1 = int(down/10000)
@@ -344,7 +237,7 @@ def acquire_clip_locus(down, up, chr):
 					list_clip.append(ele)
 	return list_clip
 
-def merge_pos(pos_list, chr, evidence_read, SV_size):
+def merge_pos(pos_list, chr, evidence_read, SV_size, CLIP_note):
 	start = list()
 	end = list()
 	for ele in pos_list:
@@ -353,50 +246,31 @@ def merge_pos(pos_list, chr, evidence_read, SV_size):
 
 	search_down = min(start) - 10
 	search_up = max(start) + 10
-
-	temp_clip = acquire_clip_locus(search_down, search_up, chr)
-	# temp_clip = list()
-	# gc.collect()
-
-	# concensus, ref_pos = construct_concensus_seq(pos_list, temp_clip)
+	temp_clip = acquire_clip_locus(search_down, search_up, chr, CLIP_note)
 	result = construct_concensus_info(pos_list, temp_clip, evidence_read, SV_size)
 
 	if result != 0:
 		for i in xrange(len(result)):
-			# result[i] = ">INS_" + chr + result[i]
 			result[i] = ["INS", chr] + result[i] + [len(result)]
 		return result
 	else:
 		return 0
 
-	# print ref_pos
-	# print concensus
-
-	'''
-	TE detect
-	'''
-
-	# total_breakpoint = int((sum(start) + sum(temp_clip)) / (len(pos_list) + len(temp_clip)))
-	# total_length = int(sum(end)/len(pos_list)) - total_breakpoint
-	# total_read_count = len(pos_list) + len(temp_clip)
-	# return	[ref_pos, len(concensus), total_read_count, concensus]
-	# return [int(sum(start)/len(pos_list)), int(sum(end)/len(pos_list)) - int(sum(start)/len(pos_list)), len(pos_list)]
-
-def cluster(pos_list, chr, evidence_read, SV_size, low_bandary):
+def cluster(pos_list, chr, evidence_read, SV_size, low_bandary, CLIP_note):
 	_cluster_ = list()
 	temp = list()
 	temp.append(pos_list[0])
 	for pos in pos_list[1:]:
 		# if temp[-1][0] + temp[-1][1] < pos[0]:
 		if temp[-1][0] + low_bandary < pos[0]:
-			result = merge_pos(temp, chr, evidence_read, SV_size)
+			result = merge_pos(temp, chr, evidence_read, SV_size, CLIP_note)
 			if result != 0:
 				_cluster_.append(result)
 			temp = list()
 			temp.append(pos)
 		else:
 			temp.append(pos)
-	result = merge_pos(temp, chr, evidence_read, SV_size)
+	result = merge_pos(temp, chr, evidence_read, SV_size, CLIP_note)
 	if result != 0:
 		_cluster_.append(result)
 	# _cluster_.append(merge_pos(temp, chr))
@@ -408,23 +282,15 @@ def merge_pos_del(pos_list, chr, Ref, evidence_read, SV_size):
 	for ele in pos_list:
 		start.append(ele[0])
 		end.append(ele[0] + ele[1])
-
 	breakpoint = sum(start)/len(start)
 	size = sum(end)/len(end) - breakpoint
-
 	result = list()
 	if len(pos_list) < evidence_read:
 		return result
 	else:
 		if chr in Ref and size >= SV_size:
-		# if 'chr'+chr in Ref and size >= 50:
-			# result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])))
 			result.append(['DEL', chr, breakpoint, size, len(pos_list), str(Ref[chr].seq[breakpoint:breakpoint+size])])
-			# result.append(['DEL', chr, breakpoint, size, len(pos_list), str(Ref['chr'+chr].seq[breakpoint:breakpoint+size])])
-	# for i in xrange(len(pos_list)):
-	# 	result.append(">DEL_%s_%d_%d_%d\n%s\n"%(chr, breakpoint, size, i, pos_list[i][2]))
 	return result
-
 
 def cluster_del(pos_list, chr, Ref, evidence_read, SV_size, low_bandary):
 	_cluster_ = list()
@@ -448,17 +314,22 @@ def load_ref(ref_g):
 	logging.info("Loading reference genome...")
 	return SeqIO.to_dict(SeqIO.parse(ref_g, "fasta"))
 
-def combine_result(INS, DEL):
-	result = list()
+def combine_result(INS, DEL, path, chr):
+	# result = list()
 	# INS_chr_pos_len_#_seq_rc_dp
+	output = "%ssignatures/%s_sig.fa"%(path, chr)
+	file = open(output, 'w')
 	for i in INS:
 		for j in i:
 			if len(j) != 8:
 				continue
 			key = "%s*%s*%d*%d*%s*%d*%d"%(j[0], j[1], j[2], j[3], j[4], j[6], j[7])
-			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
-			fake_seq.seq = Seq(j[5])
-			result.append(fake_seq)
+			# print key
+			file.write(">"+key+'\n')
+			file.write(j[5]+'\n')
+			# fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
+			# fake_seq.seq = Seq(j[5])
+			# result.append(fake_seq)
 	# INS = list()
 	del INS
 	gc.collect()
@@ -468,12 +339,15 @@ def combine_result(INS, DEL):
 			if len(j) != 7:
 				continue
 			key = "%s*%s*%d*%d*%d*%d"%(j[0], j[1], j[2], j[3], j[4], j[6])
-			fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
-			fake_seq.seq = Seq(j[5])
-			result.append(fake_seq)
+			file.write(">%s\n"%(key))
+			file.write('%s\n'%(j[5]))
+			# fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
+			# fake_seq.seq = Seq(j[5])
+			# result.append(fake_seq)
 	# DEL = list()
 	del DEL
 	gc.collect()
+	file.close()
 	# print INS+DEL
 	# Temp = sorted(INS + DEL, key = lambda x:x[2])
 	# result = list()
@@ -482,7 +356,7 @@ def combine_result(INS, DEL):
 	# 	fake_seq = SeqIO.SeqRecord(seq = str(), id = key, name = key, description = key)
 	# 	fake_seq.seq = Seq(i[5])
 	# 	result.append(fake_seq)
-	return result
+	# return result
 	# return INS+DEL
 
 def count_coverage(chr, s, e, f):
@@ -495,136 +369,19 @@ def add_genotype(info_list, file, low_bandary):
 	for i in xrange(len(info_list)):
 		if info_list[i][0][0] == 'INS':
 			chr = info_list[i][0][1]
-			'''
-			method_1
-			'''
 			start = info_list[i][0][2]-low_bandary
-			# end = info_list[i][0][2] + info_list[i][0][3]
 			end = info_list[i][0][2] + low_bandary
-			# evidence = len(info_list[i])
-			# '''
-			# method_2
-			# '''
-			# start = int(info_list[i][0][4].split(':')[1])
-			# end = int(info_list[i][0][4].split(':')[2])
 			locus_cov = count_coverage(chr, start, end, file)
-			# # GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
-			# result = simple_call_genotype(evidence, locus_cov, P_heterozygous, P_homozygous)
-			# if result != 0:
-			# 	# GT, GL = simple_call_genotype(evidence, locus_cov)
-			# 	GT, GL = result[0], result[1]
-			# 	for j in xrange(len(info_list[i])):
-			# 		info_list[i][j].append(GT)
-			# 		info_list[i][j].append(GL)
 			for j in xrange(len(info_list[i])):
 				info_list[i][j].append(locus_cov)
-
 		else:
-			# DEL_chr_pos_len_seq_rc_dp
 			for j in xrange(len(info_list[i])):
-			# if info_list[i][j][0] == 'DEL':
 				chr = info_list[i][j][1]
 				start = info_list[i][j][2]
 				end = info_list[i][j][2]+info_list[i][j][3]
-				# evidence = info_list[i][j][4]
 				locus_cov = count_coverage(chr, start, end, file)
-				# # GT, GL = caculate_genotype_likelyhood(evidence, locus_cov)
-				# # GT, GL = simple_call_genotype(evidence, locus_cov)
-				# result = simple_call_genotype(evidence, locus_cov, P_heterozygous, P_homozygous)
-				# if result != 0:
-				# 	GT, GL = result[0], result[1]
-				# 	info_list[i][j].append(GT)
-				# 	info_list[i][j].append(GL)
 				info_list[i][j].append(locus_cov)
 	return info_list
-
-def load_sam(args):
-	'''
-	Load_BAM_File
-	library:	pysam.AlignmentFile
-
-	load_Ref_Genome
-	library:	Bio
-	'''
-	p1 = args.AlignmentFile
-	p2 = args.Output_prefix
-	p3 = args.Reference
-	# global low_bandary
-	# low_bandary = args.min_distance
-	# global P_homozygous
-	# P_homozygous = args.homozygous
-	# global P_heterozygous
-	# P_heterozygous = args.heterozygous
-
-
-	Ref = load_ref(p3)
-
-	samfile = pysam.AlignmentFile(p1)
-	# print(samfile.get_index_statistics())
-	contig_num = len(samfile.get_index_statistics())
-	logging.info("The total number of chromsomes: %d"%(contig_num))
-	# Acquire_Chr_name
-	for _num_ in xrange(contig_num):
-		Chr_name = samfile.get_reference_name(_num_)
-		logging.info("Resolving the chromsome %s."%(Chr_name))
-		# Chr_length = samfile.lengths[_num_]
-		if Chr_name not in CLIP_note:
-			# CLIP_note[Chr_name] = [0] * Chr_length
-			# CLIP_note[Chr_name] = Q.PriorityQueue()
-			CLIP_note[Chr_name] = dict()
-
-		cluster_pos_INS = list()
-		cluster_pos_DEL = list()
-		for read in samfile.fetch(Chr_name):
-			feed_back, feed_back_del = parse_read(read, Chr_name)
-
-			if len(feed_back) > 0:
-				for i in feed_back:
-					cluster_pos_INS.append(i)
-
-			if len(feed_back_del) > 0:
-				for i in feed_back_del:
-					cluster_pos_DEL.append(i)
-		# while not CLIP_note[Chr_name].empty():
-		# 	print Chr_name, CLIP_note[Chr_name].get()
-		# print CLIP_note[Chr_name][6]
-		cluster_pos_INS = sorted(cluster_pos_INS, key = lambda x:x[0])
-		cluster_pos_DEL = sorted(cluster_pos_DEL, key = lambda x:x[0])
-		if len(cluster_pos_INS) == 0:
-			Cluster_INS = list()
-		else:
-			Cluster_INS = cluster(cluster_pos_INS, Chr_name, evidence_read, SV_size)
-
-		if len(cluster_pos_DEL) == 0:
-			Cluster_DEL = list()
-		else:
-			Cluster_DEL = cluster_del(cluster_pos_DEL, Chr_name, Ref)
-
-		logging.info("%d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), Chr_name))
-
-		# print Cluster_DEL
-		# merge_siganl(Chr_name, Cluster)
-		# break
-
-		# merge step
-		Final_result = combine_result(add_genotype(Cluster_INS, samfile), add_genotype(Cluster_DEL,samfile))
-
-		# print Final_result
-
-		# out_signal = open(p2, 'a+')
-		# for i in Final_result:
-		# 	for j in i:
-		# 		out_signal.write(j)
-		# out_signal.close()
-
-		path = p2+Chr_name+'.fa'
-		SeqIO.write(Final_result, path, "fasta")
-
-	# out_signal = open(p2, 'w')
-	# for i in total_signal:
-	# 	out_signal.write(i)
-	# out_signal.close()
-	samfile.close()
 
 def call_ngmlr(inFile, ref, presets, nproc, outFile):
 	"""
@@ -680,31 +437,25 @@ def call_samtools(file, tempdir):
 def single_pipe(out_path, chr, bam_path, low_bandary, evidence_read, SV_size):
 	# print out_path, chr_id, Ref, bam_path
 	samfile = pysam.AlignmentFile(bam_path)
+	CLIP_note = dict()
 	# chr = samfile.get_reference_name(chr_id)
 	logging.info("Resolving the chromsome %s."%(chr))
 	if chr not in CLIP_note:
 		CLIP_note[chr] = dict()
+
 	cluster_pos_INS = list()
 	cluster_pos_DEL = list()
 	for read in samfile.fetch(chr):
-		feed_back, feed_back_del = parse_read(read, chr, low_bandary)
-		if len(feed_back) > 0:
-			for i in feed_back:
-				cluster_pos_INS.append(i)
-			# feed_back = list()
-			# gc.collect()
+		feed_back, feed_back_del = parse_read(read, chr, low_bandary, CLIP_note)
+		cluster_pos_INS += feed_back
+		cluster_pos_DEL += feed_back_del
 
-		if len(feed_back_del) > 0:
-			for i in feed_back_del:
-				cluster_pos_DEL.append(i)
-			# feed_back_del = list()
-			# gc.collect()
 	cluster_pos_INS = sorted(cluster_pos_INS, key = lambda x:x[0])
 	cluster_pos_DEL = sorted(cluster_pos_DEL, key = lambda x:x[0])
 	if len(cluster_pos_INS) == 0:
 		Cluster_INS = list()
 	else:
-		Cluster_INS = cluster(cluster_pos_INS, chr, evidence_read, SV_size, low_bandary)
+		Cluster_INS = cluster(cluster_pos_INS, chr, evidence_read, SV_size, low_bandary, CLIP_note)
 		# cluster_pos_INS = list()
 		del cluster_pos_INS
 		# CLIP_note[chr] = dict()
@@ -720,14 +471,13 @@ def single_pipe(out_path, chr, bam_path, low_bandary, evidence_read, SV_size):
 		del cluster_pos_DEL
 		gc.collect()
 
-	# print("[INFO]: %d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
-	logging.info("%d Alu signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
-	Final_result = combine_result(add_genotype(Cluster_INS, samfile, low_bandary), add_genotype(Cluster_DEL, samfile, low_bandary))
+	# print("[INFO]: %d MEI signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
+	logging.info("%d MEI signal locuses in the chromsome %s."%(len(Cluster_INS)+len(Cluster_DEL), chr))
+	combine_result(add_genotype(Cluster_INS, samfile, low_bandary), add_genotype(Cluster_DEL, samfile, low_bandary), out_path, chr)
 	samfile.close()
 	# path = out_path+chr+'.fa'
 	# SeqIO.write(Final_result, path, "fasta")
 	# return Final_result
-	final_seq[chr] = Final_result
 
 def multi_run_wrapper(args):
    return single_pipe(*args)
@@ -744,6 +494,12 @@ def load_sam_multi_processes(args):
 	p2 = args.temp_dir
 	p3 = args.Reference
 	threads = args.threads
+
+	if p2[-1] == '/':
+		temporary_dir = p2
+	else:
+		temporary_dir = p2+'/'
+	os.mkdir("%ssignatures"%temporary_dir)
 
 	# Major Steps:
 	# loading alignment file: bam format
@@ -767,39 +523,41 @@ def load_sam_multi_processes(args):
 	# start to establish multiprocesses
 	analysis_pools = Pool(processes=threads)
 	# Acquire_Chr_name
-	Final_result = list()
+	# Final_result = list()
 	for i in process_list:
-		# single_pipe(out_path, chr_id, Ref, samfile):
-		# para = [(p2, _num_, Ref, samfile)]
-		# print i
-		para = [(p2, i[0], p1, args.min_distance, args.min_support, args.min_length)]
+		para = [(temporary_dir, i[0], p1, args.min_distance, args.min_support, args.min_length)]
 		analysis_pools.map_async(multi_run_wrapper, para)
 	analysis_pools.close()
 	analysis_pools.join()
-
-	# print len(final_seq)
-
-	# for key in dict(final_seq):
-	# 	print key, len(final_seq[key])
-
-	TE_list = list()
-	for key in dict(final_seq):
-		TE_list += final_seq[key]
-
-	gc.collect()
-
-	logging.info("Writing into disk")
-	# path = p2+'potential_ME.fa'
-	path = args.output+'potential_ME.fa'
-	# print TE_list
-	SeqIO.write(TE_list, path, "fasta")
-
 	samfile.close()
 
-# VERSION="1.0"
+	if args.output[-1] == '/':
+		output_p = args.output
+	else:
+		output_p = args.output+'/'
+	merge_cmd = ("cat %ssignatures/* > %spotential_ME.fa"%(temporary_dir, output_p))
+	print merge_cmd
+	exe(merge_cmd)
+
+	logging.info("Cleaning temporary files.")
+	cmd_remove_tempfile = ("rm -r %ssignatures"%(temporary_dir))
+	exe(cmd_remove_tempfile)
+
+	# TE_list = list()
+	# for res in Final_result:
+	# 	TE_list += res.get()[0]
+
+	# del Final_result
+	# gc.collect()
+
+	# logging.info("Writing into disk")
+	# path = args.output+'potential_ME.fa'
+	# SeqIO.write(TE_list, path, "fasta")
+
+# VERSION="1.0.2"
 
 USAGE="""\
-	Maps Reads Using NGMLR and Samtools to produce .bam file.
+	Map reads using NGMLR and Samtools to produce .bam file.
 
 	If input is a .fastq, or .fasta, we do the initial mapping
 	for you all at once.
@@ -807,7 +565,7 @@ USAGE="""\
 	If input is a .sam, we convert and sort it to be a bam, 
 	and then make an index for it.  
 
-	If your input is a .bam, we extract the ME signals and
+	If your input is a .bam, we extract the ME signatures and
 	collect the sub-sequence of them.
 
 	The output is a .fasta file contains potentials non-reference
@@ -815,37 +573,26 @@ USAGE="""\
 """
 
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="process.py extract", description=USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
+	parser = argparse.ArgumentParser(prog="process.py detection", description=USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
 	# parser.add_argument("AlignmentFile", type=str, help="the bam format file generated by ngmlr, within a '.bai' index file")
-	parser.add_argument("input", metavar="[SAM,BAM,FASTA,FASTQ]", type=str, help="Input reads to be mapped")
-	parser.add_argument("Reference", metavar="REFERENCE", type=str, help="the reference genome(fasta format)")
-	parser.add_argument('temp_dir', type=str, help = "temporary directory to use for distributed jobs")
+	parser.add_argument("input", metavar="[SAM,BAM,FASTA,FASTQ]", type=str, help="Input [Mapped/Unmapped] reads.")
+	parser.add_argument("Reference", metavar="REFERENCE", type=str, help="The reference genome (fasta format).")
+	parser.add_argument('temp_dir', type=str, help = "Temporary directory to use for distributed jobs.")
 	# parser.add_argument("--temp", type=str, default=tempfile.gettempdir(), help="Where to save temporary files")
-	parser.add_argument('output', type=str, help = "the prefix of potential ME loci output")
+	parser.add_argument('output', type=str, help = "Directory to output potential ME loci.")
 
 	parser.add_argument('-s', '--min_support', help = "Mininum number of reads that support a ME.[%(default)s]", default = 5, type = int)
 	parser.add_argument('-l', '--min_length', help = "Mininum length of ME to be reported.[%(default)s]", default = 50, type = int)
-	parser.add_argument('-d', '--min_distance', help = "Mininum distance of two ME clusters.[%(default)s]", default = 20, type = int)
+	parser.add_argument('-d', '--min_distance', help = "Mininum distance of two ME clusters to be intergrated.[%(default)s]", default = 20, type = int)
 	# parser.add_argument('-hom', '--homozygous', help = "The mininum score of a genotyping reported as a homozygous.[%(default)s]", default = 0.8, type = float)
 	# parser.add_argument('-het','--heterozygous', help = "The mininum score of a genotyping reported as a heterozygous.[%(default)s]", default = 0.3, type = float)
 	# parser.add_argument('-q', '--min_mapq', help = "Mininum mapping quality.[20]", default = 20, type = int)
-	parser.add_argument('-t', '--threads', help = "Number of threads to use.[%(default)s]", default = 1, type = int)
-	parser.add_argument('-x', '--presets', help = "The sequencing type <pacbio,ont> of the reads.[%(default)s]", default = "pacbio", type = str)
+	parser.add_argument('-t', '--threads', help = "Number of threads to use.[%(default)s]", default = 8, type = int)
+	parser.add_argument('-x', '--presets', help = "The sequencing platform <pacbio,ont> of the reads.[%(default)s]", default = "pacbio", type = str)
 	# parser.add_argument("--temp", type=str, default=tempfile.gettempdir(), help="Where to save temporary files")
 	# parser.add_argument("--chunks", type=int, default=0, help="Create N scripts containing commands to each input of the fofn (%(default)s)")
 	# parser.add_argument("--debug", action="store_true")
 	args = parser.parse_args(argv)
-
-	# setupLogging(args.debug)
-	# checkBlasrParams(args.params)
-	
-	# if args.output is None:
-	# 	ext =  args.input[args.input.rindex('.'):]
-	# 	main = args.input[:args.input.rindex('.')]
-	# 	if ext in [".sam", ".bam"]:
-	# 		args.output = main + ".tails" + ext
-	# 	else:
-	# 		args.output = main + ".tails.sam"
 	return args
 
 

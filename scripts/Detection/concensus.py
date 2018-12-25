@@ -1,3 +1,5 @@
+# * @author: Jiang Tao (tjiang@hit.edu.cn)
+
 # import sys
 from collections import Counter
 

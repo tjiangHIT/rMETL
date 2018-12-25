@@ -1,3 +1,5 @@
+# * @author: Jiang Tao (tjiang@hit.edu.cn)
+
 
 from scipy.special import comb
 # from math import log10

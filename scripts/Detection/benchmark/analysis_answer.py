@@ -2,7 +2,7 @@ import sys
 from data_collection import *
 
 # standard = 20
-dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "RetroSeq.vcf", "1kg.vcf", "Mobster.txt", "MELT.vcf"]
+dataset_name = ["Tea.alu.bed", "Tea.L1.bed", "Tangram.vcf", "RetroSeq.vcf", "1kg.vcf", "Mobster.txt", "MELT2.vcf", "MELT2D.vcf"]
 Alu = dict()
 Alu_D = dict()
 L1 = dict()
@@ -11,7 +11,7 @@ SVA = dict()
 SVA_D = dict()
 Ans = list()
 # Ans_tag = ["Tea", "Tangram", "RetroSeq", "1kG", "Mobster", "MELT"]
-Ans_tag = ["Tea", "Tangram", "1kG", "Mobster"]
+Ans_tag = ["Tea", "Tangram", "1kG", "Mobster", "MELT"]
 
 def process_path(path):
 	load_path = list()
@@ -96,7 +96,7 @@ def load_data(path):
 	# Ans.append(collect_RetroSeq_plus(path[3]))
 	Ans.append(collect_1kg_plus(path[4]))
 	Ans.append(collect_Mobster_plus(path[5]))
-	# Ans.append(collect_MELT_plus(path[6]))
+	Ans.append(collect_MELT_plus(path[6], path[7]))
 
 	for i in xrange(len(Ans)):
 		Name = Ans_tag[i]
@@ -342,10 +342,12 @@ def evaluation_output_nagitive(p):
 	for line in file:
 		seq = line.strip('\n').split('\t')
 		chr = seq[0]
+		if seq[0][0] == '#':
+			continue
 		breakpoint = int(seq[1])
 		# subtype = seq[3]
 		# subtype = subtype.split(':')[2]
-		subtype = seq[3][8]+seq[3][1]
+		subtype = seq[4][8]+seq[4][1]
 		flag = compare(chr, breakpoint, subtype)
 		if flag == 0:
 			print(line.strip('\n')) 
@@ -414,16 +416,16 @@ def evaluation_sniffles_output_negitive(p):
 		if seq[0][0] == '#':
 			continue
 		chr = seq[0]
-		breakpoint = int(seq[13])
+		breakpoint = int(seq[1])
 		# subtype = seq[3]
 		# subtype = subtype.split(':')[2]
 		f2 = 0
-		if seq[10][:3] == "DEL":
+		if seq[4][1:4] == "DEL":
 			subtype = 'XD'
 		# if seq[4][1:4] == "DEL":
 		# 	subtype = 'XD'
 			f2 = 1
-		if seq[10][:3] == "INS" or seq[10][:3] == "DUP":
+		if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
 			subtype = 'XI'
 		# if seq[4][1:4] == "INS" or seq[4][1:4] == "DUP":
 		# 	subtype = 'XI'
@@ -460,8 +462,9 @@ def main():
 	load_path = process_path(dataset_prefix)
 	load_data(load_path)
 	call_path = sys.argv[2]
-	evaluation(call_path)
-	# evaluation_output_nagitive(call_path)
+	#evaluation(call_path)
+	evaluation_vcf(call_path)
+	#evaluation_output_nagitive(call_path)
 	# evaluation_sniffles_output_negitive(call_path)
 	# evaluation_tag(call_path)
 	# evaluation_sniffles(call_path)

@@ -4,19 +4,19 @@
  * All rights Reserved, Designed By HIT-Bioinformatics   
  * @Title:  process.py
  * @Package: argparse, pysam, sys
- * @Description: Control the nTED pipeline
- * @author: tjiang
+ * @Description: Control the rMETL pipeline
+ * @author: Jiang Tao (tjiang@hit.edu.cn)
  * @date: Apr 24 2018
- * @version V1.0     
+ * @version V1.0.2   
 '''
 
 import argparse
 import sys
 import pysam
-import extract, Map, call_TE
+import extract_simple, Map, call_TE
 # from process import *
 
-STAGES = {"detection": extract.run, \
+STAGES = {"detection": extract_simple.run, \
           "realignment": Map.run, \
           "calling": call_TE.run}
 
