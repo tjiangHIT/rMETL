@@ -1,3 +1,3 @@
 #!/bin/bash
 
-ln -s scripts/Detection/process.py rMETL.py
+ln -s src/process.py rMETL.py
