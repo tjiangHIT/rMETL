@@ -1,3 +1,0 @@
-1. copy ALU elements from dbRIP and paste to the ALU locus annotated by RepeatMasker(UCSC version hg19).
-2. simulate SMRT reads using pbsim.
-3. align + detect
