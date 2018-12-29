@@ -13,7 +13,6 @@
 from collections import Counter
 from genotype import *
 from CommandRunner import *
-from Bio import SeqIO
 from SupplyInputTrans import *
 import argparse
 import logging

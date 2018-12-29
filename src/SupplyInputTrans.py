@@ -3,6 +3,7 @@
 
 import logging
 from CommandRunner import *
+from Bio import SeqIO
 
 def load_ref(ref_g):
 	logging.info("Loading reference genome...")

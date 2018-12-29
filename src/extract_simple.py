@@ -19,7 +19,6 @@ import sys
 import time
 import gc
 from concensus import *
-from Bio import SeqIO
 from genotype import *
 from CommandRunner import *
 from SupplyInputTrans import *
