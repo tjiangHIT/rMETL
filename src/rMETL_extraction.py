@@ -18,13 +18,13 @@ import logging
 import sys
 import time
 import gc
-from concensus import *
-from genotype import *
-from CommandRunner import *
-from SupplyInputTrans import *
-from multiprocessing import Pool
 
-VERSION="1.0.2"
+from multiprocessing import Pool
+from rMETL_version import __version__, __author__, __contact__
+from rMETL_concensus import construct_concensus_info
+from rMETL_genotype import add_genotype
+from rMETL_utils import load_ref, check_bai, call_ngmlr, call_samtools
+from rMETL_cmdRunner import setupLogging, exe
 
 USAGE="""\
            _  ___  _   _____   _______   _
@@ -52,7 +52,9 @@ USAGE="""\
 	ME clusters.
 
 	rMETL V%s
-"""%(VERSION)
+	Author: %s
+	Contact: %s
+"""%(__version__, __author__, __contact__)
 
 INS_flag = {1:'I'}
 DEL_flag = {2:'D'}
@@ -521,7 +523,7 @@ def load_sam_multi_processes(args):
 # 
 # ************************MAIN_FUNCTION*******************************
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="process.py detection", \
+	parser = argparse.ArgumentParser(prog="rMETL.py detection", \
 		description=USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", metavar="[SAM,BAM,FASTA,FASTQ]", type=str, \
 		help="Input [Mapped/Unmapped] reads.")

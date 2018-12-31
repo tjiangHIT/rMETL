@@ -11,17 +11,16 @@
 '''
 
 import argparse
-import extract_simple
-import Map
-import call_TE
+import rMETL_extraction
+import rMETL_realign
+import rMETL_MEIcalling
+from rMETL_version import __version__, __author__, __contact__
 
-STAGES = {"detection": extract_simple.run, \
-          "realignment": Map.run, \
-          "calling": call_TE.run}
+STAGES = {'detection': rMETL_extraction.run, \
+          'realignment': rMETL_realign.run, \
+          'calling': rMETL_MEIcalling.run}
 
-VERSION="1.0.2"
-
-USAGE = """\
+USAGE = '''\
            _  ___  _   _____   _______   _
      _ _  | ^_   _^ | |  ___| |__   __| | |
     | ^_| | | | | | | | |__      | |    | |
@@ -39,15 +38,17 @@ USAGE = """\
   See README.md for documentation or --help for details
   
   rMETL V%s
-"""%(VERSION)
+  Author: %s
+  Contact: %s
+'''%(__version__, __author__, __contact__)
 
 def parseArgs():
-	parser = argparse.ArgumentParser(prog="process.py", description=USAGE, \
+	parser = argparse.ArgumentParser(prog='rMETL.py', description=USAGE, \
     formatter_class=argparse.RawDescriptionHelpFormatter)
-	parser.add_argument("stage", metavar="STAGE", choices=STAGES.keys(), \
-    type=str, help="Stage to execute")
-	parser.add_argument("options", metavar="OPTIONS", nargs=argparse.REMAINDER, \
-    help="Options to pass to the stage")
+	parser.add_argument('stage', metavar='STAGE', choices=STAGES.keys(), \
+    type=str, help='Stage to execute')
+	parser.add_argument('options', metavar='OPTIONS', nargs=argparse.REMAINDER, \
+    help='Options to pass to the stage')
 	args = parser.parse_args()
 	STAGES[args.stage](args.options)
 

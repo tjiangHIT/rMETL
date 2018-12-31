@@ -14,9 +14,9 @@ import argparse
 import logging
 import sys
 import time
-from CommandRunner import *
 
-VERSION="1.0.2"
+from rMETL_version import __version__, __author__, __contact__
+from rMETL_cmdRunner import setupLogging, exe
 
 USAGE="""\
            _  ___  _   _____   _______   _
@@ -32,12 +32,14 @@ USAGE="""\
 
 	Aligner: NGMLR version 0.2.6
 	TE refs: Alu concensus
-			 L1 concensus
-			 SVA concensus
+		 L1 concensus
+		 SVA concensus
 	The output of this script is a .sam file.
 
 	rMETL V%s
-"""%(VERSION)
+	Author: %s
+	Contact: %s
+"""%(__version__, __author__, __contact__)
 
 # **************************Call-NGMLR********************************
 def call_ngmlr(inFile, ref, presets, nproc, outFile, SUBREAD_LENGTH, SUBREAD_CORRIDOR):
@@ -65,7 +67,7 @@ def call_ngmlr(inFile, ref, presets, nproc, outFile, SUBREAD_LENGTH, SUBREAD_COR
 # 
 # ************************MAIN_FUNCTION*******************************
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="process.py realignment", description=USAGE, \
+	parser = argparse.ArgumentParser(prog="rMETL.py realignment", description=USAGE, \
 		formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", metavar="FASTA", type=str, help="Input potential_ME.fa.")
 	parser.add_argument("ME_Ref", type=str, help="The reference genome(fasta format).")

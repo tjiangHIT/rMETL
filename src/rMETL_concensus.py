@@ -7,12 +7,6 @@ def acquire_count_max(_list_):
 	return c.most_common(1)[0]
 	# this is a tuple
 
-def revcom_complement(s): 
-    basecomplement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'} 
-    letters = list(s) 
-    letters = [basecomplement[base] for base in letters] 
-    return ''.join(letters)[::-1]
-
 def construct_concensus_info(Ins_list, Clip_list, evidence_read, SV_size):
 	total_count = len(Ins_list) + len(Clip_list)
 	if total_count < evidence_read:

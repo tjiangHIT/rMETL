@@ -10,17 +10,17 @@
  * @version V1.0.2  
 '''
 
-from collections import Counter
-from genotype import *
-from CommandRunner import *
-from SupplyInputTrans import *
 import argparse
 import logging
 import sys
 import time
 import cigar
 
-VERSION="1.0.2"
+from collections import Counter
+from rMETL_version import __version__, __author__, __contact__
+from rMETL_genotype import simple_call_genotype
+from rMETL_cmdRunner import setupLogging
+from rMETL_utils import load_ref
 
 USAGE="""\
            _  ___  _   _____   _______   _
@@ -37,7 +37,9 @@ USAGE="""\
 	Optional output format: .bed or .vcf
 	
 	rMETL V%s
-"""%(VERSION)
+	Author: %s
+	Contact: %s
+"""%(__version__, __author__, __contact__)
 
 def acquire_count_max(_list_):
 	c = Counter(_list_)
@@ -45,6 +47,8 @@ def acquire_count_max(_list_):
 
 flag_dic = {0:1, \
 			16:2, \
+			256:0, \
+			272:0, \
 			2048:0, \
 			2064:0, \
 			4:0}
@@ -307,7 +311,7 @@ def call_vcf(args):
 # 
 # ************************MAIN_FUNCTION*******************************
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="process.py calling", description=USAGE, \
+	parser = argparse.ArgumentParser(prog="rMETL.py calling", description=USAGE, \
 		formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", metavar="SAM", type=str, help="Input cluster.sam.")
 	parser.add_argument("Reference", metavar="REFERENCE", type=str, \

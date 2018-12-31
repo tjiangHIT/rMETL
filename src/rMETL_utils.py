@@ -2,8 +2,8 @@
 # -*-coding:utf-8-*-
 
 import logging
-from CommandRunner import *
 from Bio import SeqIO
+from rMETL_cmdRunner import exe
 
 def load_ref(ref_g):
 	logging.info("Loading reference genome...")
