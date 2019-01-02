@@ -2,6 +2,7 @@
 # -*-coding:utf-8-*-
 
 import logging
+import os
 from Bio import SeqIO
 from rMETL_cmdRunner import exe
 
