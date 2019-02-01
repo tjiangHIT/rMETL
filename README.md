@@ -64,6 +64,8 @@ Realignment of chimeric read parts.
 Mobile Element Insertion calling.
 
 	rMETL.py calling <SAM> <reference> <out_type> <output>
+	
+Strongly recommend making output directory manually at first.:blush:
 
 ---
 ### Optional Parameters
