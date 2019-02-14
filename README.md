@@ -101,7 +101,7 @@ Strongly recommend making output directory manually at first.:blush:
 | MEI       |Enables rMETL to display MEI/MED only.|False|
 
 ---
-### Reference
+### Citation
 Tao Jiang, Bo Liu, Junyi Li, Yadong Wang; rMETL: sensitive mobile element insertion detection with long read realignment, Bioinformatics, , btz106, https://doi.org/10.1093/bioinformatics/btz106
 
 ---
