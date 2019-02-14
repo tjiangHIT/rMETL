@@ -102,7 +102,7 @@ Strongly recommend making output directory manually at first.:blush:
 
 ---
 ### Reference
-bioRxiv 421560; doi: https://doi.org/10.1101/421560 
+Tao Jiang, Bo Liu, Junyi Li, Yadong Wang; rMETL: sensitive mobile element insertion detection with long read realignment, Bioinformatics, , btz106, https://doi.org/10.1093/bioinformatics/btz106
 
 ---
 ### Contact
