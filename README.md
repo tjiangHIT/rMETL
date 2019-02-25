@@ -106,4 +106,4 @@ Tao Jiang, Bo Liu, Junyi Li, Yadong Wang; rMETL: sensitive mobile element insert
 
 ---
 ### Contact
-For advising, bug reporting and requiring help, please contact ydwang@hit.edu.cn or tjiang@hit.edu.cn
+For advising, bug reporting and requiring help, please post on Github Issue or contact tjiang@hit.edu.cn.
