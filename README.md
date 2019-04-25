@@ -11,19 +11,19 @@ rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 		|_|    |_|  \__/  |_| |______|     |_|     |______|
      
 	
-	$ git clone https://github.com/hitbc/rMETL.git (git clone https://github.com/tjiangHIT/rMETL.git)
+	$ git clone https://github.com/tjiangHIT/rMETL.git (git clone https://github.com/hitbc/rMETL.git)
 	$ cd rMETL/
 	$ bash INSTALL.sh
 	$ ./rMETL.py
 
 ---	
 ### Introduction
-Mobile element insertion (MEI) is a major category of structure variations (SVs). The rapid development of long read sequencing technologies provides the opportunity to detect MEIs sensitively. However, the signals of MEI implied by noisy long reads are highly complex due to the repetitiveness of mobile elements as well as the high sequencing error rates. Herein, we propose the Realignmentbased Mobile Element insertion detection Tool for Long read (rMETL). Benchmarking results of simulated and real datasets demonstrate that rMETL enables to handle the complex signals to discover MEIs sensitively. It is suited to produce high-quality MEI callsets in many genomics studies. 
+Mobile element insertion (MEI) is a major category of structure variations (SVs). The rapid development of long read sequencing technologies provides the opportunity to detect MEIs sensitively. However, the signals of MEI implied by noisy long reads are highly complex due to the repetitiveness of mobile elements as well as the high sequencing error rates. Herein, we propose the Realignment-based Mobile Element insertion detection Tool for Long read (rMETL). Benchmarking results of simulated and real datasets demonstrate that rMETL has the ability to discover MEIs sensitively as well as prevent false positives. It is suited to produce high-quality MEI callsets in many genomics studies.
 
 ---
 ### Simulated datasets
 
-The simulated datasets use for benchmarking are available at: https://drive.google.com/open?id=1ujV2C8e1PNAVhSkh9vKtjWLdG_OHcH-k
+The simulated datasets use for benchmarking are available at: [Google drive](https://drive.google.com/open?id=1ujV2C8e1PNAVhSkh9vKtjWLdG_OHcH-k)
 
 ---
 ### Memory usage
@@ -45,7 +45,7 @@ Its peak memory footprint is about 7.05 Gigabytes (default setting), on a server
 ---
 ### Installation
 
-Current version of rMETL needs to be run on Linux operating system.
+Current version of rMETL has been tested on 64bit Linux operating system.
 The source code is written in python, and can be directly download from: https://github.com/hitbc/rMETL 
 A mirror is also in: https://github.com/tjiangHIT/rMETL
 The INSTALL.sh is attached. Use the bash command for generating the executable file.
@@ -106,4 +106,4 @@ If you use rMETL, please cite:
 
 ---
 ### Contact
-For advising, bug reporting and requiring help, please post on Github Issue or contact tjiang@hit.edu.cn.
+For advising, bug reporting and requiring help, please post on [Github Issue](https://github.com/tjiangHIT/rMETL/issues) or contact tjiang@hit.edu.cn.
