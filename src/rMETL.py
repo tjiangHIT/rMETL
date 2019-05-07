@@ -33,9 +33,10 @@ USAGE = '''\
   STAGE is one of
     detection    Inference of putative MEI loci.
     realignment  Realignment of chimeric read parts.
-    calling      Mobile Element Insertion calling.
+    calling      Mobile Element Insertion/Deletion calling.
     
   See README.md for documentation or --help for details
+  Strongly recommend making output directory manually at first.
   
   rMETL V%s
   Author: %s

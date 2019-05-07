@@ -37,19 +37,19 @@ USAGE="""\
     rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
 
-	Map reads using NGMLR and Samtools to produce .bam file.
+	Support reads aligned with Ngmlr and sorted with Samtools
 
-	If input is a .fastq, or .fasta, we do the initial mapping
-	for you all at once.
+	If input is a fastq or fasta format file, rMETL generates
+	alignments with Ngmlr at first;
 
-	If input is a .sam, we convert and sort it to be a bam, 
-	and then make an index for it.  
+	If input is a sam format file, rMETL converts and sorts it
+	to be a bam format file;
 
-	If your input is a .bam, we extract the ME signatures and
-	collect the sub-sequence of them.
+	If your input is a bam format file with index, rMETL extracts
+	the ME signatures and collects the sub-sequence of them.
 
-	The output is a .fasta file contains potentials non-reference
-	ME clusters.
+	The output is a fasta format file called 'potential.fa' 
+	contains potentials non-reference ME clusters.
 
 	rMETL V%s
 	Author: %s
@@ -428,7 +428,7 @@ def single_pipe(out_path, chr, bam_path, low_bandary, evidence_read, SV_size):
 	'''
 	samfile = pysam.AlignmentFile(bam_path)
 	CLIP_note = dict()
-	logging.info("Resolving the chromsome %s."%(chr))
+	logging.info("Resolving chromsome %s."%(chr))
 	if chr not in CLIP_note:
 		CLIP_note[chr] = dict()
 	cluster_pos_INS = list()
@@ -455,7 +455,7 @@ def single_pipe(out_path, chr, bam_path, low_bandary, evidence_read, SV_size):
 			SV_size, low_bandary)
 		del cluster_pos_DEL
 		gc.collect()
-	logging.info("%d MEI signal locuses in the chromsome %s."%(len(Cluster_INS)+\
+	logging.info("%d MEI/MED signal loci in the chromsome %s."%(len(Cluster_INS)+\
 		len(Cluster_DEL), chr))
 	combine_result(add_genotype(Cluster_INS, samfile, low_bandary), \
 		add_genotype(Cluster_DEL, samfile, low_bandary), out_path, chr)
@@ -528,12 +528,12 @@ def parseArgs(argv):
 	parser = argparse.ArgumentParser(prog="rMETL.py detection", \
 		description=USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", metavar="[SAM,BAM,FASTA,FASTQ]", type=str, \
-		help="Input [Mapped/Unmapped] reads.")
+		help="Input reads with/without alignment.")
 	parser.add_argument("Reference", metavar="REFERENCE", type=str, \
-		help="The reference genome (fasta format).")
+		help="The reference genome in fasta format.")
 	parser.add_argument('temp_dir', type=str, \
 		help = "Temporary directory to use for distributed jobs.")
-	parser.add_argument('output', type=str, \
+	parser.add_argument('output_dir', type=str, \
 		help = "Directory to output potential ME loci.")
 	parser.add_argument('-s', '--min_support',\
 	 help = "Mininum number of reads that support a ME.[%(default)s]", \
@@ -542,7 +542,7 @@ def parseArgs(argv):
 		help = "Mininum length of ME to be reported.[%(default)s]", \
 		default = 50, type = int)
 	parser.add_argument('-d', '--min_distance', \
-		help = "Mininum distance of two ME clusters to be intergrated.[%(default)s]", \
+		help = "Mininum distance of two ME signatures to be intergrated.[%(default)s]", \
 		default = 20, type = int)
 	parser.add_argument('-t', '--threads', \
 		help = "Number of threads to use.[%(default)s]", default = 8, \

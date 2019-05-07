@@ -32,9 +32,10 @@ USAGE="""\
 
     rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
-	rMETL MEI calling.
-
-	Optional output format: .bed or .vcf
+	Generate final MEI/MED callset in bed or vcf file.
+	
+	The output file called 'calling.bed' or 'calling.vcf'
+	stores in output directory.
 	
 	rMETL V%s
 	Author: %s
@@ -313,12 +314,12 @@ def call_vcf(args):
 def parseArgs(argv):
 	parser = argparse.ArgumentParser(prog="rMETL.py calling", description=USAGE, \
 		formatter_class=argparse.RawDescriptionHelpFormatter)
-	parser.add_argument("input", metavar="SAM", type=str, help="Input cluster.sam.")
+	parser.add_argument("input", metavar="SAM", type=str, help="Input cluster.sam on STAGE realignment.")
 	parser.add_argument("Reference", metavar="REFERENCE", type=str, \
-		help="The reference genome(fasta format).")
+		help="The reference genome in fasta format.")
 	parser.add_argument("format", metavar="[BED,VCF]", type=str, \
 		help="The format of the output file. [%(default)s]", default = "bed")
-	parser.add_argument('output', type=str, help = "Prefix of final call set.")
+	parser.add_argument('output', type=str, help = "Directory to output final callset.")
 	parser.add_argument('-hom', '--homozygous', \
 		help = "The mininum score of a genotyping reported as a homozygous.[%(default)s]", \
 		default = 0.8, type = float)
@@ -330,7 +331,7 @@ def parseArgs(argv):
 	parser.add_argument('-c', '--clipping_threshold', \
 		help = "Mininum threshold of realignment clipping.[%(default)s]", \
 		default = 0.5, type = float)
-	parser.add_argument('--sample', help = "The name of the sample that is noted.", \
+	parser.add_argument('--sample', help = "Sample description", \
 		default = "None", type = str)
 	parser.add_argument('--MEI', help = "Enables rMETL to display MEI/MED only.[%(default)s]", \
 		default = "True", type = str)
@@ -346,7 +347,7 @@ def run(argv):
     elif args.format == "vcf":
     	call_vcf(args)
     else:
-    	logging.error("The format is available.")
+    	logging.error("Invalid format.")
     	exit(1)
     logging.info("Finished in %0.2f seconds."%(time.time() - starttime))
 

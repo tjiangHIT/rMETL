@@ -34,7 +34,7 @@ USAGE="""\
 	TE refs: Alu concensus
 		 L1 concensus
 		 SVA concensus
-	The output of this script is a .sam file.
+	The output is a sam format file called 'cluster.sam'.
 
 	rMETL V%s
 	Author: %s
@@ -69,9 +69,9 @@ def call_ngmlr(inFile, ref, presets, nproc, outFile, SUBREAD_LENGTH, SUBREAD_COR
 def parseArgs(argv):
 	parser = argparse.ArgumentParser(prog="rMETL.py realignment", description=USAGE, \
 		formatter_class=argparse.RawDescriptionHelpFormatter)
-	parser.add_argument("input", metavar="FASTA", type=str, help="Input potential_ME.fa.")
-	parser.add_argument("ME_Ref", type=str, help="The reference genome(fasta format).")
-	parser.add_argument('output', type=str, help = "Prefix of potential ME classification.")
+	parser.add_argument("input", metavar="FASTA", type=str, help="Input potential_ME.fa on STAGE detection.")
+	parser.add_argument("ME_Ref", type=str, help="The transposable element concensus in fasta format.")
+	parser.add_argument('output', type=str, help = "Directory to output realignments.")
 	parser.add_argument('-t', '--threads', help = "Number of threads to use.[%(default)s]", \
 		default = 8, type = int)
 	parser.add_argument('-x', '--presets', \
