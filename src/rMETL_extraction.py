@@ -497,7 +497,8 @@ def load_sam_multi_processes(args):
 	analysis_pools.join()
 	samfile.close()
 
-	output_p = args.output if args.output.endswith('/') else "%s/"%(args.output)
+	output_p = args.output_dir if args.output_dir.endswith('/') else \
+	"%s/"%(args.output_dir)
 	if not os.path.exists(output_p):
 		os.mkdir(output_p)
 	merge_cmd = ("cat %ssignatures/* > %spotential_ME.fa"%(temporary_dir, output_p))
