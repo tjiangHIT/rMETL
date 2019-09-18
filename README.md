@@ -102,7 +102,7 @@ Strongly recommend making output directory manually at first.:blush:
 ---
 ### Citation
 If you use rMETL, please cite:
-> Tao Jiang *et al*; rMETL: sensitive mobile element insertion detection with long read realignment, *Bioinformatics*, , btz106, https://doi.org/10.1093/bioinformatics/btz106
+> Tao Jiang *et al*; rMETL: sensitive mobile element insertion detection with long read realignment, *Bioinformatics*, Volume 35, Issue 18, 15 September 2019, Pages 3484–3486, https://doi.org/10.1093/bioinformatics/btz106
 
 ---
 ### Contact
