@@ -15,8 +15,8 @@ import logging
 import sys
 import time
 
-from rMETL_version import __version__, __author__, __contact__
-from rMETL_cmdRunner import setupLogging, exe
+from rMETL.rMETL_version import __version__, __author__, __contact__
+from rMETL.rMETL_cmdRunner import setupLogging, exe
 
 USAGE="""\
            _  ___  _   _____   _______   _

@@ -13,8 +13,7 @@ rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 	
 	$ git clone https://github.com/tjiangHIT/rMETL.git (git clone https://github.com/hitbc/rMETL.git)
 	$ cd rMETL/
-	$ bash INSTALL.sh
-	$ ./rMETL.py
+	$ pip install .
 
 ---	
 ### Introduction

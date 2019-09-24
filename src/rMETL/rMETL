@@ -11,10 +11,10 @@
 '''
 
 import argparse
-import rMETL_extraction
-import rMETL_realign
-import rMETL_MEIcalling
-from rMETL_version import __version__, __author__, __contact__
+import rMETL.rMETL_extraction as rMETL_extraction
+import rMETL.rMETL_realign as rMETL_realign
+import rMETL.rMETL_MEIcalling as rMETL_MEIcalling
+from rMETL.rMETL_version import __version__, __author__, __contact__
 
 STAGES = {'detection': rMETL_extraction.run, \
           'realignment': rMETL_realign.run, \

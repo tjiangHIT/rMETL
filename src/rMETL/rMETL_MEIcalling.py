@@ -17,10 +17,10 @@ import time
 import cigar
 
 from collections import Counter
-from rMETL_version import __version__, __author__, __contact__
-from rMETL_genotype import simple_call_genotype
-from rMETL_cmdRunner import setupLogging
-from rMETL_utils import load_ref
+from rMETL.rMETL_version import __version__, __author__, __contact__
+from rMETL.rMETL_genotype import simple_call_genotype
+from rMETL.rMETL_cmdRunner import setupLogging
+from rMETL.rMETL_utils import load_ref
 
 USAGE="""\
            _  ___  _   _____   _______   _

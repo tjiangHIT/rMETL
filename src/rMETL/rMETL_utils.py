@@ -4,7 +4,7 @@
 import logging
 import os
 from Bio import SeqIO
-from rMETL_cmdRunner import exe
+from rMETL.rMETL_cmdRunner import exe
 
 def load_ref(ref_g):
 	logging.info("Loading reference genome...")

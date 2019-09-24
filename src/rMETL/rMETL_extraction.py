@@ -20,11 +20,11 @@ import time
 import gc
 
 from multiprocessing import Pool
-from rMETL_version import __version__, __author__, __contact__
-from rMETL_concensus import construct_concensus_info
-from rMETL_genotype import add_genotype
-from rMETL_utils import load_ref, check_bai, call_ngmlr, call_samtools
-from rMETL_cmdRunner import setupLogging, exe
+from rMETL.rMETL_version import __version__, __author__, __contact__
+from rMETL.rMETL_concensus import construct_concensus_info
+from rMETL.rMETL_genotype import add_genotype
+from rMETL.rMETL_utils import load_ref, check_bai, call_ngmlr, call_samtools
+from rMETL.rMETL_cmdRunner import setupLogging, exe
 
 USAGE="""\
            _  ___  _   _____   _______   _
