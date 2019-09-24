@@ -14,7 +14,7 @@ It is suited to produce high quality MEI callsets in many genomics studies.'''
 
 setup(
     name = "rMETL",
-    version = "1.0.2",
+    version = "1.0.4",
     description = "realignment-based Mobile Element insertion detection Tool for Long read",
     author = "Jiang Tao",
     author_email = "tjiang@hit.edu.cn",
