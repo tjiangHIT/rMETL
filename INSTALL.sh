@@ -1,4 +1,4 @@
 # !/usr/bin/bash
 
-ln -s src/rMETL.py rMETL.py
+ln -s src/rMETL/rMETL rMETL
 
