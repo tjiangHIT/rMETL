@@ -1,8 +1,3 @@
-# rMETL: 
-rMETL - realignment-based Mobile Element insertion detection Tool for Long read
-
----
-### Getting Start
 		        __        __   ______   _________   _
 		 _ __  |  \      /  | |  ____| |___   ___| | |
 		| ^__| |   \    /   | | |___       | |     | |
@@ -10,10 +5,7 @@ rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 		| |    | | \ \/ / | | | |____      | |     | |____
 		|_|    |_|  \__/  |_| |______|     |_|     |______|
      
-	
-	$ git clone https://github.com/tjiangHIT/rMETL.git (git clone https://github.com/hitbc/rMETL.git)
-	$ cd rMETL/
-	$ pip install .
+	rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
 ---	
 ### Introduction
@@ -44,10 +36,15 @@ Its peak memory footprint is about 7.05 Gigabytes (default setting), on a server
 ---
 ### Installation
 
+	#install via pip
+	$ pip install rMETL
+
+	#install from github
+	$ git clone https://github.com/tjiangHIT/rMETL.git (git clone https://github.com/hitbc/rMETL.git)
+	$ cd rMETL/
+	$ pip install .
+
 Current version of rMETL has been tested on 64bit Linux operating system.
-The source code is written in python, and can be directly download from: https://github.com/hitbc/rMETL 
-A mirror is also in: https://github.com/tjiangHIT/rMETL
-The INSTALL.sh is attached. Use the bash command for generating the executable file.
 
 ---
 ### Synopsis
