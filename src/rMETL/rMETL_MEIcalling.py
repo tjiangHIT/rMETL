@@ -2,12 +2,10 @@
 
 ''' 
  * All rights Reserved, Designed By HIT-Bioinformatics   
- * @Title:  call_TE.py
- * @Package: argparse, sys, logging, pysam, Bio
  * @Description: Establish the ME callset
  * @author: Jiang Tao (tjiang@hit.edu.cn)
  * @date: Apr 24 2018
- * @version V1.0.2  
+ * @version V1.0.4  
 '''
 
 import argparse
@@ -312,7 +310,7 @@ def call_vcf(args):
 # 
 # ************************MAIN_FUNCTION*******************************
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="rMETL.py calling", description=USAGE, \
+	parser = argparse.ArgumentParser(prog="rMETL calling", description=USAGE, \
 		formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", metavar="SAM", type=str, help="Input cluster.sam on STAGE realignment.")
 	parser.add_argument("Reference", metavar="REFERENCE", type=str, \

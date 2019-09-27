@@ -2,12 +2,10 @@
 
 ''' 
  * All rights Reserved, Designed By HIT-Bioinformatics   
- * @Title:  Map.py
- * @Package: argparse, sys, logging
  * @Description: Classify the ME types
   * @author: Jiang Tao (tjiang@hit.edu.cn)
  * @date: Apr 24 2018
- * @version V1.0.2
+ * @version V1.0.4
 '''
 
 import argparse
@@ -67,7 +65,7 @@ def call_ngmlr(inFile, ref, presets, nproc, outFile, SUBREAD_LENGTH, SUBREAD_COR
 # 
 # ************************MAIN_FUNCTION*******************************
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="rMETL.py realignment", description=USAGE, \
+	parser = argparse.ArgumentParser(prog="rMETL realignment", description=USAGE, \
 		formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", metavar="FASTA", type=str, help="Input potential_ME.fa on STAGE detection.")
 	parser.add_argument("ME_Ref", type=str, help="The transposable element concensus in fasta format.")

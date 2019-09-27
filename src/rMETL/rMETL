@@ -2,12 +2,10 @@
 
 ''' 
  * All rights Reserved, Designed By HIT-Bioinformatics   
- * @Title:  process.py
- * @Package: argparse
  * @Description: Control the rMETL pipeline
  * @author: Jiang Tao (tjiang@hit.edu.cn)
  * @date: Apr 24 2018
- * @version V1.0.2   
+ * @version V1.0.4   
 '''
 
 import argparse
@@ -44,7 +42,7 @@ USAGE = '''\
 '''%(__version__, __author__, __contact__)
 
 def parseArgs():
-	parser = argparse.ArgumentParser(prog='rMETL.py', description=USAGE, \
+	parser = argparse.ArgumentParser(prog='rMETL', description=USAGE, \
     formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument('stage', metavar='STAGE', choices=STAGES.keys(), \
     type=str, help='Stage to execute')

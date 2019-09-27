@@ -2,12 +2,10 @@
 
 ''' 
  * All rights Reserved, Designed By HIT-Bioinformatics   
- * @Title:  extract_simple.py
- * @Package: argparse, pysam, sys, Bio, os, logging
  * @Description: Parse the ME signatures from alignments
  * @author: Jiang Tao (tjiang@hit.edu.cn)
  * @date: Apr 24 2018
- * @version V1.0.2     
+ * @version V1.0.4     
 '''
 
 import pysam
@@ -526,7 +524,7 @@ def load_sam_multi_processes(args):
 # 
 # ************************MAIN_FUNCTION*******************************
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="rMETL.py detection", \
+	parser = argparse.ArgumentParser(prog="rMETL detection", \
 		description=USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", metavar="[SAM,BAM,FASTA,FASTQ]", type=str, \
 		help="Input reads with/without alignment.")
