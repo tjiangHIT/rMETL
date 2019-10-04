@@ -7,6 +7,12 @@
      
 	rMETL - realignment-based Mobile Element insertion detection Tool for Long read
 
+[![PyPI version](https://badge.fury.io/py/rMETL.svg)](https://badge.fury.io/py/rMETL)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/rmetl/badges/version.svg)](https://anaconda.org/bioconda/rmetl)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/rmetl/badges/license.svg)](https://anaconda.org/bioconda/rmetl)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/rmetl/badges/platforms.svg)](https://anaconda.org/bioconda/rmetl)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/rmetl/badges/latest_release_date.svg)](https://anaconda.org/bioconda/rmetl)
+
 ---	
 ### Introduction
 Mobile element insertion (MEI) is a major category of structure variations (SVs). The rapid development of long read sequencing technologies provides the opportunity to detect MEIs sensitively. However, the signals of MEI implied by noisy long reads are highly complex due to the repetitiveness of mobile elements as well as the high sequencing error rates. Herein, we propose the Realignment-based Mobile Element insertion detection Tool for Long read (rMETL). Benchmarking results of simulated and real datasets demonstrate that rMETL has the ability to discover MEIs sensitively as well as prevent false positives. It is suited to produce high-quality MEI callsets in many genomics studies.
@@ -38,6 +44,9 @@ Its peak memory footprint is about 7.05 Gigabytes (default setting), on a server
 
 	#install via pip
 	$ pip install rMETL
+	
+	#install via conda
+	$ conda install -c bioconda rmetl
 
 	#install from github
 	$ git clone https://github.com/tjiangHIT/rMETL.git (git clone https://github.com/hitbc/rMETL.git)
