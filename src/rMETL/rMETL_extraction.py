@@ -574,7 +574,7 @@ def run(argv):
 	else:
 		# inFile, ref, seq_type, nproc=1, outFile="map.sam", presets="pacbio"
 		file = call_ngmlr(args.input, args.Reference, args.presets, \
-			rgs.threads, args.temp_dir)
+			args.threads, args.temp_dir)
 		bam_path = call_samtools(file, args.temp_dir)
 		args.input = bam_path
 		load_sam_multi_processes(args)
